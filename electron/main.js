@@ -6,8 +6,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 function createWindow() {
     const win = new BrowserWindow({
-      width: 1200,
-      height: 800,
+      width: 1800,
+      height: 1000,
+      autoHideMenuBar : false,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false
@@ -17,7 +18,7 @@ function createWindow() {
     // In development, load the local dev server
     if (process.env.VITE_DEV_SERVER_URL) {
       win.loadURL(process.env.VITE_DEV_SERVER_URL)
-      win.webContents.openDevTools()
+      // win.webContents.openDevTools()
     } else {
       // In production, load the built files
       win.loadFile(path.join(__dirname, '../dist/index.html'))

@@ -1,23 +1,23 @@
 <template>
   <v-app>
-    <v-main>
-      <v-container>
-        <h1>Welcome to Vue 3 + Electron + Vuetify</h1>
-        <v-btn color="primary" class="mt-4">
-          Click Me
-        </v-btn>
-      </v-container>
+    <v-main class="bg-grey-lighten-4">
+      <div>
+        <!-- Content Goes Here  -->
+        <NavigationDrawer />
+      </div>
     </v-main>
   </v-app>
 </template>
 
 <script>
+import NavigationDrawer from "./components/GlobalComponents/NavigationDrawer.vue";
 export default {
-  name: 'App',
+  name: "App",
+  components: { NavigationDrawer },
   data() {
     return {
       // your data here
-    }
-  }
-}
+    };
+  },
+};
 </script>
