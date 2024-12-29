@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <router-view></router-view>
     <v-main class="bg-grey-lighten-4">
       <div>
         <!-- Content Goes Here  -->
