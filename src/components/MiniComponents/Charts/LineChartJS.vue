@@ -1,7 +1,19 @@
 <template>
-  <h3 class="text-center text-decoration-underline">
+  <h4 class="text-center text-decoration-underline">
     <v-icon :color="IconColor">{{ IconName }}</v-icon> {{ title }}
-  </h3>
+    <v-tooltip text="Exporter Vers Excel" location="top" activator="parent">
+      <template v-slot:activator="{ props }">
+        <v-btn icon compact size="20" class="ml-2" v-bind="props">
+          <v-img
+            src="https://static-00.iconduck.com/assets.00/ms-excel-icon-2048x2026-nws24wyy.png"
+            width="25"
+            class=""
+            style="display: inline-block; vertical-align: middle"
+          ></v-img>
+        </v-btn>
+      </template>
+    </v-tooltip>
+  </h4>
   <Line id="my-line-chart-id" :options="chartOptions" :data="chartData" />
 </template>
 
@@ -62,7 +74,7 @@ export default {
             enabled: true,
             callbacks: {
               label: function (context) {
-                return `Value: ${context.raw}`;
+                return `représente: ${context.raw}`;
               },
             },
           },

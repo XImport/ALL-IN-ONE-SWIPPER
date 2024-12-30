@@ -7,6 +7,22 @@
           <h2 class="text-decoration-underline">
             <v-icon class="pr-2" color="green">mdi-chart-tree</v-icon>Bilan
             Analytique
+            <v-tooltip
+              text="Exporter Vers Excel"
+              location="top"
+              activator="parent"
+            >
+              <template v-slot:activator="{ props }">
+                <v-btn icon compact size="25" class="ml-2" v-bind="props">
+                  <v-img
+                    src="https://static-00.iconduck.com/assets.00/ms-excel-icon-2048x2026-nws24wyy.png"
+                    width="25"
+                    class=""
+                    style="display: inline-block; vertical-align: middle"
+                  ></v-img>
+                </v-btn>
+              </template>
+            </v-tooltip>
           </h2>
         </v-col>
 
@@ -14,7 +30,7 @@
         <v-col
           cols="auto"
           class="d-flex align-center mx-4"
-          style="margin-right: 14% !important"
+          style="margin-right: 10% !important"
         >
           <div class="d-flex align-center gap-4">
             <VueDatePicker
@@ -29,6 +45,22 @@
               v-model="enddate"
               :format="format2"
             />
+            <v-tooltip
+              text="Analyser les données"
+              location="top"
+              activator="parent"
+            >
+              <template v-slot:activator="{ props }">
+                <v-btn icon compact size="35" class="" v-bind="props">
+                  <v-img
+                    src="https://static-00.iconduck.com/assets.00/go-icon-2048x769-18k4edx0.png"
+                    width="35"
+                    class=""
+                    style="display: inline-block; vertical-align: middle"
+                  ></v-img>
+                </v-btn>
+              </template>
+            </v-tooltip>
             <div class="theme-switch-wrapper">
               <button
                 class="theme-switch"
@@ -53,9 +85,9 @@
         <v-col cols="auto" style="margin-right: 5% !important">
           <v-list class="pa-0">
             <v-list-item
-              prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-              subtitle="sandra_a88@gmail.com"
-              title="Sandra Adams"
+              prepend-avatar="https://cdn-icons-png.flaticon.com/512/219/219986.png"
+              subtitle="Hamza.nouinou@ttsud.ma"
+              title="Hamza Nouinou"
             />
           </v-list>
         </v-col>
@@ -179,5 +211,9 @@ export default {
   .v-container {
     padding: 0px;
   }
+}
+
+.v-btn {
+  box-shadow: none !important;
 }
 </style>

@@ -59,7 +59,7 @@
         <v-col cols="12" sm="6" class="pa-2">
           <BarChartJS
             :CHARTDATA="COMMANDDEMANDEANDCOMMANDLIVRE"
-            title="Analyse des Commandes Demandées et Livrées"
+            title="Analyse des Commandes Demandées et Livrées (Par Date)"
             IconName="mdi-poll"
             IconColor="purple"
           />
@@ -67,7 +67,7 @@
         <v-col cols="12" sm="6" class="pa-2">
           <BarChartJS
             :CHARTDATA="QNTENTANDM3"
-            title="Volume de Vente : Tonnes et Mètres Cubes"
+            title="Volume de Vente : Tonnes et Mètres Cubes (Par Date)"
             IconName="mdi-chart-tree"
             IconColor="green"
           />
@@ -79,7 +79,7 @@
         <v-col cols="12" sm="6" class="pa-2">
           <LineChartJS
             :CHARTDATA="CANETCABRUT"
-            title="Évolution du CA Brut et du CA Net"
+            title="Évolution du CA Brut et du CA Net (Par Date)"
             IconName="mdi-chart-ppf"
             IconColor="blue"
           />
@@ -87,7 +87,7 @@
         <v-col cols="12" sm="6" class="pa-2">
           <BarChartJS
             :CHARTDATA="PMVGLOBALS"
-            title="Situation du PVM : Nobles Graves Et Le  Stérile"
+            title="Situation du PVM : Nobles Graves Et Le  Stérile (Par Date)"
             IconName="mdi-chart-box"
             IconColor="pink"
           />
@@ -99,7 +99,7 @@
         <v-col cols="12" sm="6" class="pa-2">
           <BarChartJS
             :CHARTDATA="TOP6CLIENTS"
-            title="Analyse du CA Brut pour les 6 principaux clients"
+            title="Analyse du CA Brut pour les 6 principaux clients (Par Date)"
             IconName="mdi-chart-box-multiple"
             IconColor="red"
           />
@@ -108,7 +108,7 @@
         <v-col cols="12" sm="6" class="pa-2">
           <BarChartJS
             :CHARTDATA="CREANCERECOUVREMENTENCAISSEMENT"
-            title="Performance des Créances Commerciales et du Recouvrement"
+            title="Performance des Créances Commerciales et du Recouvrement (Par Date)"
             IconName="mdi-chart-areaspline"
             IconColor="brown"
           />
@@ -129,7 +129,7 @@
           >
             <DonutsChartJS
               :CHARTDATA="VOLPARPRODUIT"
-              title="État des Ventes par Produit en Tonnes"
+              title="État des Ventes par Produit en Tonnes (Par Date)"
               IconName="mdi-chart-pie"
               IconColor="orange"
             />
@@ -147,11 +147,69 @@
           >
             <DonutsChartJS
               :CHARTDATA="CAPARPRODUIT"
-              title="État des Ventes par Produit en CA NET"
+              title="État des Ventes par Produit en CA NET (Par Date)"
               IconName="mdi-chart-pie"
               IconColor="orange"
             />
           </div>
+        </v-col>
+      </v-row>
+    </v-container>
+
+    <v-container fluid style="max-width: 100%; margin-left: 30% !important">
+      <v-row dense class="d-flex align-center">
+        <v-col cols="auto" class="pa-0">
+          <h2 class="text-center text-decoration-underline mt-6">
+            <v-icon color="pink">mdi-account-multiple-check</v-icon>
+            Bilan des Objectifs Commerciaux Annuels Avec la Réalisation d'anneé
+            <span class="text-pink">2024</span>
+          </h2>
+        </v-col>
+      </v-row>
+    </v-container>
+
+    <v-container fluid style="max-width: 100%">
+      <v-row dense class="d-flex justify-space-between">
+        <v-col cols="12" sm="6" class="pa-2">
+          <DataTABLE
+            :Headers="TOneHeaders"
+            :DATA="TOneDATA"
+            DATATABLETITLE="Tableau des Objectifs et réalisations Ventes (Par Date)"
+            TABLEICON="mdi-bag-checked"
+            TABLECOLORICON="blue"
+          />
+        </v-col>
+        <v-col cols="12" sm="6" class="pa-2">
+          <DataTABLE
+            :Headers="TTwoHeaders"
+            :DATA="TTwoDATA"
+            DATATABLETITLE="Tableau des Objectifs et Réalisation Créances Clients (Par Mois)"
+            :reverse="true"
+            TABLEICON="mdi-account-group"
+            TABLECOLORICON="purple"
+          />
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-container fluid style="max-width: 100%">
+      <v-row dense class="d-flex justify-space-between">
+        <v-col cols="12" sm="6" class="pa-2">
+          <DataTABLE
+            :Headers="TTreeHeaders"
+            :DATA="TTreeDATA"
+            DATATABLETITLE="Tableau PVM par Catégorie (Par Date)"
+            TABLEICON="mdi-chart-bar"
+            TABLECOLORICON="red"
+          />
+        </v-col>
+        <v-col cols="12" sm="6" class="pa-2">
+          <DataTABLE
+            :Headers="TFourHeaders"
+            :DATA="TFourDATA"
+            DATATABLETITLE="Tableau des Objectifs et Réalisations Recouvrement(Par Mois)"
+            TABLEICON="mdi-cash-fast"
+            TABLECOLORICON="green"
+          />
         </v-col>
       </v-row>
     </v-container>
@@ -164,6 +222,8 @@ import InfoCard from "../components/MiniComponents/InfoCard.vue";
 import BarChartJS from "../components/MiniComponents/Charts/BarChartJS.vue";
 import LineChartJS from "../components/MiniComponents/Charts/LineChartJS.vue";
 import DonutsChartJS from "../components/MiniComponents/Charts/DonutsChartJS.vue";
+import TableJS from "../components/MiniComponents/Tables/TableJS.vue";
+import DataTABLE from "../components/MiniComponents/Tables/DataTABLE.vue";
 export default {
   name: "BilanAnalytique",
   components: {
@@ -172,9 +232,216 @@ export default {
     BarChartJS,
     LineChartJS,
     DonutsChartJS,
+    TableJS,
+    DataTABLE,
   },
+
   data() {
     return {
+      TOneHeaders: [
+        {
+          title: "",
+          align: "start",
+          sortable: false,
+          key: "Key1",
+          class: "blue-header",
+        },
+        {
+          title: "Objectif",
+          key: "Key2",
+          align: "start",
+          class: "blue-header",
+        },
+        {
+          title: "Réalisation",
+          key: "Key3",
+          align: "start",
+          class: "blue-header",
+        },
+        {
+          title: "Taux d'avancement ",
+          key: "Key4",
+          align: "start",
+          class: "blue-header",
+        },
+      ],
+
+      TOneDATA: [
+        {
+          Key1: "CA BRUT",
+          Key2: 24568987.21, // Raw numeric value for Key2
+          Key3: 23698741.32, // Raw numeric value for Key3
+        },
+        {
+          Key1: "CA NET",
+          Key2: 24568987.21, // Raw numeric value for Key2
+          Key3: 23698741.32, // Raw numeric value for Key3
+        },
+        {
+          Key1: "CA TRANSPORT",
+          Key2: 24568987.21, // Raw numeric value for Key2
+          Key3: 23698741.32, // Raw numeric value for Key3
+        },
+        {
+          Key1: "MARGE DU TRANSPORT ",
+          Key2: 24568987.21, // Raw numeric value for Key2
+          Key3: 23698741.32, // Raw numeric value for Key3
+        },
+        {
+          Key1: "PVM GLOBAL",
+          Key2: 24568987.21, // Raw numeric value for Key2
+          Key3: 23698741.32, // Raw numeric value for Key3
+        },
+      ],
+
+      TTwoHeaders: [
+        {
+          title: "",
+          align: "start",
+          sortable: false,
+          key: "Key1",
+          class: "blue-header",
+        },
+        {
+          title: "Objectif",
+          key: "Key2",
+          align: "start",
+          class: "blue-header",
+        },
+        {
+          title: "Réalisation",
+          key: "Key3",
+          align: "start",
+          class: "blue-header",
+        },
+        {
+          title: "Taux d'avancement ",
+          key: "Key4",
+          align: "start",
+          class: "blue-header",
+        },
+      ],
+
+      TTwoDATA: [
+        {
+          Key1: "Créance Commerciale",
+          Key2: 1547963.21, // Raw numeric value for Key2
+          Key3: 1887994.21, // Raw numeric value for Key3
+        },
+        {
+          Key1: "Créance CRJ",
+          Key2: 3254789.21, // Raw numeric value for Key2
+          Key3: 9857623.32, // Raw numeric value for Key3
+        },
+        {
+          Key1: "Créance H.Recouvrement",
+          Key2: 1000000, // Raw numeric value for Key2
+          Key3: 3845697.32, // Raw numeric value for Key3
+        },
+        {
+          Key1: "Créance Contentieux",
+          Key2: 1000000, // Raw numeric value for Key2
+          Key3: 1365871.32, // Raw numeric value for Key3
+        },
+        {
+          Key1: "Créance Global",
+          Key2: 6802752.42, // Raw numeric value for Key2
+          Key3: 16718617.32, // Raw numeric value for Key3
+        },
+      ],
+
+      TTreeHeaders: [
+        {
+          title: "",
+          align: "start",
+          sortable: false,
+          key: "Key1",
+          class: "blue-header",
+        },
+        {
+          title: "Objectif",
+          key: "Key2",
+          align: "start",
+          class: "blue-header",
+        },
+        {
+          title: "Réalisation",
+          key: "Key3",
+          align: "start",
+          class: "blue-header",
+        },
+        {
+          title: "Taux d'avancement ",
+          key: "Key4",
+          align: "start",
+          class: "blue-header",
+        },
+      ],
+
+      TTreeDATA: [
+        {
+          Key1: "PVM NOBLES",
+          Key2: 44.21, // Raw numeric value for Key2
+          Key3: 42.32, // Raw numeric value for Key3
+        },
+        {
+          Key1: "PVM GRAVES",
+          Key2: 34.21, // Raw numeric value for Key2
+          Key3: 33.21, // Raw numeric value for Key3
+        },
+        {
+          Key1: "PVM STERILE",
+          Key2: 15.5, // Raw numeric value for Key2
+          Key3: 14.97, // Raw numeric value for Key3
+        },
+      ],
+
+      TFourHeaders: [
+        {
+          title: "",
+          align: "start",
+          sortable: false,
+          key: "Key1",
+          class: "blue-header",
+        },
+        {
+          title: "Objectif",
+          key: "Key2",
+          align: "start",
+          class: "blue-header",
+        },
+        {
+          title: "Réalisation",
+          key: "Key3",
+          align: "start",
+          class: "blue-header",
+        },
+        {
+          title: "Taux d'avancement ",
+          key: "Key4",
+          align: "start",
+          class: "blue-header",
+        },
+      ],
+
+      TFourDATA: [
+        {
+          Key1: "Recouvrement",
+          Key2: 24547965.21, // Raw numeric value for Key2
+          Key3: 21654741.21, // Raw numeric value for Key3
+        },
+        {
+          Key1: "Encaissement",
+          Key2: 20654741.21, // Raw numeric value for Key2
+          Key3: 19745321.32, // Raw numeric value for Key3
+        },
+        {
+          Key1: "Compensation",
+          Key2: 4000000, // Raw numeric value for Key2
+          Key3: 3798631.32, // Raw numeric value for Key3
+        },
+      ],
+
       VOLPARPRODUIT: {
         labels: [
           "Grain de Riz",
@@ -352,7 +619,7 @@ export default {
         ],
         datasets: [
           {
-            label: "PMV NOBLES",
+            label: "PVM NOBLES",
             data: [
               41.05, 41.48, 41.91, 42.34, 42.77, 43.2, 43.63, 44.06, 44.02,
               43.8, 43.47, 44.32,
@@ -360,7 +627,7 @@ export default {
             backgroundColor: ["#008000"],
           },
           {
-            label: "PMV GRAVES",
+            label: "PVM GRAVES",
             data: [
               29.05, 29.39, 29.73, 30.07, 30.41, 30.75, 31.09, 31.43, 31.77,
               32.11, 32.45, 32.87,
@@ -368,7 +635,7 @@ export default {
             backgroundColor: ["#FFA500"],
           },
           {
-            label: "PMV STERILE",
+            label: "PVM STERILE",
             data: [
               15.01, 15.05, 15.09, 15.13, 15.17, 15.21, 15.25, 15.29, 15.33,
               15.37, 15.41, 15.45,
@@ -471,13 +738,13 @@ export default {
           Icon: "mdi-chart-bar", // Changed to a relevant net cash flow icon
         },
         {
-          Title: "PMV Global",
+          Title: "PVM Global",
           IconColor: "lime-darken-4",
           TextNumber: 36.35,
           Icon: "mdi-circle-multiple", // Used a globe icon for global scope
         },
         {
-          Title: "PMV Hors Stérile",
+          Title: "PVM Hors Stérile",
           IconColor: "orange-darken-4",
           TextNumber: 43.25,
           Icon: "mdi-circle-multiple", // Icon to reflect something outside sterile conditions
@@ -539,5 +806,9 @@ export default {
     margin-left: 0 !important;
     width: 100% !important;
   }
+}
+
+.v-btn {
+  box-shadow: none;
 }
 </style>

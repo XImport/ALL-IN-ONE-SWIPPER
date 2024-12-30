@@ -13,8 +13,10 @@
     "electron:preview": "electron ."
   },
   "dependencies": {
+    "@ag-grid-community/client-side-row-model": "^32.3.3",
     "@mdi/font": "^7.4.47",
     "@vuepic/vue-datepicker": "^10.0.0",
+    "ag-grid-vue3": "^33.0.3",
     "chart.js": "^4.4.7",
     "chartjs-plugin-annotation": "^3.1.0",
     "vue": "^3.5.13",
