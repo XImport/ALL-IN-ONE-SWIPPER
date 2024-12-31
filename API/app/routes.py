@@ -144,12 +144,81 @@ def balance_sheet():
             filtered_data["Coût de transport"].tolist()
         )
         QNTENTONNE = sum(filtered_data["Qté en T"].tolist())
+        QNTENM3 = sum(filtered_data["Qté en m3"].tolist())
         MIXPRODUIT = (VOLNOBLES) / (VOLNOBLES + VOLGRAVES + VOLSTERILE) * 100
         CACAISSE = sum(
             filtered_data[filtered_data["BC"] == "EN ESPECE"]["CA BRUT"].tolist()
         )
         VOYAGESRENDULIV = filtered_data[filtered_data["Chantier"] != "DEPART"].shape[0]
         RECOUVREMENT = sum(filtered_data2["Montant Paye"].tolist())
+
+        GRAPHVOYAGESRENDULIVDATES = (
+            filtered_data[filtered_data["Chantier"] != "DEPART"]["Date"]
+            .unique()
+            .tolist()
+        )
+        GRAPHVOYAGERENDULIVREE = (
+            filtered_data[filtered_data["Chantier"] != "DEPART"]
+            .groupby("Date")["Ticket/BL"]
+            .count()
+            .tolist()
+        )
+        GRAPHVOYAGERENDUCOMMANDEE = (
+            filtered_data[filtered_data["Chantier"] != "DEPART"]
+            .groupby("Date")["Ticket/BL"]
+            .count()
+            .tolist()
+        )
+        ############################################################################################################
+        GRAPHQNTENTONNEDATES = filtered_data["Date"].unique().tolist()
+
+        filtered_data["Qté en T"] = pd.to_numeric(
+            filtered_data["Qté en T"], errors="coerce"
+        )
+        filtered_data["Qté en m3"] = pd.to_numeric(
+            filtered_data["Qté en m3"], errors="coerce"
+        )
+
+        # Group by "Date" and sum "Qté en T" and "Qté en m3" for each date
+        sum_per_date = (
+            filtered_data.groupby("Date")[["Qté en T", "Qté en m3"]].sum().reset_index()
+        )
+
+        # Convert the result into a list of dictionaries
+        GRAPHQNTENTONNEDATES = sum_per_date.to_dict(orient="records")
+
+        # Output the result
+        # Separate the Date, Qté en T, and Qté en m3 into individual lists
+        GRAPHVOLDATES = [entry["Date"] for entry in GRAPHQNTENTONNEDATES]
+        GRAPHVOLQNTENT = [entry["Qté en T"] for entry in GRAPHQNTENTONNEDATES]
+        GRAPHVOLQNTENM3 = [entry["Qté en m3"] for entry in GRAPHQNTENTONNEDATES]
+        ################################################################################################################
+        # Assuming filtered_data is already loaded and contains the required data
+        GRAPHCADATES = filtered_data["Date"].unique().tolist()
+
+        # Ensure that "CA BRUT" and "CA Net" are numeric
+        filtered_data["CA BRUT"] = pd.to_numeric(
+            filtered_data["CA BRUT"], errors="coerce"
+        )
+        filtered_data["CA Net"] = pd.to_numeric(
+            filtered_data["CA Net"], errors="coerce"
+        )
+
+        # Group by "Date" and sum "CA BRUT" and "CA Net" for each date
+        sum_per_date = (
+            filtered_data.groupby("Date")[["CA BRUT", "CA Net"]].sum().reset_index()
+        )
+
+        # Convert the result into a list of dictionaries
+        GRAPHCADATES = sum_per_date.to_dict(orient="records")
+
+        # Separate the Date, CA BRUT, and CA Net into individual lists
+        GRAPHCADATESS = [entry["Date"] for entry in GRAPHCADATES]
+        GRAPHCABRUT = [entry["CA BRUT"] for entry in GRAPHCADATES]
+        GRAPHCANET = [entry["CA Net"] for entry in GRAPHCADATES]
+
+        ##################################################################################################################
+
         return (
             jsonify(
                 {
@@ -157,22 +226,34 @@ def balance_sheet():
                     "RECOUVREMENT_Data": filtered_data2.to_dict(orient="records"),
                     "VENTES_Records": len(filtered_data),
                     "RECOUVREMENT_Records": len(filtered_data2),
-                    "Metrics": {
+                    "Metrics1": {
                         "CABRUT": CABRUT,
                         "CANET": CANET,
                         "PMVGLOBAL": PMVGLOBAL,
-                        "CANOBLES": CANOBLES,
-                        "CAGRAVES": CAGRAVES,
-                        "VOLNOBLES": VOLNOBLES,
-                        "VOLGRAVES": VOLGRAVES,
-                        "VOLSTERILE": VOLSTERILE,
                         "PMVHORSSTERILE": PMVHORSSTERILE,
                         "MARGETRANSPORT": MARGETRANSPORT,
                         "QNTENTONNE": QNTENTONNE,
+                    },
+                    "Metrics2": {
                         "MIXPRODUIT": MIXPRODUIT,
                         "CACAISSE": CACAISSE,
                         "VOYAGESRENDULIV": VOYAGESRENDULIV,
                         "RECOUVREMENTCOMMERCIALE": RECOUVREMENT,
+                    },
+                    "COMMANDEGRAPH": {
+                        "GRAPHVOYAGESRENDULIVDATES": GRAPHVOYAGESRENDULIVDATES,
+                        "GRAPHVOYAGERENDULIVREE": GRAPHVOYAGERENDULIVREE,
+                        "GRAPHVOYAGERENDUCOMMANDEE": GRAPHVOYAGERENDUCOMMANDEE,
+                    },
+                    "VOLGRAPH": {
+                        "GRAPHVOLDATES": GRAPHVOLDATES,
+                        "GRAPHVOLQNTENT": GRAPHVOLQNTENT,
+                        "GRAPHVOLQNTENM3": GRAPHVOLQNTENM3,
+                    },
+                    "CAGRAPH": {
+                        "GRAPHCADATESS": GRAPHCADATESS,
+                        "GRAPHCABRUT": GRAPHCABRUT,
+                        "GRAPHCANET": GRAPHCANET,
                     },
                 }
             ),
