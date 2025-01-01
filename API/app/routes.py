@@ -307,6 +307,49 @@ def balance_sheet():
 
         ##############################################################################################################
 
+        convert_data_json3 = pd.read_excel(files[0], sheet_name="ETAT FINANCIER")
+
+        convert_data_json3["Date"] = pd.to_datetime(
+            convert_data_json3["Date"], format="%d/%m/%Y", errors="coerce"
+        )
+
+        convert_data_json3["Formatted_Date"] = convert_data_json3["Date"].dt.strftime(
+            "%d/%m/%Y"
+        )
+
+        search_month = fin_date.month
+
+        filtered_rows = convert_data_json3[
+            convert_data_json3["Date"].dt.month == search_month
+        ]
+
+        #################################################################################################################
+        result = filtered_data.groupby("Produit")["Qté en T"].sum()
+
+        if QNTENTONNE is None or not isinstance(QNTENTONNE, (int, float)):
+            raise ValueError("QNTENTONNE must be defined as a valid integer or float")
+
+        # Calculate percentages for QNTBYPRODUIT
+        QNTBYPRODUIT = []
+        for QNT in result.values.tolist():
+            percentage = (int(QNT) / int(QNTENTONNE)) * 100
+            QNTBYPRODUIT.append(percentage)
+
+        PRODUITS = result.index.tolist()  # List of "Produit"
+
+        print("Produits:", PRODUITS)
+        print("Quantities by Produit (%):", QNTBYPRODUIT)
+
+        ###############################################################################################################
+
+        result2 = filtered_data.groupby("Produit")["CA Net"].sum()
+        CANETBYPRODUIT = []
+        for CA in result2.values.tolist():
+            percentage = (int(CA) / int(CANET)) * 100
+            CANETBYPRODUIT.append(percentage)
+
+        ####################################################################################################################
+
         return (
             jsonify(
                 {
@@ -349,9 +392,29 @@ def balance_sheet():
                         "PMVGRAVES": List_Division(GRAPHCAGRAVES, GRAPHVOLUGRAVES),
                         "PMVSTERILE": List_Division(GRAPHCASTERILE, GRAPHVOLUSTERILE),
                     },
-                    "TOP6CLIENTS": {
+                    "TOP6CLIENTSGRAPH": {
                         "TOP6CLIENTNAMES": TOP6_SORTED_CLIENTS["Client"].tolist(),
                         "TOP6CLIENTVALUES": TOP6_SORTED_CLIENTS["CA BRUT"].tolist(),
+                    },
+                    "PERFORMANCECREANCEGRAPH": {
+                        "DATES": filtered_rows["Formatted_Date"].to_list(),
+                        "RECOUVREMENTCOMMERCIAL": filtered_rows[
+                            "Recouvrement Commerciale"
+                        ].to_list(),
+                        "CREANCECOMMERCIALE": filtered_rows[
+                            "Créance Commerciale"
+                        ].to_list(),
+                        "ENCAISSEMENTFINANCIER": filtered_rows[
+                            "Encaissement Financier"
+                        ].to_list(),
+                    },
+                    "QNTBYPRODUITGRAPH": {
+                        "PRODUITS": PRODUITS,
+                        "QNTBYPRODUIT": QNTBYPRODUIT,
+                    },
+                    "CANETBYPRODUITGRAPH": {
+                        "PRODUITS": PRODUITS,
+                        "CANETBYPRODUIT": CANETBYPRODUIT,
                     },
                 }
             ),
