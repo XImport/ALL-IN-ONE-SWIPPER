@@ -27,6 +27,27 @@ def get_files_in_directory(directory_path):
         return str(e)
 
 
+def List_Division(list1, list2, default_value=0):
+    """
+    Perform element-wise division between two lists, handling division by zero.
+
+    Args:
+        list1 (list): The numerator list.
+        list2 (list): The denominator list.
+        default_value (float): The value to use when division by zero occurs.
+
+    Returns:
+        list: A list containing the results of the division.
+    """
+    if len(list1) != len(list2):
+        raise ValueError("Both lists must have the same length.")
+
+    return [
+        (num / denom if denom != 0 else default_value)
+        for num, denom in zip(list1, list2)
+    ]
+
+
 @app.route("/API/TESTING")
 def hello_world():
     return jsonify({"Message": "Hello API"})
@@ -218,6 +239,73 @@ def balance_sheet():
         GRAPHCANET = [entry["CA Net"] for entry in GRAPHCADATES]
 
         ##################################################################################################################
+        GRAPHDATEPMV = filtered_data["Date"].unique().tolist()
+
+        daily_sums = (
+            filtered_data.groupby(["Date", "Type"])["CA Net"].sum().reset_index()
+        )
+
+        # Get a complete list of unique dates
+        all_dates = sorted(filtered_data["Date"].unique())
+
+        # Create a DataFrame for all combinations of dates and types
+        all_combinations = pd.MultiIndex.from_product(
+            [all_dates, ["Nobles", "Graves", "Stérile"]], names=["Date", "Type"]
+        )
+        complete_data = (
+            daily_sums.set_index(["Date", "Type"])
+            .reindex(all_combinations, fill_value=0)  # Fill missing values with 0
+            .reset_index()
+        )
+
+        # Separate the data by type
+        GRAPHCANOBLES = complete_data[complete_data["Type"] == "Nobles"][
+            "CA Net"
+        ].tolist()
+        GRAPHCAGRAVES = complete_data[complete_data["Type"] == "Graves"][
+            "CA Net"
+        ].tolist()
+        GRAPHCASTERILE = complete_data[complete_data["Type"] == "Stérile"][
+            "CA Net"
+        ].tolist()
+
+        daily_volumes = (
+            filtered_data.groupby(["Date", "Type"])["Qté en T"].sum().reset_index()
+        )
+
+        # Get a complete list of unique dates
+        all_dates = sorted(filtered_data["Date"].unique())
+
+        # Create a DataFrame for all combinations of dates and types
+        all_combinations = pd.MultiIndex.from_product(
+            [all_dates, ["Nobles", "Graves", "Stérile"]], names=["Date", "Type"]
+        )
+        complete_volumes = (
+            daily_volumes.set_index(["Date", "Type"])
+            .reindex(all_combinations, fill_value=0)  # Fill missing values with 0
+            .reset_index()
+        )
+
+        # Separate the data by type
+        GRAPHVOLUNOBLES = complete_volumes[complete_volumes["Type"] == "Nobles"][
+            "Qté en T"
+        ].tolist()
+        GRAPHVOLUGRAVES = complete_volumes[complete_volumes["Type"] == "Graves"][
+            "Qté en T"
+        ].tolist()
+        GRAPHVOLUSTERILE = complete_volumes[complete_volumes["Type"] == "Stérile"][
+            "Qté en T"
+        ].tolist()
+
+        ##################################################################################################################
+
+        CLIENT_TOTAL = filtered_data.groupby("Client")["CA BRUT"].sum().reset_index()
+
+        TOP6_SORTED_CLIENTS = CLIENT_TOTAL.sort_values(
+            by="CA BRUT", ascending=False
+        ).head(6)
+
+        ##############################################################################################################
 
         return (
             jsonify(
@@ -254,6 +342,16 @@ def balance_sheet():
                         "GRAPHCADATESS": GRAPHCADATESS,
                         "GRAPHCABRUT": GRAPHCABRUT,
                         "GRAPHCANET": GRAPHCANET,
+                    },
+                    "PMVGRAPH": {
+                        "GRAPHDATEPMV": GRAPHDATEPMV,
+                        "PMVNOBLES": List_Division(GRAPHCANOBLES, GRAPHVOLUNOBLES),
+                        "PMVGRAVES": List_Division(GRAPHCAGRAVES, GRAPHVOLUGRAVES),
+                        "PMVSTERILE": List_Division(GRAPHCASTERILE, GRAPHVOLUSTERILE),
+                    },
+                    "TOP6CLIENTS": {
+                        "TOP6CLIENTNAMES": TOP6_SORTED_CLIENTS["Client"].tolist(),
+                        "TOP6CLIENTVALUES": TOP6_SORTED_CLIENTS["CA BRUT"].tolist(),
                     },
                 }
             ),
