@@ -1,433 +1,299 @@
-from flask import jsonify, request
+from flask import jsonify, request, Response
 from app import app
 import os
 import pandas as pd
 from datetime import datetime
+from .Functions.Utils import (
+    get_files_in_directory,
+    should_aggregate_monthly,
+    aggregate_time_series,
+    Metrics_DATA_Filters,
+)
+from .CHARTS.Volumedata import prepare_volume_data
+from .CHARTS.VolumeByProducts import prepare_volume_data_by_product
+from .CHARTS.CANetByProducts import prepare_ca_net_by_product
+from .CHARTS.VoyagesRendus import prepare_voyages_rendus_data
+from .CHARTS.CANetandCABrut import prepare_ca_data
+from .CHARTS.PerformanceCommercialAndFinancier import (
+    prepare_performance_créance_commerciale_recouvrement,
+)
+from .CHARTS.PMVGlobal import prepare_pmv_data
+from .CHARTS.TopSixClients import prepare_top_six_clients
 
 
-def get_files_in_directory(directory_path):
-    """
-    List all files in the specified directory recursively.
-
-    Args:
-        directory_path (str): Path of the directory to search in.
-
-    Returns:
-        list: List of file paths.
-    """
-    try:
-        all_files = []
-        for root, _, files in os.walk(directory_path):
-            for file in files:
-                all_files.append(os.path.join(root, file))
-        return all_files
-    except FileNotFoundError:
-        return None
-    except Exception as e:
-        return str(e)
-
-
-def List_Division(list1, list2, default_value=0):
-    """
-    Perform element-wise division between two lists, handling division by zero.
-
-    Args:
-        list1 (list): The numerator list.
-        list2 (list): The denominator list.
-        default_value (float): The value to use when division by zero occurs.
-
-    Returns:
-        list: A list containing the results of the division.
-    """
-    if len(list1) != len(list2):
-        raise ValueError("Both lists must have the same length.")
-
-    return [
-        (num / denom if denom != 0 else default_value)
-        for num, denom in zip(list1, list2)
+def Metrics(filtered_data, group_by_month, args, df_recouvrement, debut_date, fin_date):
+    RECOUVREMENT_DATA = df_recouvrement
+    RECOUVREMENT_DATA["Date de Paiement"] = pd.to_datetime(
+        RECOUVREMENT_DATA["Date de Paiement"], format="%d/%m/%Y", errors="coerce"
+    )
+    RECOUVREMENT_DATA = RECOUVREMENT_DATA[
+        (RECOUVREMENT_DATA["Date de Paiement"].dt.date >= debut_date.date())
+        & (RECOUVREMENT_DATA["Date de Paiement"].dt.date <= fin_date.date())
     ]
 
+    RECOUVREMENT_DATA["Date de Paiement"] = RECOUVREMENT_DATA[
+        "Date de Paiement"
+    ].dt.strftime("%d/%m/%Y")
+    nobles_filtered = filtered_data[filtered_data["Type"] == "Nobles"].copy()
+    graves_filtered = filtered_data[filtered_data["Type"] == "Graves"].copy()
+    steriles_filtered = filtered_data[filtered_data["Type"] == "Stérile"].copy()
+    En_espece_filtered = filtered_data[filtered_data["BC"] == "EN ESPECE"].copy()
 
-@app.route("/API/TESTING")
-def hello_world():
-    return jsonify({"Message": "Hello API"})
+    CA_NET_NOBLES = Metrics_DATA_Filters(nobles_filtered, group_by_month)[
+        "CA Net"
+    ].sum()
+    CA_NET_GRAVES = Metrics_DATA_Filters(graves_filtered, group_by_month)[
+        "CA Net"
+    ].sum()
+    CA_NET_STERILES = Metrics_DATA_Filters(steriles_filtered, group_by_month)[
+        "CA Net"
+    ].sum()
+    QNT_NET_NOBLES = Metrics_DATA_Filters(nobles_filtered, group_by_month)[
+        "Qté en T"
+    ].sum()
+    QNT_NET_GRAVES = Metrics_DATA_Filters(graves_filtered, group_by_month)[
+        "Qté en T"
+    ].sum()
+    QNT_NET_STERILES = Metrics_DATA_Filters(steriles_filtered, group_by_month)[
+        "Qté en T"
+    ].sum()
+
+    # Calculate totals used in both conditions
+    DATA = aggregate_time_series(
+        filtered_data,
+        "Date",
+        [
+            "CA BRUT",
+            "CA Net",
+            "Qté en T",
+            "Qté en m3",
+            "Type",
+            "CA Transport",
+            "Coût de transport",
+            "Marge sur Transport",
+        ],
+        group_by_month,
+    )
+
+    CA_BRUT_TOTAL = DATA["CA BRUT"].sum()
+    CA_NET_TOTAL = DATA["CA Net"].sum()
+    QNT_EN_TONNE_TOTAL = DATA["Qté en T"].sum()
+    MARGE_TRANSPORT = DATA["Marge sur Transport"].sum()
+
+    if args == "METRICS#1":
+        PMV_GLOBAL = CA_NET_TOTAL / QNT_EN_TONNE_TOTAL if QNT_EN_TONNE_TOTAL != 0 else 0
+
+        return {
+            "METRICS_CA_BRUT": CA_BRUT_TOTAL,
+            "METRICS_CA_NET": CA_NET_TOTAL,
+            "METRICS_PMV_GLOBAL": PMV_GLOBAL,
+            "METRICS_QNT_EN_TONNE_GLOBALE": QNT_EN_TONNE_TOTAL,
+            "METRICS_PMV_HORS_STERILE": (
+                (CA_NET_NOBLES + CA_NET_GRAVES) / (QNT_NET_NOBLES + QNT_NET_GRAVES)
+                if (QNT_NET_NOBLES + QNT_NET_GRAVES) != 0
+                else 0
+            ),
+            "METRICS_MARGE_TRANSPORT": MARGE_TRANSPORT,
+        }
+    elif args == "METRICS#2":
+        MIX_PRODUCT = (
+            QNT_NET_NOBLES / QNT_EN_TONNE_TOTAL if QNT_EN_TONNE_TOTAL != 0 else 0
+        )
+
+        CAISSE_ESPECE = Metrics_DATA_Filters(En_espece_filtered, group_by_month)[
+            "CA BRUT"
+        ].sum()
+        VOYAGES_RENDUS = prepare_voyages_rendus_data(filtered_data, group_by_month)
+        RECOUVREMENT = RECOUVREMENT_DATA["Montant Paye"].tolist()
+        return {
+            "MIX_PRODUCT": MIX_PRODUCT,
+            "CAISSE_ESPECE": CAISSE_ESPECE,
+            "VOYAGES_RENDUS": sum(VOYAGES_RENDUS["GRAPHVOYAGERENDULIVREE"]),
+            "RECOUVREMENT_EFFECTUER": sum(RECOUVREMENT),
+        }
 
 
 @app.route("/API/V1/BalanceSheet", methods=["POST"])
 def balance_sheet():
     try:
-        # Retrieve dates from the request body
+        # Get and validate input dates
         debut_date = request.json.get("DébutDate")
         fin_date = request.json.get("FinDate")
 
         if not debut_date or not fin_date:
             return jsonify({"Message": "DébutDate and FinDate are required."}), 400
 
-        print("Dates received:", debut_date, fin_date)
-
-        # Path to the source directory
-        source_path = "./app/Source"
-        files = get_files_in_directory(source_path)
-
-        if not files:
-            return (
-                jsonify({"Message": f"No files found in the directory {source_path}."}),
-                404,
-            )
-
-        # Load both sheets from the Excel file
-        convert_data_json = pd.read_excel(files[0], sheet_name="VENTES")
-        convert_data_json2 = pd.read_excel(files[0], sheet_name="RECOUVREMENT")
-
-        # Convert "Date" column to datetime for both dataframes
-        convert_data_json["Date"] = pd.to_datetime(
-            convert_data_json["Date"], format="%d/%m/%Y", errors="coerce"
-        )
-        convert_data_json2["Date de Paiement"] = pd.to_datetime(
-            convert_data_json2["Date de Paiement"], format="%d/%m/%Y", errors="coerce"
-        )
-
-        # Convert input dates to datetime objects
         try:
             debut_date = pd.to_datetime(debut_date, format="%d/%m/%Y")
             fin_date = pd.to_datetime(fin_date, format="%d/%m/%Y")
         except ValueError:
+            return jsonify({"Message": "Invalid date format. Use DD/MM/YYYY."}), 400
+
+        if fin_date < debut_date:
             return (
-                jsonify(
-                    {"Message": "Invalid date format. Please use DD/MM/YYYY format."}
-                ),
+                jsonify({"Message": "FinDate cannot be earlier than DébutDate."}),
                 400,
             )
 
-        # Filter both datasets between DébutDate and FinDate
-        filtered_data = convert_data_json[
-            (convert_data_json["Date"].dt.date >= debut_date.date())
-            & (convert_data_json["Date"].dt.date <= fin_date.date())
-        ]
+        # Determine aggregation type
+        group_by_month = should_aggregate_monthly(debut_date, fin_date)
 
-        filtered_data2 = convert_data_json2[
-            (convert_data_json2["Date de Paiement"].dt.date >= debut_date.date())
-            & (convert_data_json2["Date de Paiement"].dt.date <= fin_date.date())
-        ]
+        # Specific file path handling
+        year = str(debut_date.year)
+        source_path = os.path.join(".", "app/Source", year)
+        print(source_path)
+        expected_file = f"Source {year}.xlsx"
+        target_file = os.path.join(source_path, expected_file)
 
-        if filtered_data.empty and filtered_data2.empty:
+        # Check if directory exists
+        if not os.path.exists(source_path):
             return (
                 jsonify(
                     {
-                        "Message": "No data found between the specified dates in either sheet.",
-                        "Available_Dates_VENTES": convert_data_json["Date"]
-                        .dt.strftime("%d/%m/%Y")
-                        .unique()
-                        .tolist(),
-                        "Available_Dates_RECOUVREMENT": convert_data_json2[
-                            "Date de Paiement"
-                        ]
-                        .dt.strftime("%d/%m/%Y")
-                        .unique()
-                        .tolist(),
+                        "Message": f"Year directory not found: {source_path}",
+                        "Available_Years": [
+                            d
+                            for d in os.listdir("./app/Source")
+                            if os.path.isdir(os.path.join("./app/Source", d))
+                        ],
                     }
                 ),
                 404,
             )
 
-        # Convert dates back to string format for JSON response
-        filtered_data["Date"] = filtered_data["Date"].dt.strftime("%d/%m/%Y")
-        filtered_data2["Date de Paiement"] = filtered_data2[
-            "Date de Paiement"
-        ].dt.strftime("%d/%m/%Y")
+        # Check if file exists
+        if not os.path.exists(target_file):
+            return (
+                jsonify(
+                    {
+                        "Message": f"Excel file not found: {expected_file}",
+                        "Available_Files": os.listdir(source_path),
+                    }
+                ),
+                404,
+            )
 
-        # Calculate metrics from filtered_data
-        CABRUT = sum(filtered_data["CA BRUT"].tolist())
-        CANET = sum(filtered_data["CA Net"].tolist())
-        PMVGLOBAL = sum(filtered_data["CA Net"].tolist()) / sum(
-            filtered_data["Qté en T"].tolist()
-        )
-        CANOBLES = sum(
-            filtered_data[filtered_data["Type"] == "Nobles"]["CA Net"].tolist()
-        )
-        CAGRAVES = sum(
-            filtered_data[filtered_data["Type"] == "Graves"]["CA Net"].tolist()
-        )
+        try:
+            ventes_df = pd.read_excel(target_file, sheet_name="VENTES")
+            recouvrement_df = pd.read_excel(target_file, sheet_name="RECOUVREMENT")
+        except Exception as e:
+            return (
+                jsonify(
+                    {
+                        "Message": f"Error reading Excel file: {str(e)}",
+                        "File": target_file,
+                    }
+                ),
+                500,
+            )
 
-        VOLNOBLES = sum(
-            filtered_data[filtered_data["Type"] == "Nobles"]["Qté en T"].tolist()
+        # Parse dates and filter data
+        ventes_df["Date"] = pd.to_datetime(
+            ventes_df["Date"], format="%d/%m/%Y", errors="coerce"
         )
-        VOLGRAVES = sum(
-            filtered_data[filtered_data["Type"] == "Graves"]["Qté en T"].tolist()
-        )
-        VOLSTERILE = sum(
-            filtered_data[filtered_data["Type"] == "Stérile"]["Qté en T"].tolist()
-        )
-
-        PMVHORSSTERILE = (CANOBLES + CAGRAVES) / (VOLNOBLES + VOLGRAVES)
-
-        MARGETRANSPORT = sum(filtered_data["CA Transport"].tolist()) - sum(
-            filtered_data["Coût de transport"].tolist()
-        )
-        QNTENTONNE = sum(filtered_data["Qté en T"].tolist())
-        QNTENM3 = sum(filtered_data["Qté en m3"].tolist())
-        MIXPRODUIT = (VOLNOBLES) / (VOLNOBLES + VOLGRAVES + VOLSTERILE) * 100
-        CACAISSE = sum(
-            filtered_data[filtered_data["BC"] == "EN ESPECE"]["CA BRUT"].tolist()
-        )
-        VOYAGESRENDULIV = filtered_data[filtered_data["Chantier"] != "DEPART"].shape[0]
-        RECOUVREMENT = sum(filtered_data2["Montant Paye"].tolist())
-
-        GRAPHVOYAGESRENDULIVDATES = (
-            filtered_data[filtered_data["Chantier"] != "DEPART"]["Date"]
-            .unique()
-            .tolist()
-        )
-        GRAPHVOYAGERENDULIVREE = (
-            filtered_data[filtered_data["Chantier"] != "DEPART"]
-            .groupby("Date")["Ticket/BL"]
-            .count()
-            .tolist()
-        )
-        GRAPHVOYAGERENDUCOMMANDEE = (
-            filtered_data[filtered_data["Chantier"] != "DEPART"]
-            .groupby("Date")["Ticket/BL"]
-            .count()
-            .tolist()
-        )
-        ############################################################################################################
-        GRAPHQNTENTONNEDATES = filtered_data["Date"].unique().tolist()
-
-        filtered_data["Qté en T"] = pd.to_numeric(
-            filtered_data["Qté en T"], errors="coerce"
-        )
-        filtered_data["Qté en m3"] = pd.to_numeric(
-            filtered_data["Qté en m3"], errors="coerce"
+        recouvrement_df["Date de Paiement"] = pd.to_datetime(
+            recouvrement_df["Date de Paiement"], format="%d/%m/%Y", errors="coerce"
         )
 
-        # Group by "Date" and sum "Qté en T" and "Qté en m3" for each date
-        sum_per_date = (
-            filtered_data.groupby("Date")[["Qté en T", "Qté en m3"]].sum().reset_index()
-        )
+        ventes_df.dropna(subset=["Date"], inplace=True)
+        recouvrement_df.dropna(subset=["Date de Paiement"], inplace=True)
 
-        # Convert the result into a list of dictionaries
-        GRAPHQNTENTONNEDATES = sum_per_date.to_dict(orient="records")
-
-        # Output the result
-        # Separate the Date, Qté en T, and Qté en m3 into individual lists
-        GRAPHVOLDATES = [entry["Date"] for entry in GRAPHQNTENTONNEDATES]
-        GRAPHVOLQNTENT = [entry["Qté en T"] for entry in GRAPHQNTENTONNEDATES]
-        GRAPHVOLQNTENM3 = [entry["Qté en m3"] for entry in GRAPHQNTENTONNEDATES]
-        ################################################################################################################
-        # Assuming filtered_data is already loaded and contains the required data
-        GRAPHCADATES = filtered_data["Date"].unique().tolist()
-
-        # Ensure that "CA BRUT" and "CA Net" are numeric
-        filtered_data["CA BRUT"] = pd.to_numeric(
-            filtered_data["CA BRUT"], errors="coerce"
-        )
-        filtered_data["CA Net"] = pd.to_numeric(
-            filtered_data["CA Net"], errors="coerce"
-        )
-
-        # Group by "Date" and sum "CA BRUT" and "CA Net" for each date
-        sum_per_date = (
-            filtered_data.groupby("Date")[["CA BRUT", "CA Net"]].sum().reset_index()
-        )
-
-        # Convert the result into a list of dictionaries
-        GRAPHCADATES = sum_per_date.to_dict(orient="records")
-
-        # Separate the Date, CA BRUT, and CA Net into individual lists
-        GRAPHCADATESS = [entry["Date"] for entry in GRAPHCADATES]
-        GRAPHCABRUT = [entry["CA BRUT"] for entry in GRAPHCADATES]
-        GRAPHCANET = [entry["CA Net"] for entry in GRAPHCADATES]
-
-        ##################################################################################################################
-        GRAPHDATEPMV = filtered_data["Date"].unique().tolist()
-
-        daily_sums = (
-            filtered_data.groupby(["Date", "Type"])["CA Net"].sum().reset_index()
-        )
-
-        # Get a complete list of unique dates
-        all_dates = sorted(filtered_data["Date"].unique())
-
-        # Create a DataFrame for all combinations of dates and types
-        all_combinations = pd.MultiIndex.from_product(
-            [all_dates, ["Nobles", "Graves", "Stérile"]], names=["Date", "Type"]
-        )
-        complete_data = (
-            daily_sums.set_index(["Date", "Type"])
-            .reindex(all_combinations, fill_value=0)  # Fill missing values with 0
-            .reset_index()
-        )
-
-        # Separate the data by type
-        GRAPHCANOBLES = complete_data[complete_data["Type"] == "Nobles"][
-            "CA Net"
-        ].tolist()
-        GRAPHCAGRAVES = complete_data[complete_data["Type"] == "Graves"][
-            "CA Net"
-        ].tolist()
-        GRAPHCASTERILE = complete_data[complete_data["Type"] == "Stérile"][
-            "CA Net"
-        ].tolist()
-
-        daily_volumes = (
-            filtered_data.groupby(["Date", "Type"])["Qté en T"].sum().reset_index()
-        )
-
-        # Get a complete list of unique dates
-        all_dates = sorted(filtered_data["Date"].unique())
-
-        # Create a DataFrame for all combinations of dates and types
-        all_combinations = pd.MultiIndex.from_product(
-            [all_dates, ["Nobles", "Graves", "Stérile"]], names=["Date", "Type"]
-        )
-        complete_volumes = (
-            daily_volumes.set_index(["Date", "Type"])
-            .reindex(all_combinations, fill_value=0)  # Fill missing values with 0
-            .reset_index()
-        )
-
-        # Separate the data by type
-        GRAPHVOLUNOBLES = complete_volumes[complete_volumes["Type"] == "Nobles"][
-            "Qté en T"
-        ].tolist()
-        GRAPHVOLUGRAVES = complete_volumes[complete_volumes["Type"] == "Graves"][
-            "Qté en T"
-        ].tolist()
-        GRAPHVOLUSTERILE = complete_volumes[complete_volumes["Type"] == "Stérile"][
-            "Qté en T"
-        ].tolist()
-
-        ##################################################################################################################
-
-        CLIENT_TOTAL = filtered_data.groupby("Client")["CA BRUT"].sum().reset_index()
-
-        TOP6_SORTED_CLIENTS = CLIENT_TOTAL.sort_values(
-            by="CA BRUT", ascending=False
-        ).head(6)
-
-        ##############################################################################################################
-
-        convert_data_json3 = pd.read_excel(files[0], sheet_name="ETAT FINANCIER")
-
-        convert_data_json3["Date"] = pd.to_datetime(
-            convert_data_json3["Date"], format="%d/%m/%Y", errors="coerce"
-        )
-
-        convert_data_json3["Formatted_Date"] = convert_data_json3["Date"].dt.strftime(
-            "%d/%m/%Y"
-        )
-
-        search_month = fin_date.month
-
-        filtered_rows = convert_data_json3[
-            convert_data_json3["Date"].dt.month == search_month
+        # Filter data based on date range
+        filtered_ventes = ventes_df[
+            (ventes_df["Date"].dt.date >= debut_date.date())
+            & (ventes_df["Date"].dt.date <= fin_date.date())
         ]
 
-        #################################################################################################################
-        result = filtered_data.groupby("Produit")["Qté en T"].sum()
+        filtered_recouvrement = recouvrement_df[
+            (recouvrement_df["Date de Paiement"].dt.date >= debut_date.date())
+            & (recouvrement_df["Date de Paiement"].dt.date <= fin_date.date())
+        ]
 
-        if QNTENTONNE is None or not isinstance(QNTENTONNE, (int, float)):
-            raise ValueError("QNTENTONNE must be defined as a valid integer or float")
+        # Handle empty data case
+        if filtered_ventes.empty and filtered_recouvrement.empty:
+            available_dates = {
+                "VENTES": ventes_df["Date"]
+                .dt.strftime("%d/%m/%Y")
+                .drop_duplicates()
+                .tolist(),
+                "RECOUVREMENT": recouvrement_df["Date de Paiement"]
+                .dt.strftime("%d/%m/%Y")
+                .drop_duplicates()
+                .tolist(),
+            }
+            return (
+                jsonify(
+                    {
+                        "Message": "No data found between the specified dates.",
+                        "Available_Dates": available_dates,
+                    }
+                ),
+                404,
+            )
 
-        # Calculate percentages for QNTBYPRODUIT
-        QNTBYPRODUIT = []
-        for QNT in result.values.tolist():
-            percentage = (int(QNT) / int(QNTENTONNE)) * 100
-            QNTBYPRODUIT.append(percentage)
-
-        PRODUITS = result.index.tolist()  # List of "Produit"
-
-        print("Produits:", PRODUITS)
-        print("Quantities by Produit (%):", QNTBYPRODUIT)
-
-        ###############################################################################################################
-
-        result2 = filtered_data.groupby("Produit")["CA Net"].sum()
-        CANETBYPRODUIT = []
-        for CA in result2.values.tolist():
-            percentage = (int(CA) / int(CANET)) * 100
-            CANETBYPRODUIT.append(percentage)
-
-        ####################################################################################################################
-
-        return (
-            jsonify(
-                {
-                    "Message": "Balance Sheet",
-                    "RECOUVREMENT_Data": filtered_data2.to_dict(orient="records"),
-                    "VENTES_Records": len(filtered_data),
-                    "RECOUVREMENT_Records": len(filtered_data2),
-                    "Metrics1": {
-                        "CABRUT": CABRUT,
-                        "CANET": CANET,
-                        "PMVGLOBAL": PMVGLOBAL,
-                        "PMVHORSSTERILE": PMVHORSSTERILE,
-                        "MARGETRANSPORT": MARGETRANSPORT,
-                        "QNTENTONNE": QNTENTONNE,
-                    },
-                    "Metrics2": {
-                        "MIXPRODUIT": MIXPRODUIT,
-                        "CACAISSE": CACAISSE,
-                        "VOYAGESRENDULIV": VOYAGESRENDULIV,
-                        "RECOUVREMENTCOMMERCIALE": RECOUVREMENT,
-                    },
-                    "COMMANDEGRAPH": {
-                        "GRAPHVOYAGESRENDULIVDATES": GRAPHVOYAGESRENDULIVDATES,
-                        "GRAPHVOYAGERENDULIVREE": GRAPHVOYAGERENDULIVREE,
-                        "GRAPHVOYAGERENDUCOMMANDEE": GRAPHVOYAGERENDUCOMMANDEE,
-                    },
-                    "VOLGRAPH": {
-                        "GRAPHVOLDATES": GRAPHVOLDATES,
-                        "GRAPHVOLQNTENT": GRAPHVOLQNTENT,
-                        "GRAPHVOLQNTENM3": GRAPHVOLQNTENM3,
-                    },
-                    "CAGRAPH": {
-                        "GRAPHCADATESS": GRAPHCADATESS,
-                        "GRAPHCABRUT": GRAPHCABRUT,
-                        "GRAPHCANET": GRAPHCANET,
-                    },
-                    "PMVGRAPH": {
-                        "GRAPHDATEPMV": GRAPHDATEPMV,
-                        "PMVNOBLES": List_Division(GRAPHCANOBLES, GRAPHVOLUNOBLES),
-                        "PMVGRAVES": List_Division(GRAPHCAGRAVES, GRAPHVOLUGRAVES),
-                        "PMVSTERILE": List_Division(GRAPHCASTERILE, GRAPHVOLUSTERILE),
-                    },
-                    "TOP6CLIENTSGRAPH": {
-                        "TOP6CLIENTNAMES": TOP6_SORTED_CLIENTS["Client"].tolist(),
-                        "TOP6CLIENTVALUES": TOP6_SORTED_CLIENTS["CA BRUT"].tolist(),
-                    },
-                    "PERFORMANCECREANCEGRAPH": {
-                        "DATES": filtered_rows["Formatted_Date"].to_list(),
-                        "RECOUVREMENTCOMMERCIAL": filtered_rows[
-                            "Recouvrement Commerciale"
-                        ].to_list(),
-                        "CREANCECOMMERCIALE": filtered_rows[
-                            "Créance Commerciale"
-                        ].to_list(),
-                        "ENCAISSEMENTFINANCIER": filtered_rows[
-                            "Encaissement Financier"
-                        ].to_list(),
-                    },
-                    "QNTBYPRODUITGRAPH": {
-                        "PRODUITS": PRODUITS,
-                        "QNTBYPRODUIT": QNTBYPRODUIT,
-                    },
-                    "CANETBYPRODUITGRAPH": {
-                        "PRODUITS": PRODUITS,
-                        "CANETBYPRODUIT": CANETBYPRODUIT,
-                    },
-                }
+        # Prepare chart data
+        chart_data = {
+            "VOLGRAPH": prepare_volume_data(filtered_ventes, group_by_month),
+            "CAGRAPH": prepare_ca_data(filtered_ventes, group_by_month),
+            "PMVGRAPH": prepare_pmv_data(filtered_ventes, group_by_month),
+            "COMMANDEGRAPH": prepare_voyages_rendus_data(
+                filtered_ventes, group_by_month
             ),
-            200,
-        )
+            "QNTBYPRODUITGRAPH": prepare_volume_data_by_product(
+                filtered_ventes, group_by_month
+            ),
+            "CANETBYPRODUITGRAPH": prepare_ca_net_by_product(
+                filtered_ventes, group_by_month
+            ),
+            "TOP6CLIENTSGRAPH": prepare_top_six_clients(
+                filtered_ventes, group_by_month
+            ),
+            "PERFORMANCECREANCEGRAPH": prepare_performance_créance_commerciale_recouvrement(
+                target_file, debut_date, fin_date
+            ),
+        }
+
+        # Prepare metrics data
+        metrics_data = {
+            "METRICS_ONE": Metrics(
+                filtered_ventes,
+                group_by_month,
+                "METRICS#1",
+                filtered_recouvrement,
+                debut_date,
+                fin_date,
+            ),
+            "METRICS_TWO": Metrics(
+                filtered_ventes,
+                group_by_month,
+                "METRICS#2",
+                filtered_recouvrement,
+                debut_date,
+                fin_date,
+            ),
+        }
+
+        # Prepare final response
+        final_response = {
+            "Message": "Balance Sheet Generated Successfully",
+            "Metrics": metrics_data,
+            "AggregationType": "monthly" if group_by_month else "daily",
+            **chart_data,
+        }
+
+        return jsonify(final_response), 200
 
     except Exception as e:
+        import traceback
+
+        print(f"Error in balance_sheet function: {str(e)}")
+        print(f"Stacktrace: {traceback.format_exc()}")
         return (
             jsonify(
                 {
-                    "Message": "An error occurred.",
+                    "Message": "An error occurred during processing.",
                     "Error": str(e),
-                    "Type": str(type(e).__name__),
+                    "Stacktrace": traceback.format_exc(),
                 }
             ),
             500,
