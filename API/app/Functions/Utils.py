@@ -160,13 +160,6 @@ def aggregate_time_series(df, date_column, value_columns, group_by_month=False):
         if col not in result.columns:
             result[col] = None
 
-    # Print debug information (optional)
-    print("Original DataFrame shape:", df.shape)
-    print("Result DataFrame shape:", result.shape)
-    print("Columns in result:", result.columns.tolist())
-    print("\nSample of result DataFrame:")
-    print(result.head())
-
     return result
 
 

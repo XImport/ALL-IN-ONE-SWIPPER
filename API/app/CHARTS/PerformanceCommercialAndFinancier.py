@@ -33,8 +33,14 @@ def prepare_performance_créance_commerciale_recouvrement(
         "GRAPHPERFOCECREANCECOMMERCIALEDATES": filtered_rows[
             "Formatted_Date"
         ].to_list(),
+        "GRAPHPERFOCECREANCECOMMERCIALE": filtered_rows[
+            "Créance Commerciale"
+        ].to_list(),
         "GRAPHRECOUVREMENTCOMMERCIAL": filtered_rows[
             "Recouvrement Commerciale"
         ].to_list(),
         "GRAPHENCAISSEMENTFINANCIER": filtered_rows["Encaissement Financier"].to_list(),
+        "GRAPHCREANCECRJ": filtered_rows["Créance CRJ"].to_list(),
+        "GRAPHCREANCEHRECOUVREMENT": filtered_rows["Créance H.RECOUVREMENT"].to_list(),
+        "GRAPHCREANCECONTENIEUX": filtered_rows["Créance CONTENTIEUX"].to_list(),
     }
