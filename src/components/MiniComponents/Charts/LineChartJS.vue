@@ -50,10 +50,6 @@ export default {
   components: { Line },
   props: ["CHARTDATA", "title", "IconName", "IconColor"],
   data() {
-    // Assume `chartData` has point colors defined
-    const pointColor = this.CHARTDATA.datasets[1].backgroundColor; // Get the background color of the points
-    const pointColor1 = this.CHARTDATA.datasets[0].backgroundColor; // Get the background color of the points
-
     return {
       chartData: this.CHARTDATA,
       chartOptions: {
@@ -129,6 +125,21 @@ export default {
         },
       },
     };
+  },
+  watch: {
+    CHARTDATA: {
+      deep: true,
+      immediate: true,
+      handler(newData) {
+        // Ensure the chartData is updated reactively
+        this.chartData = {
+          ...newData,
+          datasets: newData.datasets.map((dataset) => ({
+            ...dataset, // Keep the dataset configuration (e.g., colors)
+          })),
+        };
+      },
+    },
   },
 };
 </script>

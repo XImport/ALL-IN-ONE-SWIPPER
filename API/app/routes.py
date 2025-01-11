@@ -19,6 +19,7 @@ from .CHARTS.PerformanceCommercialAndFinancier import (
 )
 from .CHARTS.PMVGlobal import prepare_pmv_data
 from .CHARTS.TopSixClients import prepare_top_six_clients
+from flask_cors import CORS, cross_origin
 
 
 def Metrics(filtered_data, group_by_month, args, df_recouvrement, debut_date, fin_date):
@@ -118,6 +119,7 @@ def Metrics(filtered_data, group_by_month, args, df_recouvrement, debut_date, fi
 
 
 @app.route("/API/V1/BalanceSheet", methods=["POST"])
+@cross_origin()
 def balance_sheet():
     try:
         # Get and validate input dates

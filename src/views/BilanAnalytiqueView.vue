@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppHeaderBar />
+    <AppHeaderBar :DATA="DATA" />
 
     <!-- Cards container -->
     <v-container fluid>
@@ -224,6 +224,7 @@ import LineChartJS from "../components/MiniComponents/Charts/LineChartJS.vue";
 import DonutsChartJS from "../components/MiniComponents/Charts/DonutsChartJS.vue";
 import TableJS from "../components/MiniComponents/Tables/TableJS.vue";
 import DataTABLE from "../components/MiniComponents/Tables/DataTABLE.vue";
+import axiosInstance from "../Axios";
 export default {
   name: "BilanAnalytique",
   components: {
@@ -235,9 +236,196 @@ export default {
     TableJS,
     DataTABLE,
   },
+  created() {
+    this.FetchQuery();
+  },
+  methods: {
+    async FetchQuery() {
+      try {
+        const response = await axiosInstance.post(
+          "/API/V1/BalanceSheet",
+          this.DATA
+        );
+        const { METRICS_ONE, METRICS_TWO, COMMANDEGRAPH } =
+          response.data.Metrics;
+
+        // Update cards data
+        this.FirstRowCard.forEach((card, index) => {
+          const firstRowValues = [
+            METRICS_ONE.METRICS_CA_BRUT,
+            METRICS_ONE.METRICS_CA_NET,
+            METRICS_ONE.METRICS_PMV_GLOBAL,
+            METRICS_ONE.METRICS_PMV_HORS_STERILE,
+            METRICS_ONE.METRICS_MARGE_TRANSPORT,
+            METRICS_ONE.METRICS_QNT_EN_TONNE_GLOBALE,
+          ];
+          card.TextNumber = firstRowValues[index];
+        });
+
+        this.SecondRowCard.forEach((card, index) => {
+          const secondRowValues = [
+            `${(METRICS_TWO.MIX_PRODUCT * 100).toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            })} %`,
+            String(`${METRICS_TWO.VOYAGES_RENDUS} Voyages`),
+            METRICS_TWO.CAISSE_ESPECE,
+            METRICS_TWO.RECOUVREMENT_EFFECTUER,
+          ];
+          card.TextNumber = secondRowValues[index];
+        });
+
+        // Create a new object for the chart data
+        const COMMANDCHARTDATA = {
+          labels: [...response.data.COMMANDEGRAPH.GRAPHVOYAGESRENDULIVDATES],
+          datasets: [
+            {
+              label: "Commandes Demandées",
+              data: [...response.data.COMMANDEGRAPH.GRAPHVOYAGERENDUCOMMANDEE],
+            },
+            {
+              label: "Commandes Livrées",
+              data: [...response.data.COMMANDEGRAPH.GRAPHVOYAGERENDULIVREE],
+            },
+          ],
+        };
+
+        // Assign the new object to trigger a single update
+        this.COMMANDDEMANDEANDCOMMANDLIVRE = COMMANDCHARTDATA;
+
+        const QNT = {
+          labels: [...response.data.VOLGRAPH.GRAPHVOLDATES],
+          datasets: [
+            {
+              label: "QUANTITE EN T",
+              data: [...response.data.VOLGRAPH.GRAPHVOLQNTENT],
+            },
+            {
+              label: "QUANTITE EN M3",
+              data: [...response.data.VOLGRAPH.GRAPHVOLQNTENM3],
+            },
+          ],
+        };
+
+        this.QNTENTANDM3 = QNT;
+
+        const CA = {
+          labels: [...response.data.CAGRAPH.GRAPHCADATESS],
+          datasets: [
+            {
+              label: "SOMME DU CA BRUT",
+              data: [...response.data.CAGRAPH.GRAPHCABRUT],
+            },
+            {
+              label: "SOMME DU CA NET",
+              data: [...response.data.CAGRAPH.GRAPHCANET],
+            },
+          ],
+        };
+
+        this.CANETCABRUT = CA;
+
+        const PMV = {
+          labels: [...response.data.PMVGRAPH.PMVDATES],
+          datasets: [
+            {
+              label: "PVM NOBLES",
+              data: [...response.data.PMVGRAPH.PMVNOBLES],
+            },
+            {
+              label: "PVM GRAVES",
+              data: [...response.data.PMVGRAPH.PMVGRAVES],
+            },
+            {
+              label: "PVM STERILE",
+              data: [...response.data.PMVGRAPH.PMVSTERILE],
+            },
+          ],
+        };
+
+        this.PMVGLOBALS = PMV;
+
+        const TOP6CLIENTS = {
+          labels: [...response.data.TOP6CLIENTSGRAPH.TOP6CLIENTNAMES],
+          datasets: [
+            {
+              label: "CA BRUT",
+              data: [...response.data.TOP6CLIENTSGRAPH.TOP6CLIENTVALUES],
+            },
+          ],
+        };
+
+        this.TOP6CLIENTS = TOP6CLIENTS;
+
+        const CREANCERECOUVREMENTENCAISSEMENT = {
+          labels: [
+            ...response.data.PERFORMANCECREANCEGRAPH
+              .GRAPHPERFOCECREANCECOMMERCIALEDATES,
+          ],
+          datasets: [
+            {
+              label: "Créance Commerciale",
+              data: [
+                ...response.data.PERFORMANCECREANCEGRAPH
+                  .GRAPHPERFOCECREANCECOMMERCIALE,
+              ],
+            },
+            {
+              label: "Recouvrement Commerciale",
+              data: [
+                ...response.data.PERFORMANCECREANCEGRAPH
+                  .GRAPHCREANCEHRECOUVREMENT,
+              ],
+            },
+            {
+              label: "Encaissement Financiere ",
+              data: [
+                ...response.data.PERFORMANCECREANCEGRAPH
+                  .GRAPHENCAISSEMENTFINANCIER,
+              ],
+            },
+          ],
+        };
+
+        this.CREANCERECOUVREMENTENCAISSEMENT = CREANCERECOUVREMENTENCAISSEMENT;
+
+        const VOLPARPRODUIT = {
+          labels: [...response.data.QNTBYPRODUITGRAPH.PRODUITS],
+          datasets: [
+            {
+              label: "Volume Par Produits",
+              data: [...response.data.QNTBYPRODUITGRAPH.QNTBYPRODUIT],
+            },
+          ],
+        };
+
+        this.VOLPARPRODUIT = VOLPARPRODUIT;
+
+        const CAPARPRODUIT = {
+          labels: [...response.data.CANETBYPRODUITGRAPH.PRODUITS],
+          datasets: [
+            {
+              label: "CA Net Par Produits",
+              data: [...response.data.CANETBYPRODUITGRAPH.CANETBYPRODUIT],
+            },
+          ],
+        };
+
+        this.CAPARPRODUIT = CAPARPRODUIT;
+
+        console.log("Data successfully fetched and processed:", response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        this.errorMessage = "Failed to fetch data. Please try again later.";
+      }
+    },
+  },
 
   data() {
     return {
+      DATA: {
+        DébutDate: "01/01/2024",
+        FinDate: "08/02/2024",
+      },
       TOneHeaders: [
         {
           title: "",
@@ -456,7 +644,7 @@ export default {
         ],
         datasets: [
           {
-            label: "Commandes Demandées",
+            label: "Volume Par Produits",
             data: [2, 35, 15, 37, 2, 6, 0.5, 1, 0.5],
             backgroundColor: [
               "#41B883",
@@ -488,7 +676,7 @@ export default {
         ],
         datasets: [
           {
-            label: "Commandes Demandées",
+            label: "CA Net Par Produits",
             data: [2, 35, 15, 37, 2, 6, 0.5, 1, 0.5],
             backgroundColor: [
               "#41B883",

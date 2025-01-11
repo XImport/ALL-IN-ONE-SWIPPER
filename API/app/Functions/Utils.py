@@ -121,12 +121,23 @@ def aggregate_time_series(df, date_column, value_columns, group_by_month=False):
     # Convert date column to datetime if not already
     df_copy[date_column] = pd.to_datetime(df_copy[date_column], errors="coerce")
 
+    # Check if any date conversion failed
+
+    # Drop rows where date conversion failed (NaT)
+    df_copy = df_copy.dropna(subset=[date_column])
+
+    if df_copy.empty:
+
+        return pd.DataFrame(columns=[date_column] + value_columns)
+
     # Handle case when start_date == end_date (only one day)
     if not group_by_month:
         df_copy["group_key"] = df_copy[date_column].dt.date
     else:
         # Prepare grouping key (month-year)
         df_copy["group_key"] = df_copy[date_column].dt.strftime("%m/%Y")
+
+    # Check the group_key and unique values
 
     # Split columns into numeric and non-numeric
     numeric_cols = []
@@ -138,6 +149,8 @@ def aggregate_time_series(df, date_column, value_columns, group_by_month=False):
                 numeric_cols.append(col)
             else:
                 non_numeric_cols.append(col)
+        else:
+            print(f"Column '{col}' not found in DataFrame")
 
     # Create aggregation dictionary
     agg_dict = {}
@@ -146,11 +159,14 @@ def aggregate_time_series(df, date_column, value_columns, group_by_month=False):
     for col in non_numeric_cols:
         agg_dict[col] = "first"  # Take the first value for non-numeric columns
 
+    # Check if aggregation dictionary is created
+
     # Perform groupby and aggregation
     if agg_dict:  # Only if we have columns to aggregate
         result = df_copy.groupby("group_key").agg(agg_dict).reset_index()
         # Rename the group_key back to date_column
         result = result.rename(columns={"group_key": date_column})
+
     else:
         # If no columns to aggregate, return empty DataFrame with correct columns
         result = pd.DataFrame(columns=[date_column] + value_columns)

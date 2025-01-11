@@ -36,13 +36,13 @@
             <VueDatePicker
               class="datepicker"
               placeholder="Date de début"
-              v-model="startdate"
+              v-model="DATA.DébutDate"
               :format="format1"
             />
             <VueDatePicker
               class="datepicker"
               placeholder="Date de fin"
-              v-model="enddate"
+              v-model="DATA.FinDate"
               :format="format2"
             />
             <v-tooltip
@@ -102,6 +102,7 @@ import "@vuepic/vue-datepicker/dist/main.css";
 
 export default {
   name: "BilanAnalytique",
+  props: ["DATA"],
   components: { VueDatePicker },
   data() {
     return {

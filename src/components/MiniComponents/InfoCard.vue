@@ -39,7 +39,7 @@ export default {
     FormatNumber(number) {
       // If the number is in millions, format it to millions (MDHS)
       if (typeof number === "string") {
-        return number; // Return the string as-is
+        return `${number}`; // Return the string as-is
       }
       if (number >= 1000000) {
         const formattedNumber = (number / 1000000).toLocaleString(undefined, {

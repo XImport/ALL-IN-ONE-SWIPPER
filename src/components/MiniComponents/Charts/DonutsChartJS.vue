@@ -96,6 +96,14 @@ export default {
       },
     };
   },
+  watch: {
+    CHARTDATA: {
+      handler(newData) {
+        this.chartData = newData;
+      },
+      deep: true,
+    },
+  },
 };
 </script>
 
