@@ -21,7 +21,7 @@
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
       :headers="Headers"
-      :items="serverItems"
+      :items="DATA"
       :items-length="totalItems"
       :loading="loading"
       item-value="name"
@@ -29,100 +29,183 @@
       hide-default-footer
       class="custom-header-table"
     >
-      <template v-slot:item.Key2="{ item }">
-        <!-- Display the localized Key2 value -->
-        {{ item.Key2Formatted }}
-      </template>
-      <template v-slot:item.Key3="{ item }">
-        <!-- Display the localized Key3 value -->
-        {{ item.Key3Formatted }}
-      </template>
-      <template v-slot:item.Key4="{ item }">
-        <span :class="getPercentageClass(item.Key4)">{{ item.Key4 }}</span>
+      <template v-slot:body="{ items }">
+        <tr v-for="(item, index) in items" :key="index">
+          <td class="font-weight-bold">{{ item.Key1.toLocaleString() }}</td>
+          <td class="font-weight-bold">{{ item.Key2.toLocaleString() }}</td>
+          <td class="font-weight-bold">{{ item.Key3.toLocaleString() }}</td>
+
+          <td
+            v-if="reverse"
+            class="font-weight-bold"
+            :style="getPercentageColor(item.Key2, item.Key3)"
+          >
+            {{ ((item.Key2 / item.Key3) * 100).toFixed(2) }}%
+          </td>
+
+          <td
+            v-if="!reverse"
+            class="font-weight-bold"
+            :style="getPercentageColor(item.Key3, item.Key2)"
+          >
+            {{ ((item.Key3 / item.Key2).toFixed(2) * 100).toFixed(2) }}%
+          </td>
+        </tr>
       </template>
     </v-data-table-server>
   </div>
 </template>
-
 <script>
 export default {
-  props: [
-    "Headers",
-    "DATA",
-    "DATATABLETITLE",
-    "reverse",
-    "TABLEICON",
-    "TABLECOLORICON",
-  ],
+  props: {
+    Headers: {
+      type: Array,
+      required: true,
+    },
+    DATA: {
+      type: Array,
+      required: true,
+    },
+    DATATABLETITLE: {
+      type: String,
+      required: true,
+    },
+    reverse: {
+      type: Boolean,
+      default: false,
+    },
+    TABLEICON: {
+      type: String,
+      required: true,
+    },
+    TABLECOLORICON: {
+      type: String,
+      required: true,
+    },
+  },
+
   data() {
     return {
       itemsPerPage: 5,
-
       serverItems: [],
       loading: true,
       totalItems: 0,
+      currentPage: 1,
+      localData: [...this.DATA],
+      currentSort: [],
     };
   },
-  methods: {
-    loadItems({ page, itemsPerPage, sortBy }) {
-      this.loading = true;
-      this.fakeApiFetch({ page, itemsPerPage, sortBy }).then(
-        ({ items, total }) => {
-          this.serverItems = items;
-          this.totalItems = total;
-          this.loading = false;
-        }
-      );
+
+  computed: {
+    // Process all items with formatting
+    processedData() {
+      return this.DATA.map((item) => ({
+        ...item,
+        Key2Formatted: this.formatNumber(item.Key2),
+        Key3Formatted: this.formatNumber(item.Key3),
+        Key4: this.calculateKey4(item.Key2, item.Key3),
+      }));
     },
-    fakeApiFetch({ page, itemsPerPage, sortBy }) {
-      // Loop through each item in DATA to format Key2 and Key3 and calculate Key4
-      this.DATA.forEach((item) => {
-        // Format Key2 and Key3 using toLocaleString for display
-        item.Key2Formatted = item.Key2.toLocaleString();
-        item.Key3Formatted = item.Key3.toLocaleString();
 
-        // Dynamically calculate Key4 using the raw numeric values of Key2 and Key3
-        if (this.reverse) {
-          item.Key4 = ((item.Key2 / item.Key3) * 100).toFixed(2) + " %";
-        } else {
-          item.Key4 = ((item.Key3 / item.Key2) * 100).toFixed(2) + " %";
-        }
+    // Get current page items
+    processedItems() {
+      return this.serverItems.map((item) => ({
+        ...item,
+        Key2Formatted: this.formatNumber(item.Key2),
+        Key3Formatted: this.formatNumber(item.Key3),
+        Key4: this.calculateKey4(item.Key2, item.Key3),
+      }));
+    },
+  },
+
+  methods: {
+    getPercentageColor(value1, value2) {
+      const percentage = (value1 / value2) * 100;
+      return percentage < 70 ? { color: "orange" } : { color: "green" };
+    },
+    formatNumber(value) {
+      return value.toLocaleString();
+    },
+
+    calculateKey4(key2, key3) {
+      const percentage = this.reverse
+        ? (key2 / key3) * 100
+        : (key3 / key2) * 100;
+      return `${percentage.toFixed(2)} %`;
+    },
+
+    refreshData() {
+      this.loadItems({
+        page: this.currentPage,
+        itemsPerPage: this.itemsPerPage,
+        sortBy: this.currentSort,
       });
+    },
 
+    async loadItems({ page, itemsPerPage, sortBy }) {
+      this.loading = true;
+      this.currentPage = page;
+      this.currentSort = sortBy;
+
+      try {
+        const { items, total } = await this.fetchItems({
+          page,
+          itemsPerPage,
+          sortBy,
+        });
+        this.serverItems = items;
+        this.totalItems = total;
+      } catch (error) {
+        console.error("Error loading items:", error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async fetchItems({ page, itemsPerPage, sortBy }) {
       return new Promise((resolve) => {
         setTimeout(() => {
           const start = (page - 1) * itemsPerPage;
           const end = start + itemsPerPage;
-          const items = this.DATA.slice();
+          const items = [...this.processedData];
 
-          // Sort logic if needed
-          if (sortBy.length) {
-            const sortKey = sortBy[0].key;
-            const sortOrder = sortBy[0].order;
+          if (sortBy && sortBy.length) {
+            const { key, order } = sortBy[0];
             items.sort((a, b) => {
-              const aValue = a[sortKey];
-              const bValue = b[sortKey];
-              return sortOrder === "desc" ? bValue - aValue : aValue - bValue;
+              // Remove formatting for numeric comparison
+              const aValue = this.getNumericValue(a[key]);
+              const bValue = this.getNumericValue(b[key]);
+              return order === "desc" ? bValue - aValue : aValue - bValue;
             });
           }
 
-          const paginated = items.slice(start, end);
-          resolve({ items: paginated, total: items.length });
-        }, 500);
+          resolve({
+            items: items.slice(start, end),
+            total: items.length,
+          });
+        }, 200);
       });
     },
 
+    getNumericValue(value) {
+      if (typeof value === "string" && value.includes("%")) {
+        return parseFloat(value);
+      }
+      return typeof value === "string"
+        ? parseFloat(value.replace(/,/g, ""))
+        : value;
+    },
+
     getPercentageClass(value) {
-      // Extract number from string and convert to float
       const percentage = parseFloat(value);
-      return percentage >= 80 ? "text-green" : "text-orange"; // Adjusted logic for 80% threshold
+      return percentage >= 80 ? "text-green" : "text-orange";
     },
   },
 };
 </script>
 
 <style>
-/* Target all possible header selectors to ensure override */
+/* Style remains unchanged */
 .custom-header-table :deep(.v-data-table-header),
 .custom-header-table :deep(thead),
 .custom-header-table :deep(thead tr),
@@ -132,13 +215,11 @@ export default {
   color: white !important;
 }
 
-/* Ensure text color remains white */
 .custom-header-table :deep(th),
 .custom-header-table :deep(.v-data-table-header-cell) {
   color: white !important;
 }
 
-/* Handle sorting icons */
 .custom-header-table :deep(.v-data-table-header i),
 .custom-header-table :deep(.v-data-table-header .v-icon) {
   color: white !important;
@@ -153,7 +234,6 @@ export default {
   font-weight: bold !important;
 }
 
-/* Percentage colors */
 .text-green {
   color: #4caf50 !important;
   font-weight: bold;

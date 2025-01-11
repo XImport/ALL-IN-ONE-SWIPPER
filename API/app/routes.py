@@ -283,45 +283,45 @@ def balance_sheet():
             ),
         }
         Table_Objectifs_DATA = {
-            "CA BRUT OBJECTIF": commercials_objectifs_df.to_dict()["CA BRUT OBJ"][0],
-            "CA BRUT": CA_BRUT_TOTAL,
+            "CA_BRUT_OBJECTIF": commercials_objectifs_df.to_dict()["CA BRUT OBJ"][0],
+            "CA_BRUT": CA_BRUT_TOTAL,
             #############################################################################
-            "CA NET OBJECTIF": commercials_objectifs_df.to_dict()["CA NET OBJ"][0],
-            "CA NET": CA_NET_TOTAL,
+            "CA_NET_OBJECTIF": commercials_objectifs_df.to_dict()["CA NET OBJ"][0],
+            "CA_NET": CA_NET_TOTAL,
             ###########################################################
-            "CA TRANSPORT OBJECTIF": commercials_objectifs_df.to_dict()[
+            "CA_TRANSPORT_OBJECTIF": commercials_objectifs_df.to_dict()[
                 "CA TRANSPORT OBJ"
             ][0],
-            "CA TRANSPORT": CA_TRANSPORT,
+            "CA_TRANSPORT": CA_TRANSPORT,
             ###############################################################
-            "MARGE TRANSPORT OBJECTIF": commercials_objectifs_df.to_dict()[
+            "MARGE_TRANSPORT_OBJECTIF": commercials_objectifs_df.to_dict()[
                 "MARGE TRANSPORT OBJ"
             ][0],
-            "MARGE TRANSPORT": MARGE_TRANSPORT,
+            "MARGE_TRANSPORT": MARGE_TRANSPORT,
             ###############################################################
-            "PMV GLOBAL OBJECTIF": commercials_objectifs_df.to_dict()["PMV GLOBAL OBJ"][
+            "PMV_GLOBAL_OBJECTIF": commercials_objectifs_df.to_dict()["PMV GLOBAL OBJ"][
                 0
             ],
-            "PMV GLOBAL": PMV_GLOBAL,
+            "PMV_GLOBAL": PMV_GLOBAL,
             ##############################################################################
-            "CREANCE COMMERCIAL OBJECTIF": commercials_objectifs_df.to_dict()[
+            "CREANCE_COMMERCIAL_OBJECTIF": commercials_objectifs_df.to_dict()[
                 "CREANCE COMMERCIAL OBJ"
             ][0],
-            "CREANCE COMMERCIAL": prepare_performance_créance_commerciale_recouvrement(
+            "CREANCE_COMMERCIAL": prepare_performance_créance_commerciale_recouvrement(
                 target_file, debut_date, fin_date
             )["GRAPHPERFOCECREANCECOMMERCIALE"][0],
             #################################################################################
-            "CREANCE CRJ  OBJECTIF": commercials_objectifs_df.to_dict()[
+            "CREANCE_CRJ_OBJECTIF": commercials_objectifs_df.to_dict()[
                 "CREANCE CRJ OBJ"
             ][0],
-            "CREANCE CRJ": prepare_performance_créance_commerciale_recouvrement(
+            "CREANCE_CRJ": prepare_performance_créance_commerciale_recouvrement(
                 target_file, debut_date, fin_date
             )["GRAPHCREANCECRJ"][0],
             ##################################################################################
-            "CREANCE H.RECOUVREMENT OBJECTIF": commercials_objectifs_df.to_dict()[
+            "CREANCE_H.RECOUVREMENT_OBJECTIF": commercials_objectifs_df.to_dict()[
                 "CREANCE H.RECOUVREMENT OBJ"
             ][0],
-            "CREANCE H.RECOUVREMENT": prepare_performance_créance_commerciale_recouvrement(
+            "CREANCE_H.RECOUVREMENT": prepare_performance_créance_commerciale_recouvrement(
                 target_file, debut_date, fin_date
             )[
                 "GRAPHCREANCEHRECOUVREMENT"
@@ -329,17 +329,17 @@ def balance_sheet():
                 0
             ],
             ###############################################################################
-            "CREANCE CONTENTIEUX OBJECTIF": commercials_objectifs_df.to_dict()[
+            "CREANCE_CONTENTIEUX_OBJECTIF": commercials_objectifs_df.to_dict()[
                 "CREANCE CONTENTIEUX OBJ"
             ][0],
-            "CREANCE CONTENTIEUX": prepare_performance_créance_commerciale_recouvrement(
+            "CREANCE_CONTENTIEUX": prepare_performance_créance_commerciale_recouvrement(
                 target_file, debut_date, fin_date
             )["GRAPHCREANCECONTENIEUX"][0],
             ###############################################################################
-            "CREANCE GLOBAL OBJECTIF": commercials_objectifs_df.to_dict()[
+            "CREANCE_GLOBAL_OBJECTIF": commercials_objectifs_df.to_dict()[
                 "CREANCE GLOBAL OBJ"
             ][0],
-            "CREANCE GLOBAL": (
+            "CREANCE_GLOBAL": (
                 prepare_performance_créance_commerciale_recouvrement(
                     target_file, debut_date, fin_date
                 )["GRAPHPERFOCECREANCECOMMERCIALE"][0]
@@ -354,24 +354,24 @@ def balance_sheet():
                 )["GRAPHCREANCECONTENIEUX"][0]
             ),
             ###############################################################################################
-            "PMV NOBLES  OBJECTIF": commercials_objectifs_df.to_dict()[
-                "PMV NOBLES OBJ"
-            ][0],
-            "PMV NOBLES": sum(
+            "PMV_NOBLES_OBJECTIF": commercials_objectifs_df.to_dict()["PMV NOBLES OBJ"][
+                0
+            ],
+            "PMV_NOBLES": sum(
                 prepare_pmv_data(filtered_ventes, group_by_month)["PMVNOBLES"]
             )
             / len(prepare_pmv_data(filtered_ventes, group_by_month)["PMVNOBLES"]),
             ###############################################################################################
-            "PMV GRAVES OBJECTIF": commercials_objectifs_df.to_dict()["PMV GRAVES OBJ"][
+            "PMV_GRAVES_OBJECTIF": commercials_objectifs_df.to_dict()["PMV GRAVES OBJ"][
                 0
             ],
-            "PMV GRAVES": sum(
+            "PMV_GRAVES": sum(
                 prepare_pmv_data(filtered_ventes, group_by_month)["PMVGRAVES"]
             )
             / len(prepare_pmv_data(filtered_ventes, group_by_month)["PMVGRAVES"]),
             ###############################################################################################
             ###############################################################################################
-            "PMV STERILE OBJECTIF": commercials_objectifs_df.to_dict()[
+            "PMV_STERILE_OBJECTIF": commercials_objectifs_df.to_dict()[
                 "PMV STERILE OBJ"
             ][0],
             "PMV STERILE": sum(
@@ -379,7 +379,7 @@ def balance_sheet():
             )
             / len(prepare_pmv_data(filtered_ventes, group_by_month)["PMVSTERILE"]),
             ###############################################################################################
-            "RECOUVREMENT  OBJECTIF": commercials_objectifs_df.to_dict()[
+            "RECOUVREMENT_OBJECTIF": commercials_objectifs_df.to_dict()[
                 "RECOUVREMENT OBJ"
             ][0],
             "RECOUVREMENT": sum(RECOUVREMENT),
@@ -387,28 +387,28 @@ def balance_sheet():
             "ENCAISSEMENT  OBJECTIF": commercials_objectifs_df.to_dict()[
                 "ENCAISSEMENT OBJ"
             ][0],
-            "ENCAISSEMENT FINANCIER": sum(
+            "ENCAISSEMENT_FINANCIER": sum(
                 prepare_performance_créance_commerciale_recouvrement(
                     target_file, debut_date, fin_date
                 )["GRAPHENCAISSEMENTFINANCIER"]
             ),
             ####################################################################################################
-            "COMPENSATION  OBJECTIF": commercials_objectifs_df.to_dict()[
+            "COMPENSATION_OBJECTIF": commercials_objectifs_df.to_dict()[
                 "COMPENSATION OBJ"
             ][0],
-            "COUT TRANSPORT": COUT_TRANSPORT,
+            "COUT_TRANSPORT": COUT_TRANSPORT,
         }
 
         # Prepare final response
         final_response = {
             "Message": "Balance Sheet Generated Successfully",
             "Metrics": metrics_data,
-            "TABLES DATA OBJECTIFS": Table_Objectifs_DATA,
+            "TABLES_DATA_OBJECTIFS": Table_Objectifs_DATA,
             "AggregationType": "monthly" if group_by_month else "daily",
             **chart_data,
         }
-
-        return jsonify(final_response), 200
+        print(type((final_response)))
+        return final_response
 
     except Exception as e:
         import traceback

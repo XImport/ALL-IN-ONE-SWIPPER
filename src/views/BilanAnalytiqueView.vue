@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppHeaderBar :DATA="DATA" />
+    <AppHeaderBar :DATA="DATA" :FetchQuery="FetchQuery" />
 
     <!-- Cards container -->
     <v-container fluid>
@@ -236,20 +236,17 @@ export default {
     TableJS,
     DataTABLE,
   },
-  created() {
-    this.FetchQuery();
-  },
+  created() {},
+  computed: {},
   methods: {
-    async FetchQuery() {
+    async FetchQuery(DATA) {
       try {
-        const response = await axiosInstance.post(
-          "/API/V1/BalanceSheet",
-          this.DATA
-        );
+        const response = await axiosInstance.post("/API/V1/BalanceSheet", DATA);
         const { METRICS_ONE, METRICS_TWO, COMMANDEGRAPH } =
           response.data.Metrics;
 
         // Update cards data
+
         this.FirstRowCard.forEach((card, index) => {
           const firstRowValues = [
             METRICS_ONE.METRICS_CA_BRUT,
@@ -275,22 +272,31 @@ export default {
         });
 
         // Create a new object for the chart data
-        const COMMANDCHARTDATA = {
-          labels: [...response.data.COMMANDEGRAPH.GRAPHVOYAGESRENDULIVDATES],
-          datasets: [
-            {
-              label: "Commandes Demandées",
-              data: [...response.data.COMMANDEGRAPH.GRAPHVOYAGERENDUCOMMANDEE],
-            },
-            {
-              label: "Commandes Livrées",
-              data: [...response.data.COMMANDEGRAPH.GRAPHVOYAGERENDULIVREE],
-            },
-          ],
-        };
 
+        if (response.data.COMMANDEGRAPH) {
+          const COMMANDCHARTDATA = {
+            labels: [
+              ...(response.data.COMMANDEGRAPH.GRAPHVOYAGESRENDULIVDATES || []),
+            ], // Default to empty array if undefined
+            datasets: [
+              {
+                label: "Commandes Demandées",
+                data: [
+                  ...(response.data.COMMANDEGRAPH.GRAPHVOYAGERENDUCOMMANDEE ||
+                    []),
+                ],
+              },
+              {
+                label: "Commandes Livrées",
+                data: [
+                  ...(response.data.COMMANDEGRAPH.GRAPHVOYAGERENDULIVREE || []),
+                ],
+              },
+            ],
+          };
+          this.COMMANDDEMANDEANDCOMMANDLIVRE = COMMANDCHARTDATA;
+        }
         // Assign the new object to trigger a single update
-        this.COMMANDDEMANDEANDCOMMANDLIVRE = COMMANDCHARTDATA;
 
         const QNT = {
           labels: [...response.data.VOLGRAPH.GRAPHVOLDATES],
@@ -412,7 +418,92 @@ export default {
 
         this.CAPARPRODUIT = CAPARPRODUIT;
 
-        console.log("Data successfully fetched and processed:", response.data);
+        this.TOneDATA[0].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS.CA_BRUT_OBJECTIF;
+        this.TOneDATA[0].Key3 = response.data.TABLES_DATA_OBJECTIFS.CA_BRUT;
+
+        this.TOneDATA[1].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS.CA_NET_OBJECTIF;
+        this.TOneDATA[1].Key3 = response.data.TABLES_DATA_OBJECTIFS.CA_NET;
+
+        this.TOneDATA[2].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS.CA_TRANSPORT_OBJECTIF;
+        this.TOneDATA[2].Key3 =
+          response.data.TABLES_DATA_OBJECTIFS.CA_TRANSPORT;
+
+        this.TOneDATA[3].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS.MARGE_TRANSPORT_OBJECTIF;
+        this.TOneDATA[3].Key3 =
+          response.data.TABLES_DATA_OBJECTIFS.MARGE_TRANSPORT;
+
+        this.TOneDATA[4].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS.PMV_GLOBAL_OBJECTIF;
+        this.TOneDATA[4].Key3 = response.data.TABLES_DATA_OBJECTIFS.PMV_GLOBAL;
+        // #########################################################################
+
+        this.TTwoDATA[0].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS.CREANCE_COMMERCIAL_OBJECTIF;
+        this.TTwoDATA[0].Key3 =
+          response.data.TABLES_DATA_OBJECTIFS.CREANCE_COMMERCIAL;
+
+        this.TTwoDATA[1].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS.CREANCE_CRJ_OBJECTIF;
+        this.TTwoDATA[1].Key3 = response.data.TABLES_DATA_OBJECTIFS.CREANCE_CRJ;
+
+        this.TTwoDATA[2].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS[
+            "CREANCE_H.RECOUVREMENT_OBJECTIF"
+          ];
+        this.TTwoDATA[2].Key3 =
+          response.data.TABLES_DATA_OBJECTIFS["CREANCE_H.RECOUVREMENT"];
+
+        this.TTwoDATA[3].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS["CREANCE_CONTENTIEUX_OBJECTIF"];
+        this.TTwoDATA[3].Key3 =
+          response.data.TABLES_DATA_OBJECTIFS["CREANCE_CONTENTIEUX"];
+
+        this.TTwoDATA[4].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS["CREANCE_GLOBAL_OBJECTIF"];
+        this.TTwoDATA[4].Key3 =
+          response.data.TABLES_DATA_OBJECTIFS["CREANCE_GLOBAL"];
+        // ######################################################################
+
+        this.TTreeDATA[0].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS.PMV_NOBLES_OBJECTIF;
+        this.TTreeDATA[0].Key3 = response.data.TABLES_DATA_OBJECTIFS.PMV_NOBLES;
+
+        this.TTreeDATA[1].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS.PMV_GRAVES_OBJECTIF;
+        this.TTreeDATA[1].Key3 = response.data.TABLES_DATA_OBJECTIFS.PMV_GRAVES;
+
+        this.TTreeDATA[2].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS.PMV_STERILE_OBJECTIF;
+        this.TTreeDATA[2].Key3 =
+          response.data.TABLES_DATA_OBJECTIFS["PMV STERILE"];
+
+        // ############################################################################
+
+        this.TFourDATA[0].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS.RECOUVREMENT_OBJECTIF;
+        this.TFourDATA[0].Key3 =
+          response.data.TABLES_DATA_OBJECTIFS.RECOUVREMENT;
+
+        this.TFourDATA[1].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS["ENCAISSEMENT  OBJECTIF"];
+        this.TFourDATA[1].Key3 =
+          response.data.TABLES_DATA_OBJECTIFS.ENCAISSEMENT_FINANCIER;
+
+        this.TFourDATA[2].Key2 =
+          response.data.TABLES_DATA_OBJECTIFS.COMPENSATION_OBJECTIF;
+        this.TFourDATA[2].Key3 =
+          response.data.TABLES_DATA_OBJECTIFS.COUT_TRANSPORT;
+
+        // ##########################################################################
+
+        console.log(
+          "Data successfully fetched and processed:",
+          typeof response.data
+        );
       } catch (error) {
         console.error("Error fetching data:", error);
         this.errorMessage = "Failed to fetch data. Please try again later.";
@@ -423,8 +514,8 @@ export default {
   data() {
     return {
       DATA: {
-        DébutDate: "01/01/2024",
-        FinDate: "08/02/2024",
+        DébutDate: "",
+        FinDate: "",
       },
       TOneHeaders: [
         {

@@ -36,22 +36,36 @@
             <VueDatePicker
               class="datepicker"
               placeholder="Date de début"
-              v-model="DATA.DébutDate"
+              v-model="startdate"
               :format="format1"
             />
+
             <VueDatePicker
               class="datepicker"
               placeholder="Date de fin"
-              v-model="DATA.FinDate"
+              v-model="enddate"
               :format="format2"
             />
+
             <v-tooltip
               text="Analyser les données"
               location="top"
               activator="parent"
             >
               <template v-slot:activator="{ props }">
-                <v-btn icon compact size="35" class="" v-bind="props">
+                <v-btn
+                  icon
+                  compact
+                  size="35"
+                  class=""
+                  v-bind="props"
+                  @click="
+                    FetchQuery({
+                      DébutDate: formatDate(startdate),
+                      FinDate: formatDate(enddate),
+                    })
+                  "
+                >
                   <v-img
                     src="https://static-00.iconduck.com/assets.00/go-icon-2048x769-18k4edx0.png"
                     width="35"
@@ -99,10 +113,11 @@
 <script>
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
+import { format } from "date-fns";
 
 export default {
   name: "BilanAnalytique",
-  props: ["DATA"],
+  props: ["FetchQuery", "DATA"],
   components: { VueDatePicker },
   data() {
     return {
@@ -112,22 +127,39 @@ export default {
       date: new Date(), // Date is initialized as the current date
     };
   },
+  computed: {},
   methods: {
+    formatDate(date) {
+      if (!date) return "";
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    },
+
+    formatDate2(date) {
+      if (!date) return "";
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    },
+
     toggleTheme() {
       this.isDark = !this.isDark;
       this.$vuetify.theme.dark = this.isDark;
     },
     format1(date) {
-      const day = date.getDate();
-      const month = date.getMonth() + 1;
+      const day = date.getDate().toString().padStart(2, "0");
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
       const year = date.getFullYear();
-      return ` ${day}/${month}/${year}`;
+      return `${day}/${month}/${year}`;
     },
     format2(date) {
-      const day = date.getDate();
-      const month = date.getMonth() + 1;
+      const day = date.getDate().toString().padStart(2, "0");
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
       const year = date.getFullYear();
-      return ` ${day}/${month}/${year}`;
+      return `${day}/${month}/${year}`;
     },
   },
 };
