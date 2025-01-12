@@ -38,6 +38,8 @@
               placeholder="Date de début"
               v-model="startdate"
               :format="format1"
+              locale="fr"
+              cancelText="Annuler"
             />
 
             <VueDatePicker
@@ -45,6 +47,8 @@
               placeholder="Date de fin"
               v-model="enddate"
               :format="format2"
+              locale="fr"
+              cancelText="Annuler"
             />
 
             <v-tooltip
@@ -114,15 +118,38 @@
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import { format } from "date-fns";
+import { fr } from "date-fns/locale"; // Import French locale
 
 export default {
   name: "BilanAnalytique",
   props: ["FetchQuery", "DATA"],
   components: { VueDatePicker },
+  mounted() {
+    this.DATA.FinDate = this.enddate;
+  },
   data() {
     return {
       isDark: false,
+      locale: fr, // Set the locale to French
       startdate: "",
+      translations: {
+        cancel: "Annuler",
+        select: "Sélectionner",
+        months: [
+          "Janvier",
+          "Février",
+          "Mars",
+          "Avril",
+          "Mai",
+          "Juin",
+          "Juillet",
+          "Août",
+          "Septembre",
+          "Octobre",
+          "Novembre",
+          "Décembre",
+        ],
+      },
       enddate: "",
       date: new Date(), // Date is initialized as the current date
     };
@@ -131,6 +158,7 @@ export default {
   methods: {
     formatDate(date) {
       if (!date) return "";
+
       const day = String(date.getDate()).padStart(2, "0");
       const month = String(date.getMonth() + 1).padStart(2, "0");
       const year = date.getFullYear();
@@ -139,6 +167,7 @@ export default {
 
     formatDate2(date) {
       if (!date) return "";
+      this.DATA.FinDate = this.enddate;
       const day = String(date.getDate()).padStart(2, "0");
       const month = String(date.getMonth() + 1).padStart(2, "0");
       const year = date.getFullYear();

@@ -1,218 +1,233 @@
 <template>
   <div>
     <AppHeaderBar :DATA="DATA" :FetchQuery="FetchQuery" />
-
+    <div v-if="SpinnerLoader">
+      <v-progress-linear
+        color="yellow-darken-2"
+        indeterminate
+      ></v-progress-linear>
+      <div style="position: absolute; top: 30%; left: 40%">
+        <div class="bg-white pa-12 rounded-xl">
+          <h1 class="text-center text-decoration-underline">
+            Préparation des données ... <span>{{ DATA.FinDate }}</span>
+          </h1>
+        </div>
+      </div>
+    </div>
     <!-- Cards container -->
-    <v-container fluid>
-      <v-row dense>
-        <v-col
-          v-for="(Frow, index) in FirstRowCard"
-          :key="index"
-          cols="12"
-          sm="3"
-          md="2"
-          class="pa-2"
-        >
-          <InfoCard
-            :Title="Frow.Title"
-            :TextNumber="Frow.TextNumber"
-            :Icon="Frow.Icon"
-            :IconColor="Frow.IconColor"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-
-    <v-container fluid style="max-width: 60%; margin-left: 25% !important">
-      <v-row dense>
-        <v-col
-          v-for="(Srow, index) in SecondRowCard"
-          :key="index"
-          cols="12"
-          sm="3"
-          class="pa-2 mx-auto"
-        >
-          <InfoCard
-            :Title="Srow.Title"
-            :TextNumber="Srow.TextNumber"
-            :Icon="Srow.Icon"
-            :IconColor="Srow.IconColor"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-
-    <v-container fluid style="max-width: 100%">
-      <v-row dense class="d-flex justify-space-between">
-        <v-col cols="12" sm="12" class="pa-2">
-          <h2 class="text-center text-decoration-underline">
-            <v-icon color="pink">mdi-table-large</v-icon> Tableau de Bord des
-            Indicateurs Commerciaux par Graphiques :
-            <span class="text-pink">2024</span>
-          </h2>
-        </v-col>
-      </v-row>
-    </v-container>
-
-    <v-container fluid style="max-width: 100%">
-      <v-row dense class="d-flex justify-space-between">
-        <v-col cols="12" sm="6" class="pa-2">
-          <BarChartJS
-            :CHARTDATA="COMMANDDEMANDEANDCOMMANDLIVRE"
-            title="Analyse des Commandes Demandées et Livrées (Par Date)"
-            IconName="mdi-poll"
-            IconColor="purple"
-          />
-        </v-col>
-        <v-col cols="12" sm="6" class="pa-2">
-          <BarChartJS
-            :CHARTDATA="QNTENTANDM3"
-            title="Volume de Vente : Tonnes et Mètres Cubes (Par Date)"
-            IconName="mdi-chart-tree"
-            IconColor="green"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container fluid style="max-width: 100%">
-      <v-row dense class="d-flex justify-space-between">
-        <v-col cols="12" sm="6" class="pa-2">
-          <LineChartJS
-            :CHARTDATA="CANETCABRUT"
-            title="Évolution du CA Brut et du CA Net (Par Date)"
-            IconName="mdi-chart-ppf"
-            IconColor="blue"
-          />
-        </v-col>
-        <v-col cols="12" sm="6" class="pa-2">
-          <BarChartJS
-            :CHARTDATA="PMVGLOBALS"
-            title="Situation du PVM : Nobles Graves Et Le  Stérile (Par Date)"
-            IconName="mdi-chart-box"
-            IconColor="pink"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container fluid style="max-width: 100%">
-      <v-row dense class="d-flex justify-space-between">
-        <v-col cols="12" sm="6" class="pa-2">
-          <BarChartJS
-            :CHARTDATA="TOP6CLIENTS"
-            title="Analyse du CA Brut pour les 6 principaux clients (Par Date)"
-            IconName="mdi-chart-box-multiple"
-            IconColor="red"
-          />
-        </v-col>
-
-        <v-col cols="12" sm="6" class="pa-2">
-          <BarChartJS
-            :CHARTDATA="CREANCERECOUVREMENTENCAISSEMENT"
-            title="Performance des Créances Commerciales et du Recouvrement (Par Date)"
-            IconName="mdi-chart-areaspline"
-            IconColor="brown"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-
-    <v-container fluid style="max-width: 100%">
-      <v-row dense class="d-flex justify-space-between">
-        <v-col cols="12" sm="6" class="pa-2">
-          <div
-            style="
-              width: 100%;
-              display: flex;
-              justify-content: center;
-              margin-top: 5%;
-            "
+    <div v-if="LoadingContent">
+      <v-container fluid>
+        <v-row dense>
+          <v-col
+            v-for="(Frow, index) in FirstRowCard"
+            :key="index"
+            cols="12"
+            sm="3"
+            md="2"
+            class="pa-2"
           >
-            <DonutsChartJS
-              :CHARTDATA="VOLPARPRODUIT"
-              title="État des Ventes par Produit en Tonnes (Par Date)"
-              IconName="mdi-chart-pie"
-              IconColor="orange"
+            <InfoCard
+              :Title="Frow.Title"
+              :TextNumber="Frow.TextNumber"
+              :Icon="Frow.Icon"
+              :IconColor="Frow.IconColor"
             />
-          </div>
-        </v-col>
+          </v-col>
+        </v-row>
+      </v-container>
 
-        <v-col cols="12" sm="6" class="pa-2">
-          <div
-            style="
-              width: 100%;
-              display: flex;
-              justify-content: center;
-              margin-top: 5%;
-            "
+      <v-container fluid style="max-width: 60%; margin-left: 25% !important">
+        <v-row dense>
+          <v-col
+            v-for="(Srow, index) in SecondRowCard"
+            :key="index"
+            cols="12"
+            sm="3"
+            class="pa-2 mx-auto"
           >
-            <DonutsChartJS
-              :CHARTDATA="CAPARPRODUIT"
-              title="État des Ventes par Produit en CA NET (Par Date)"
-              IconName="mdi-chart-pie"
-              IconColor="orange"
+            <InfoCard
+              :Title="Srow.Title"
+              :TextNumber="Srow.TextNumber"
+              :Icon="Srow.Icon"
+              :IconColor="Srow.IconColor"
             />
-          </div>
-        </v-col>
-      </v-row>
-    </v-container>
+          </v-col>
+        </v-row>
+      </v-container>
 
-    <v-container fluid style="max-width: 100%; margin-left: 30% !important">
-      <v-row dense class="d-flex align-center">
-        <v-col cols="auto" class="pa-0">
-          <h2 class="text-center text-decoration-underline mt-6">
-            <v-icon color="pink">mdi-account-multiple-check</v-icon>
-            Bilan des Objectifs Commerciaux Annuels Avec la Réalisation d'anneé
-            <span class="text-pink">2024</span>
-          </h2>
-        </v-col>
-      </v-row>
-    </v-container>
+      <v-container fluid style="max-width: 100%">
+        <v-row dense class="d-flex justify-space-between">
+          <v-col cols="12" sm="12" class="pa-2">
+            <h2 class="text-center text-decoration-underline">
+              <v-icon color="pink">mdi-table-large</v-icon> Tableau de Bord des
+              Indicateurs Commerciaux par Graphiques :
+              <span class="text-pink">2024</span>
+            </h2>
+          </v-col>
+        </v-row>
+      </v-container>
 
-    <v-container fluid style="max-width: 100%">
-      <v-row dense class="d-flex justify-space-between">
-        <v-col cols="12" sm="6" class="pa-2">
-          <DataTABLE
-            :Headers="TOneHeaders"
-            :DATA="TOneDATA"
-            DATATABLETITLE="Tableau des Objectifs et réalisations Ventes (Par Date)"
-            TABLEICON="mdi-bag-checked"
-            TABLECOLORICON="blue"
-          />
-        </v-col>
-        <v-col cols="12" sm="6" class="pa-2">
-          <DataTABLE
-            :Headers="TTwoHeaders"
-            :DATA="TTwoDATA"
-            DATATABLETITLE="Tableau des Objectifs et Réalisation Créances Clients (Par Mois)"
-            :reverse="true"
-            TABLEICON="mdi-account-group"
-            TABLECOLORICON="purple"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container fluid style="max-width: 100%">
-      <v-row dense class="d-flex justify-space-between">
-        <v-col cols="12" sm="6" class="pa-2">
-          <DataTABLE
-            :Headers="TTreeHeaders"
-            :DATA="TTreeDATA"
-            DATATABLETITLE="Tableau PVM par Catégorie (Par Date)"
-            TABLEICON="mdi-chart-bar"
-            TABLECOLORICON="red"
-          />
-        </v-col>
-        <v-col cols="12" sm="6" class="pa-2">
-          <DataTABLE
-            :Headers="TFourHeaders"
-            :DATA="TFourDATA"
-            DATATABLETITLE="Tableau des Objectifs et Réalisations Recouvrement(Par Mois)"
-            TABLEICON="mdi-cash-fast"
-            TABLECOLORICON="green"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
+      <v-container fluid style="max-width: 100%">
+        <v-row dense class="d-flex justify-space-between">
+          <v-col cols="12" sm="6" class="pa-2">
+            <BarChartJS
+              :CHARTDATA="COMMANDDEMANDEANDCOMMANDLIVRE"
+              title="Analyse des Commandes Demandées et Livrées (Par Date)"
+              IconName="mdi-poll"
+              IconColor="purple"
+            />
+          </v-col>
+          <v-col cols="12" sm="6" class="pa-2">
+            <BarChartJS
+              :CHARTDATA="QNTENTANDM3"
+              title="Volume de Vente : Tonnes et Mètres Cubes (Par Date)"
+              IconName="mdi-chart-tree"
+              IconColor="green"
+            />
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container fluid style="max-width: 100%">
+        <v-row dense class="d-flex justify-space-between">
+          <v-col cols="12" sm="6" class="pa-2">
+            <LineChartJS
+              :CHARTDATA="CANETCABRUT"
+              title="Évolution du CA Brut et du CA Net (Par Date)"
+              IconName="mdi-chart-ppf"
+              IconColor="blue"
+            />
+          </v-col>
+          <v-col cols="12" sm="6" class="pa-2">
+            <BarChartJS
+              :CHARTDATA="PMVGLOBALS"
+              title="Situation du PVM : Nobles Graves Et Le  Stérile (Par Date)"
+              IconName="mdi-chart-box"
+              IconColor="pink"
+            />
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container fluid style="max-width: 100%">
+        <v-row dense class="d-flex justify-space-between">
+          <v-col cols="12" sm="6" class="pa-2">
+            <BarChartJS
+              :CHARTDATA="TOP6CLIENTS"
+              title="Analyse du CA Brut pour les 6 principaux clients (Par Date)"
+              IconName="mdi-chart-box-multiple"
+              IconColor="red"
+            />
+          </v-col>
+
+          <v-col cols="12" sm="6" class="pa-2">
+            <BarChartJS
+              :CHARTDATA="CREANCERECOUVREMENTENCAISSEMENT"
+              title="Performance des Créances Commerciales et du Recouvrement (Par Date)"
+              IconName="mdi-chart-areaspline"
+              IconColor="brown"
+            />
+          </v-col>
+        </v-row>
+      </v-container>
+
+      <v-container fluid style="max-width: 100%">
+        <v-row dense class="d-flex justify-space-between">
+          <v-col cols="12" sm="6" class="pa-2">
+            <div
+              style="
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                margin-top: 5%;
+              "
+            >
+              <DonutsChartJS
+                :CHARTDATA="VOLPARPRODUIT"
+                title="État des Ventes par Produit en Tonnes (Par Date)"
+                IconName="mdi-chart-pie"
+                IconColor="orange"
+              />
+            </div>
+          </v-col>
+
+          <v-col cols="12" sm="6" class="pa-2">
+            <div
+              style="
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                margin-top: 5%;
+              "
+            >
+              <DonutsChartJS
+                :CHARTDATA="CAPARPRODUIT"
+                title="État des Ventes par Produit en CA NET (Par Date)"
+                IconName="mdi-chart-pie"
+                IconColor="orange"
+              />
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+
+      <v-container fluid style="max-width: 100%; margin-left: 30% !important">
+        <v-row dense class="d-flex align-center">
+          <v-col cols="auto" class="pa-0">
+            <h2 class="text-center text-decoration-underline mt-6">
+              <v-icon color="pink">mdi-account-multiple-check</v-icon>
+              Bilan des Objectifs Commerciaux Annuels Avec la Réalisation
+              d'anneé
+              <span class="text-pink">2024</span>
+            </h2>
+          </v-col>
+        </v-row>
+      </v-container>
+
+      <v-container fluid style="max-width: 100%">
+        <v-row dense class="d-flex justify-space-between">
+          <v-col cols="12" sm="6" class="pa-2">
+            <DataTABLE
+              :Headers="TOneHeaders"
+              :DATA="TOneDATA"
+              DATATABLETITLE="Tableau des Objectifs et réalisations Ventes (Par Date)"
+              TABLEICON="mdi-bag-checked"
+              TABLECOLORICON="blue"
+            />
+          </v-col>
+          <v-col cols="12" sm="6" class="pa-2">
+            <DataTABLE
+              :Headers="TTwoHeaders"
+              :DATA="TTwoDATA"
+              DATATABLETITLE="Tableau des Objectifs et Réalisation Créances Clients (Par Mois)"
+              :reverse="true"
+              TABLEICON="mdi-account-group"
+              TABLECOLORICON="purple"
+            />
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container fluid style="max-width: 100%">
+        <v-row dense class="d-flex justify-space-between">
+          <v-col cols="12" sm="6" class="pa-2">
+            <DataTABLE
+              :Headers="TTreeHeaders"
+              :DATA="TTreeDATA"
+              DATATABLETITLE="Tableau PVM par Catégorie (Par Date)"
+              TABLEICON="mdi-chart-bar"
+              TABLECOLORICON="red"
+            />
+          </v-col>
+          <v-col cols="12" sm="6" class="pa-2">
+            <DataTABLE
+              :Headers="TFourHeaders"
+              :DATA="TFourDATA"
+              DATATABLETITLE="Tableau des Objectifs et Réalisations Recouvrement(Par Mois)"
+              TABLEICON="mdi-cash-fast"
+              TABLECOLORICON="green"
+            />
+          </v-col>
+        </v-row>
+      </v-container>
+    </div>
   </div>
 </template>
 
@@ -225,6 +240,7 @@ import DonutsChartJS from "../components/MiniComponents/Charts/DonutsChartJS.vue
 import TableJS from "../components/MiniComponents/Tables/TableJS.vue";
 import DataTABLE from "../components/MiniComponents/Tables/DataTABLE.vue";
 import axiosInstance from "../Axios";
+
 export default {
   name: "BilanAnalytique",
   components: {
@@ -241,6 +257,8 @@ export default {
   methods: {
     async FetchQuery(DATA) {
       try {
+        this.LoadingContent = false;
+        this.SpinnerLoader = true;
         const response = await axiosInstance.post("/API/V1/BalanceSheet", DATA);
         const { METRICS_ONE, METRICS_TWO, COMMANDEGRAPH } =
           response.data.Metrics;
@@ -285,12 +303,14 @@ export default {
                   ...(response.data.COMMANDEGRAPH.GRAPHVOYAGERENDUCOMMANDEE ||
                     []),
                 ],
+                backgroundColor: ["#0c38a5"],
               },
               {
                 label: "Commandes Livrées",
                 data: [
                   ...(response.data.COMMANDEGRAPH.GRAPHVOYAGERENDULIVREE || []),
                 ],
+                backgroundColor: ["#6c057b"],
               },
             ],
           };
@@ -304,10 +324,12 @@ export default {
             {
               label: "QUANTITE EN T",
               data: [...response.data.VOLGRAPH.GRAPHVOLQNTENT],
+              backgroundColor: ["#08a06e"],
             },
             {
               label: "QUANTITE EN M3",
               data: [...response.data.VOLGRAPH.GRAPHVOLQNTENM3],
+              backgroundColor: ["#f50750"],
             },
           ],
         };
@@ -320,10 +342,15 @@ export default {
             {
               label: "SOMME DU CA BRUT",
               data: [...response.data.CAGRAPH.GRAPHCABRUT],
+              backgroundColor: ["#0c38a5"],
+              borderColor: "#0c38a5",
             },
+
             {
               label: "SOMME DU CA NET",
               data: [...response.data.CAGRAPH.GRAPHCANET],
+              backgroundColor: ["#eca90e"],
+              borderColor: "#eca90e",
             },
           ],
         };
@@ -336,14 +363,17 @@ export default {
             {
               label: "PVM NOBLES",
               data: [...response.data.PMVGRAPH.PMVNOBLES],
+              backgroundColor: ["#008000"],
             },
             {
               label: "PVM GRAVES",
               data: [...response.data.PMVGRAPH.PMVGRAVES],
+              backgroundColor: ["#FFA500"],
             },
             {
               label: "PVM STERILE",
               data: [...response.data.PMVGRAPH.PMVSTERILE],
+              backgroundColor: ["#FF0000"],
             },
           ],
         };
@@ -356,6 +386,14 @@ export default {
             {
               label: "CA BRUT",
               data: [...response.data.TOP6CLIENTSGRAPH.TOP6CLIENTVALUES],
+              backgroundColor: [
+                "#00C853",
+                "#0091EA",
+                "#C51162",
+                "#D50000",
+                "#FF6D00",
+                "#3E2723",
+              ],
             },
           ],
         };
@@ -374,6 +412,7 @@ export default {
                 ...response.data.PERFORMANCECREANCEGRAPH
                   .GRAPHPERFOCECREANCECOMMERCIALE,
               ],
+              backgroundColor: ["#BF360C"],
             },
             {
               label: "Recouvrement Commerciale",
@@ -381,6 +420,7 @@ export default {
                 ...response.data.PERFORMANCECREANCEGRAPH
                   .GRAPHCREANCEHRECOUVREMENT,
               ],
+              backgroundColor: ["#F57C00"],
             },
             {
               label: "Encaissement Financiere ",
@@ -388,6 +428,7 @@ export default {
                 ...response.data.PERFORMANCECREANCEGRAPH
                   .GRAPHENCAISSEMENTFINANCIER,
               ],
+              backgroundColor: ["#2E7D32"],
             },
           ],
         };
@@ -400,6 +441,18 @@ export default {
             {
               label: "Volume Par Produits",
               data: [...response.data.QNTBYPRODUITGRAPH.QNTBYPRODUIT],
+              backgroundColor: [
+                "#41B883",
+                "#E46651",
+                "#00D8FF",
+                "#DD1B16",
+
+                "#12be65",
+                "#ecc43d",
+                "#c45db9",
+                "#6aca65",
+                "#f2c68a",
+              ],
             },
           ],
         };
@@ -412,6 +465,18 @@ export default {
             {
               label: "CA Net Par Produits",
               data: [...response.data.CANETBYPRODUITGRAPH.CANETBYPRODUIT],
+              backgroundColor: [
+                "#41B883",
+                "#E46651",
+                "#00D8FF",
+                "#DD1B16",
+
+                "#12be65",
+                "#ecc43d",
+                "#c45db9",
+                "#6aca65",
+                "#f2c68a",
+              ],
             },
           ],
         };
@@ -499,7 +564,8 @@ export default {
           response.data.TABLES_DATA_OBJECTIFS.COUT_TRANSPORT;
 
         // ##########################################################################
-
+        this.SpinnerLoader = false;
+        this.LoadingContent = true;
         console.log(
           "Data successfully fetched and processed:",
           typeof response.data
@@ -517,6 +583,8 @@ export default {
         DébutDate: "",
         FinDate: "",
       },
+      LoadingContent: false,
+      SpinnerLoader: true,
       TOneHeaders: [
         {
           title: "",

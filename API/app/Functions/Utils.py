@@ -121,60 +121,53 @@ def aggregate_time_series(df, date_column, value_columns, group_by_month=False):
     # Convert date column to datetime if not already
     df_copy[date_column] = pd.to_datetime(df_copy[date_column], errors="coerce")
 
-    # Check if any date conversion failed
-
     # Drop rows where date conversion failed (NaT)
     df_copy = df_copy.dropna(subset=[date_column])
 
     if df_copy.empty:
-
         return pd.DataFrame(columns=[date_column] + value_columns)
 
-    # Handle case when start_date == end_date (only one day)
+    # Handle case when grouping by day or month
     if not group_by_month:
-        df_copy["group_key"] = df_copy[date_column].dt.date
+        df_copy["group_key"] = df_copy[date_column].dt.date  # Group by day
     else:
-        # Prepare grouping key (month-year)
-        df_copy["group_key"] = df_copy[date_column].dt.strftime("%m/%Y")
-
-    # Check the group_key and unique values
+        df_copy["group_key"] = df_copy[date_column].dt.strftime(
+            "%m/%Y"
+        )  # Group by month-year
 
     # Split columns into numeric and non-numeric
-    numeric_cols = []
-    non_numeric_cols = []
-
-    for col in value_columns:
-        if col in df_copy.columns:  # Ensure column exists
-            if df_copy[col].dtype in ["int64", "float64", "int32", "float32"]:
-                numeric_cols.append(col)
-            else:
-                non_numeric_cols.append(col)
-        else:
-            print(f"Column '{col}' not found in DataFrame")
+    numeric_cols = [
+        col
+        for col in value_columns
+        if col in df_copy.columns and pd.api.types.is_numeric_dtype(df_copy[col])
+    ]
+    non_numeric_cols = [
+        col
+        for col in value_columns
+        if col in df_copy.columns and not pd.api.types.is_numeric_dtype(df_copy[col])
+    ]
 
     # Create aggregation dictionary
-    agg_dict = {}
-    for col in numeric_cols:
-        agg_dict[col] = "sum"  # Sum numeric values
-    for col in non_numeric_cols:
-        agg_dict[col] = "first"  # Take the first value for non-numeric columns
-
-    # Check if aggregation dictionary is created
+    agg_dict = {col: "sum" for col in numeric_cols}
+    agg_dict.update({col: "first" for col in non_numeric_cols})
 
     # Perform groupby and aggregation
-    if agg_dict:  # Only if we have columns to aggregate
-        result = df_copy.groupby("group_key").agg(agg_dict).reset_index()
-        # Rename the group_key back to date_column
-        result = result.rename(columns={"group_key": date_column})
+    result = df_copy.groupby("group_key").agg(agg_dict).reset_index()
+    result = result.rename(columns={"group_key": date_column})
 
-    else:
-        # If no columns to aggregate, return empty DataFrame with correct columns
-        result = pd.DataFrame(columns=[date_column] + value_columns)
+    # Explicitly format the date column for daily grouping
+    if not group_by_month:
+        result[date_column] = pd.to_datetime(result[date_column]).dt.strftime(
+            "%d %b %Y"
+        )  # Format as '02 Jan 2024'
 
     # Ensure all requested columns are present
     for col in value_columns:
         if col not in result.columns:
             result[col] = None
+
+    # Convert the date column to string to prevent re-interpretation
+    result[date_column] = result[date_column].astype(str)
 
     return result
 
@@ -194,5 +187,6 @@ def should_aggregate_monthly(start_date, end_date):
     # Calculate the difference in days
     days_difference = (end_date - start_date).days
 
+    print("resuuuuuuuuuuuult : ", (days_difference))
     # If the date range is more than 20 days, aggregate by month
     return days_difference > 20

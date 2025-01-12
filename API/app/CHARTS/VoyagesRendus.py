@@ -6,9 +6,11 @@ def prepare_voyages_rendus_data(filtered_data, group_by_month):
     # First filter for non-DEPART Chantier
     rendus_data = filtered_data[filtered_data["Chantier"] != "DEPART"].copy()
 
+    # Ensure the "Date" column is in datetime format
+    rendus_data["Date"] = pd.to_datetime(rendus_data["Date"], errors="coerce")
+
     if group_by_month:
         # For monthly aggregation
-        rendus_data["Date"] = pd.to_datetime(rendus_data["Date"])
         grouped = (
             rendus_data.groupby(rendus_data["Date"].dt.strftime("%m/%Y"))
             .agg({"Ticket/BL": "count"})  # Count tickets per month
@@ -21,6 +23,8 @@ def prepare_voyages_rendus_data(filtered_data, group_by_month):
             .agg({"Ticket/BL": "count"})  # Count tickets per day
             .reset_index()
         )
+        # Format the "Date" column as "02 Jan 2024"
+        grouped["Date"] = grouped["Date"].dt.strftime("%d %b %Y")
 
     return {
         "GRAPHVOYAGESRENDULIVDATES": grouped["Date"].tolist(),
