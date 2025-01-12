@@ -1,26 +1,31 @@
-import { createApp } from 'vue'
+// src/store/index.js
 import { createStore } from 'vuex'
-
-Vue.use(Vuex);
 
 export default createStore({
   state: {
+   title : {debutDate : "",finDate : ""}
+  },
+  
+  getters: {
+   getTtitleContent(state){
+    return state.title
+   }
    
-    count: 0,
-    
   },
+  
   mutations: {
-    // Define methods to modify the state
-    
+    ChangeTitleContent(state,payload){
+      state.title.debutDate = payload.DébutDate
+      state.title.finDate = payload.FinDate
+    }
+   
   },
+  
   actions: {
    
   },
-  getters: {
-    // Define getters to retrieve state values
-    getCount(state) {
-      return state.count;
-    },
-   
+  
+  modules: {
+    // Your modules here
   }
-});
+})

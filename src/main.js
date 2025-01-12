@@ -9,6 +9,7 @@ import * as directives from 'vuetify/directives'
 import '@mdi/font/css/materialdesignicons.css'
 import Axios from "./Axios"
 import Router from "./router"
+import Store from './Store'
 
 const vuetify = createVuetify({
   components,
@@ -18,6 +19,7 @@ const vuetify = createVuetify({
 const app = createApp(App)
 
 app.use(Axios)
+app.use(Store)
 app.use(Router)
 app.use(vuetify)
 app.mount('#app')

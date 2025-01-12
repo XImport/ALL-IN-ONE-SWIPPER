@@ -9,8 +9,9 @@
       <div style="position: absolute; top: 30%; left: 40%">
         <div class="bg-white pa-12 rounded-xl">
           <h1 class="text-center text-decoration-underline">
-            Préparation des données ... <span>{{ DATA.FinDate }}</span>
+            Préparation des données ...
           </h1>
+          <h3 class="text-center text-grey mt-2">Merci de patienter 🔍😁</h3>
         </div>
       </div>
     </div>
@@ -60,8 +61,11 @@
           <v-col cols="12" sm="12" class="pa-2">
             <h2 class="text-center text-decoration-underline">
               <v-icon color="pink">mdi-table-large</v-icon> Tableau de Bord des
-              Indicateurs Commerciaux par Graphiques :
-              <span class="text-pink">2024</span>
+              Indicateurs Commerciaux par Graphiques : du
+              <span class="text-pink"
+                >{{ Title.debutDate }} <span class="text-black">au </span>
+                <span class="text-pink">{{ Title.finDate }}</span>
+              </span>
             </h2>
           </v-col>
         </v-row>
@@ -169,14 +173,17 @@
         </v-row>
       </v-container>
 
-      <v-container fluid style="max-width: 100%; margin-left: 30% !important">
+      <v-container fluid style="max-width: 100%; margin-left: 22% !important">
         <v-row dense class="d-flex align-center">
           <v-col cols="auto" class="pa-0">
             <h2 class="text-center text-decoration-underline mt-6">
               <v-icon color="pink">mdi-account-multiple-check</v-icon>
               Bilan des Objectifs Commerciaux Annuels Avec la Réalisation
               d'anneé
-              <span class="text-pink">2024</span>
+              <span class="text-pink"
+                >{{ Title.debutDate }} <span class="text-black">au </span>
+                <span class="text-pink">{{ Title.finDate }}</span>
+              </span>
             </h2>
           </v-col>
         </v-row>
@@ -253,7 +260,11 @@ export default {
     DataTABLE,
   },
   created() {},
-  computed: {},
+  computed: {
+    Title() {
+      return this.$store.getters.getTtitleContent;
+    },
+  },
   methods: {
     async FetchQuery(DATA) {
       try {
@@ -263,6 +274,7 @@ export default {
         const { METRICS_ONE, METRICS_TWO, COMMANDEGRAPH } =
           response.data.Metrics;
 
+        this.$store.commit("ChangeTitleContent", DATA);
         // Update cards data
 
         this.FirstRowCard.forEach((card, index) => {
@@ -584,7 +596,7 @@ export default {
         FinDate: "",
       },
       LoadingContent: false,
-      SpinnerLoader: true,
+      SpinnerLoader: false,
       TOneHeaders: [
         {
           title: "",
