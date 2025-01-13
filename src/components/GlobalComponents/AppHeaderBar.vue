@@ -6,8 +6,8 @@
         <v-col cols="auto" class="mr-auto" style="margin-left: 20%">
           <h2 class="text-decoration-underline">
             <v-icon class="pr-2" color="green">mdi-chart-tree</v-icon>Bilan
-            Analytique
-            <v-tooltip
+            Analytique :
+            <!-- <v-tooltip
               text="Exporter Vers Excel"
               location="top"
               activator="parent"
@@ -15,14 +15,14 @@
               <template v-slot:activator="{ props }">
                 <v-btn icon compact size="25" class="ml-2" v-bind="props">
                   <v-img
-                    src="https://static-00.iconduck.com/assets.00/ms-excel-icon-2048x2026-nws24wyy.png"
+                    src="https://i.postimg.cc/ryDbsPWF/analysis-icon-5097437.png"
                     width="25"
                     class=""
                     style="display: inline-block; vertical-align: middle"
                   ></v-img>
                 </v-btn>
               </template>
-            </v-tooltip>
+            </v-tooltip> -->
           </h2>
         </v-col>
 

@@ -6,7 +6,14 @@
         {{ DATATABLETITLE }}
         <v-tooltip text="Exporter Vers Excel" location="top" activator="parent">
           <template v-slot:activator="{ props }">
-            <v-btn icon compact size="20" class="ml-2" v-bind="props">
+            <v-btn
+              icon
+              compact
+              size="20"
+              class="ml-2"
+              v-bind="props"
+              @click="exportTableToExcel()"
+            >
               <v-img
                 src="https://static-00.iconduck.com/assets.00/ms-excel-icon-2048x2026-nws24wyy.png"
                 width="25"
@@ -56,6 +63,8 @@
   </div>
 </template>
 <script>
+import { exportToExcel } from "../../../utils"; // Adjust path as needed
+
 export default {
   props: {
     Headers: {
@@ -119,6 +128,19 @@ export default {
   },
 
   methods: {
+    exportTableToExcel() {
+      const rows = this.DATA.map((item) => ({
+        Observation: item.Key1, // Assuming Key1 is the date
+        Objectif: item.Key2,
+        Réalisation: item.Key3,
+        Taux: this.reverse
+          ? ((item.Key2 / item.Key3) * 100).toFixed(2) + "%"
+          : ((item.Key3 / item.Key2) * 100).toFixed(2) + "%",
+      }));
+
+      exportToExcel(rows, `Table.xlsx`);
+    },
+
     getPercentageColor(value1, value2) {
       const percentage = (value1 / value2) * 100;
       return percentage < 70 ? { color: "orange" } : { color: "green" };

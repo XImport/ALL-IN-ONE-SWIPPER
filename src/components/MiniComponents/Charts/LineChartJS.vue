@@ -3,7 +3,14 @@
     <v-icon :color="IconColor">{{ IconName }}</v-icon> {{ title }}
     <v-tooltip text="Exporter Vers Excel" location="top" activator="parent">
       <template v-slot:activator="{ props }">
-        <v-btn icon compact size="20" class="ml-2" v-bind="props">
+        <v-btn
+          icon
+          compact
+          size="20"
+          class="ml-2"
+          v-bind="props"
+          @click="ExportToExcel"
+        >
           <v-img
             src="https://static-00.iconduck.com/assets.00/ms-excel-icon-2048x2026-nws24wyy.png"
             width="25"
@@ -32,7 +39,7 @@ import {
 } from "chart.js";
 // Import the annotation plugin
 import annotationPlugin from "chartjs-plugin-annotation";
-
+import { exportToExcel } from "../../../utils"; // Adjust the path if needed
 ChartJS.register(
   Title,
   Tooltip,
@@ -139,6 +146,23 @@ export default {
           })),
         };
       },
+    },
+  },
+  methods: {
+    ExportToExcel() {
+      const rows = [];
+      const { labels, datasets } = this.chartData;
+
+      // Transform chart data into a table-like array
+      labels.forEach((label, index) => {
+        const row = { Date: label };
+        datasets.forEach((dataset) => {
+          row[dataset.label] = dataset.data[index];
+        });
+        rows.push(row);
+      });
+
+      exportToExcel(rows, "DATA.xlsx");
     },
   },
 };
