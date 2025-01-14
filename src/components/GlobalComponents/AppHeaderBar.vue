@@ -1,28 +1,19 @@
 <template>
   <div>
-    <v-container fluid class="px-0 pb-2">
+    <v-container fluid class="px-0 pb-2 sticky-header">
       <v-row no-gutters align="center" class="px-4">
         <!-- Title Section -->
         <v-col cols="auto" class="mr-auto" style="margin-left: 20%">
           <h2 class="text-decoration-underline">
             <v-icon class="pr-2" color="green">mdi-chart-tree</v-icon>Bilan
             Analytique
-            <!-- <v-tooltip
-              text="Exporter Vers Excel"
-              location="top"
-              activator="parent"
-            >
-              <template v-slot:activator="{ props }"> -->
-            <!-- <v-btn icon compact size="35" class="ml-2" v-bind="props"> -->
+
             <v-img
               src="https://cdn-icons-png.flaticon.com/512/167/167485.png"
               width="35"
               class=""
               style="display: inline-block; vertical-align: middle"
             ></v-img>
-            <!-- </v-btn> -->
-            <!-- </template>
-            </v-tooltip> -->
           </h2>
         </v-col>
 
@@ -50,12 +41,7 @@
               locale="fr"
               cancelText="Annuler"
             />
-
-            <v-tooltip
-              text="Analyser les données"
-              location="top"
-              activator="parent"
-            >
+            <v-tooltip text="Consulter des données" location="top">
               <template v-slot:activator="{ props }">
                 <v-btn
                   icon
@@ -79,6 +65,7 @@
                 </v-btn>
               </template>
             </v-tooltip>
+
             <div class="theme-switch-wrapper">
               <button
                 class="theme-switch"
@@ -101,12 +88,35 @@
 
         <!-- User Profile Section -->
         <v-col cols="auto" style="margin-right: 5% !important">
-          <v-list class="pa-0">
+          <v-list class="pa-0" style="display: flex; align-items: center">
             <v-list-item
               prepend-avatar="https://cdn-icons-png.flaticon.com/512/219/219986.png"
               subtitle="Hamza.nouinou@ttsud.ma"
               title="Hamza Nouinou"
+              style="flex-grow: 1"
             />
+            <v-tooltip
+              text="Paramètres Rapides & Raccourcis"
+              location="top"
+              activator="parent"
+            >
+              <template v-slot:activator="{ props2 }">
+                <v-btn
+                  icon
+                  compact
+                  size="30"
+                  class="ml-2"
+                  v-bind="props2"
+                  @click="ChangeInfoState()"
+                >
+                  <v-img
+                    src="https://static-00.iconduck.com/assets.00/info-icon-2048x2048-tcgtx810.png"
+                    width="30"
+                    style="display: inline-block; vertical-align: middle"
+                  ></v-img>
+                </v-btn>
+              </template>
+            </v-tooltip>
           </v-list>
         </v-col>
       </v-row>
@@ -189,6 +199,9 @@ export default {
       const month = (date.getMonth() + 1).toString().padStart(2, "0");
       const year = date.getFullYear();
       return `${day}/${month}/${year}`;
+    },
+    ChangeInfoState() {
+      this.$store.commit("ChangeDialogState");
     },
   },
 };
@@ -277,5 +290,13 @@ export default {
 
 .v-btn {
   box-shadow: none !important;
+}
+
+.sticky-header {
+  position: fixed !important;
+  top: 0;
+  z-index: 1000; /* Ensure it stays above other elements */
+  background-color: white; /* Match background to prevent overlap issues */
+  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  */
 }
 </style>

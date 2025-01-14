@@ -5,6 +5,7 @@
       <v-progress-linear
         color="yellow-darken-2"
         indeterminate
+        style="margin-top: 4%"
       ></v-progress-linear>
       <div style="position: absolute; top: 30%; left: 40%">
         <div class="bg-white pa-12 rounded-xl">
@@ -16,7 +17,12 @@
       </div>
     </div>
     <!-- Cards container -->
-    <div v-if="LoadingContent">
+
+    <div>
+      <DialogBox />
+    </div>
+
+    <div v-if="LoadingContent" class="mt-12 pt-2">
       <v-container fluid>
         <v-row dense>
           <v-col
@@ -56,7 +62,11 @@
         </v-row>
       </v-container>
 
-      <v-container fluid style="max-width: 100%">
+      <v-container
+        fluid
+        style="max-width: 100%"
+        class="animate__animated animate__fadeInUp"
+      >
         <v-row dense class="d-flex justify-space-between">
           <v-col cols="12" sm="12" class="pa-2">
             <h2 class="text-center text-decoration-underline">
@@ -71,7 +81,11 @@
         </v-row>
       </v-container>
 
-      <v-container fluid style="max-width: 100%">
+      <v-container
+        fluid
+        style="max-width: 100%"
+        class="animate__animated animate__fadeInUp"
+      >
         <v-row dense class="d-flex justify-space-between">
           <v-col cols="12" sm="6" class="pa-2">
             <BarChartJS
@@ -178,8 +192,7 @@
           <v-col cols="auto" class="pa-0">
             <h2 class="text-center text-decoration-underline mt-6">
               <v-icon color="pink">mdi-account-multiple-check</v-icon>
-              Bilan des Objectifs Commerciaux Annuels Avec la Réalisation
-              d'anneé
+              Bilan des Objectifs Commerciaux Annuels Avec la Réalisation du
               <span class="text-pink"
                 >{{ Title.debutDate }} <span class="text-black">au </span>
                 <span class="text-pink">{{ Title.finDate }}</span>
@@ -247,7 +260,7 @@ import DonutsChartJS from "../components/MiniComponents/Charts/DonutsChartJS.vue
 import TableJS from "../components/MiniComponents/Tables/TableJS.vue";
 import DataTABLE from "../components/MiniComponents/Tables/DataTABLE.vue";
 import axiosInstance from "../Axios";
-
+import DialogBox from "../components/MiniComponents/DialogBox.vue";
 export default {
   name: "BilanAnalytique",
   components: {
@@ -258,6 +271,7 @@ export default {
     DonutsChartJS,
     TableJS,
     DataTABLE,
+    DialogBox,
   },
   created() {},
   computed: {
@@ -266,6 +280,9 @@ export default {
     },
   },
   methods: {
+    ChangeDrawerState() {
+      this.$store.commit("ChangeDrawerState");
+    },
     async FetchQuery(DATA) {
       try {
         this.LoadingContent = false;

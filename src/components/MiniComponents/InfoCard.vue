@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="metric-card pa-4 rounded-xl"
+    class="metric-card pa-4 rounded-xl animate__animated animate__fadeInUp"
     variant="flat"
     :rounded="true"
     style="max-width: 10%"

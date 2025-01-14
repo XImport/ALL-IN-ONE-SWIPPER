@@ -4,7 +4,7 @@
     <v-main class="bg-grey-lighten-4">
       <div>
         <!-- Content Goes Here  -->
-        <NavigationDrawer />
+        <NavigationDrawer v-if="Drawer" />
       </div>
     </v-main>
   </v-app>
@@ -19,6 +19,11 @@ export default {
     return {
       // your data here
     };
+  },
+  computed: {
+    Drawer() {
+      return this.$store.getters.GetDrawerState;
+    },
   },
 };
 </script>

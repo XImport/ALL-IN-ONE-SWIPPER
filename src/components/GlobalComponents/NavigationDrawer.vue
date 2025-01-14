@@ -1,5 +1,9 @@
 <template>
-  <v-navigation-drawer floating permanent class="business-navigation-drawer">
+  <v-navigation-drawer
+    floating
+    permanent
+    class="business-navigation-drawer --v-navigation-drawer-width"
+  >
     <!-- Logo/Brand Section -->
     <v-container class="brand-container pa-4">
       <v-img

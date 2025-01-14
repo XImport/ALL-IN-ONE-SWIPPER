@@ -10,6 +10,7 @@ import '@mdi/font/css/materialdesignicons.css'
 import Axios from "./Axios"
 import Router from "./router"
 import Store from './Store'
+import 'animate.css';
 
 const vuetify = createVuetify({
   components,
