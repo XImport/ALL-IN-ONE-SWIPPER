@@ -309,14 +309,14 @@ def balance_sheet():
             ][0],
             "CREANCE_COMMERCIAL": prepare_performance_créance_commerciale_recouvrement(
                 target_file, debut_date, fin_date
-            )["GRAPHPERFOCECREANCECOMMERCIALE"][0],
+            )["GRAPHPERFOCECREANCECOMMERCIALE"][-1],
             #################################################################################
             "CREANCE_CRJ_OBJECTIF": commercials_objectifs_df.to_dict()[
                 "CREANCE CRJ OBJ"
             ][0],
             "CREANCE_CRJ": prepare_performance_créance_commerciale_recouvrement(
                 target_file, debut_date, fin_date
-            )["GRAPHCREANCECRJ"][0],
+            )["GRAPHCREANCECRJ"][-1],
             ##################################################################################
             "CREANCE_H.RECOUVREMENT_OBJECTIF": commercials_objectifs_df.to_dict()[
                 "CREANCE H.RECOUVREMENT OBJ"
@@ -326,7 +326,7 @@ def balance_sheet():
             )[
                 "GRAPHCREANCEHRECOUVREMENT"
             ][
-                0
+                -1
             ],
             ###############################################################################
             "CREANCE_CONTENTIEUX_OBJECTIF": commercials_objectifs_df.to_dict()[
@@ -334,7 +334,7 @@ def balance_sheet():
             ][0],
             "CREANCE_CONTENTIEUX": prepare_performance_créance_commerciale_recouvrement(
                 target_file, debut_date, fin_date
-            )["GRAPHCREANCECONTENIEUX"][0],
+            )["GRAPHCREANCECONTENIEUX"][-1],
             ###############################################################################
             "CREANCE_GLOBAL_OBJECTIF": commercials_objectifs_df.to_dict()[
                 "CREANCE GLOBAL OBJ"
@@ -342,16 +342,16 @@ def balance_sheet():
             "CREANCE_GLOBAL": (
                 prepare_performance_créance_commerciale_recouvrement(
                     target_file, debut_date, fin_date
-                )["GRAPHPERFOCECREANCECOMMERCIALE"][0]
+                )["GRAPHPERFOCECREANCECOMMERCIALE"][-1]
                 + prepare_performance_créance_commerciale_recouvrement(
                     target_file, debut_date, fin_date
-                )["GRAPHCREANCECRJ"][0]
+                )["GRAPHCREANCECRJ"][-1]
                 + prepare_performance_créance_commerciale_recouvrement(
                     target_file, debut_date, fin_date
-                )["GRAPHCREANCEHRECOUVREMENT"][0]
+                )["GRAPHCREANCEHRECOUVREMENT"][-1]
                 + prepare_performance_créance_commerciale_recouvrement(
                     target_file, debut_date, fin_date
-                )["GRAPHCREANCECONTENIEUX"][0]
+                )["GRAPHCREANCECONTENIEUX"][-1]
             ),
             ###############################################################################################
             "PMV_NOBLES_OBJECTIF": commercials_objectifs_df.to_dict()["PMV NOBLES OBJ"][

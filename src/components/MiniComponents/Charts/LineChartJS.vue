@@ -77,7 +77,8 @@ export default {
             enabled: true,
             callbacks: {
               label: function (context) {
-                return `représente: ${context.raw}`;
+                const value = context.raw;
+                return `représente: ${new Intl.NumberFormat().format(value)}`;
               },
             },
           },
@@ -100,7 +101,34 @@ export default {
                   },
                   color: "red",
                 },
+                // Add interactivity with listeners
+                listeners: {
+                  enter: function (context) {
+                    // Programmatically set tooltip content when the line is hovered
+                    const tooltip = context.chart.tooltip;
+                    tooltip.setActiveElements(
+                      [
+                        {
+                          datasetIndex: 0,
+                          element: context.element,
+                        },
+                      ],
+                      {
+                        x: context.element.x,
+                        y: context.element.y,
+                      }
+                    );
+                    tooltip.update(); // Ensure the tooltip gets updated
+                  },
+                  leave: function (context) {
+                    // Hide tooltip when the cursor leaves the line
+                    const tooltip = context.chart.tooltip;
+                    tooltip.setActiveElements([], { x: 0, y: 0 });
+                    tooltip.update();
+                  },
+                },
               },
+
               // Max Target Line
               maxTargetLine: {
                 type: "line",
