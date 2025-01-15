@@ -174,6 +174,9 @@ export default {
       const year = date.getFullYear();
       return `${day}/${month}/${year}`;
     },
+    closeDrawer() {
+      this.$store.commit("ChangeDrawerState");
+    },
 
     formatDate2(date) {
       if (!date) return "";

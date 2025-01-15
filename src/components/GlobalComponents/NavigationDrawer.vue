@@ -2,7 +2,8 @@
   <v-navigation-drawer
     floating
     permanent
-    class="business-navigation-drawer --v-navigation-drawer-width"
+    v-model="drawer"
+    class="business-navigation-drawer"
   >
     <!-- Logo/Brand Section -->
     <v-container class="brand-container pa-4">
@@ -58,7 +59,7 @@
           <span class="nav-text">{{ menu1.title }}</span>
         </v-btn>
         <!-- <v-btn block class="bg-primary">
-          <v-icon color="white pr-2">mdi-logout</v-icon> Déconnexion
+          <v-icon color="white pr-2">mdi-logout</v-icon> hello
         </v-btn> -->
         <div style="min-height: 20px" />
       </v-container>
@@ -68,6 +69,12 @@
 
 <script>
 export default {
+  computed: {
+    drawer() {
+      return this.$store.getters.GetDrawerState;
+    },
+  },
+
   data() {
     return {
       activeItem: "bilan analytique",

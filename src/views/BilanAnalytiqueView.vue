@@ -1,252 +1,280 @@
 <template>
   <div>
     <AppHeaderBar :DATA="DATA" :FetchQuery="FetchQuery" />
-    <div v-if="SpinnerLoader">
-      <v-progress-linear
-        color="yellow-darken-2"
-        indeterminate
-        style="margin-top: 4%"
-      ></v-progress-linear>
-      <div style="position: absolute; top: 30%; left: 40%">
-        <div class="bg-white pa-12 rounded-xl">
-          <h1 class="text-center text-decoration-underline">
-            Préparation des données ...
-          </h1>
-          <h3 class="text-center text-grey mt-2">Merci de patienter 🔍😁</h3>
+    <div
+      style="position: fixed; top: 300px; left: 0%; z-index: 5 !important"
+      v-show="!isDrawerOpen"
+    >
+      <v-btn
+        icon="mdi-arrow-collapse-right"
+        elevation="3"
+        @click="ChangeDrawerState()"
+        size="x-large"
+      ></v-btn>
+    </div>
+    <div
+      :class="{
+        'content-with-drawer': isDrawerOpen,
+        'content-full-width': !isDrawerOpen,
+      }"
+    >
+      <div v-if="SpinnerLoader">
+        <v-progress-linear
+          color="yellow-darken-2"
+          indeterminate
+          style="margin-top: 5%"
+        ></v-progress-linear>
+        <div style="position: absolute; top: 30%; left: 40%">
+          <div class="bg-white pa-12 rounded-xl">
+            <h1 class="text-center text-decoration-underline">
+              Préparation des données ...
+            </h1>
+            <h3 class="text-center text-grey mt-2">Merci de patienter 🔍😁</h3>
+          </div>
         </div>
       </div>
-    </div>
-    <!-- Cards container -->
-
-    <div>
-      <DialogBox />
-    </div>
-
-    <div v-if="LoadingContent" class="mt-12 pt-2">
-      <v-container fluid>
-        <v-row dense>
-          <v-col
-            v-for="(Frow, index) in FirstRowCard"
-            :key="index"
-            cols="12"
-            sm="3"
-            md="2"
-            class="pa-2"
-          >
-            <InfoCard
-              :Title="Frow.Title"
-              :TextNumber="Frow.TextNumber"
-              :Icon="Frow.Icon"
-              :IconColor="Frow.IconColor"
-            />
-          </v-col>
-        </v-row>
-      </v-container>
-
-      <v-container fluid style="max-width: 60%; margin-left: 25% !important">
-        <v-row dense>
-          <v-col
-            v-for="(Srow, index) in SecondRowCard"
-            :key="index"
-            cols="12"
-            sm="3"
-            class="pa-2 mx-auto"
-          >
-            <InfoCard
-              :Title="Srow.Title"
-              :TextNumber="Srow.TextNumber"
-              :Icon="Srow.Icon"
-              :IconColor="Srow.IconColor"
-            />
-          </v-col>
-        </v-row>
-      </v-container>
-
-      <v-container
-        fluid
-        style="max-width: 100%"
-        class="animate__animated animate__fadeInUp"
+      <!-- Cards container -->
+      <div
+        style="position: fixed; top: 300px; left: 15%; z-index: 5 !important"
+        v-show="isDrawerOpen"
       >
-        <v-row dense class="d-flex justify-space-between">
-          <v-col cols="12" sm="12" class="pa-2">
-            <h2 class="text-center text-decoration-underline">
-              <v-icon color="pink">mdi-table-large</v-icon> Tableau de Bord des
-              Indicateurs Commerciaux par Graphiques : du
-              <span class="text-pink"
-                >{{ Title.debutDate }} <span class="text-black">au </span>
-                <span class="text-pink">{{ Title.finDate }}</span>
-              </span>
-            </h2>
-          </v-col>
-        </v-row>
-      </v-container>
+        <v-btn
+          icon="mdi-arrow-collapse-left"
+          elevation="3"
+          @click="ChangeDrawerState()"
+          size="x-large"
+        ></v-btn>
+      </div>
+      <div>
+        <DialogBox />
+      </div>
 
-      <v-container
-        fluid
-        style="max-width: 100%"
-        class="animate__animated animate__fadeInUp"
-      >
-        <v-row dense class="d-flex justify-space-between">
-          <v-col cols="12" sm="6" class="pa-2">
-            <BarChartJS
-              :CHARTDATA="COMMANDDEMANDEANDCOMMANDLIVRE"
-              title="Analyse des Commandes Demandées et Livrées (Par Date)"
-              IconName="mdi-poll"
-              IconColor="purple"
-            />
-          </v-col>
-          <v-col cols="12" sm="6" class="pa-2">
-            <BarChartJS
-              :CHARTDATA="QNTENTANDM3"
-              title="Volume de Vente : Tonnes et Mètres Cubes (Par Date)"
-              IconName="mdi-chart-tree"
-              IconColor="green"
-            />
-          </v-col>
-        </v-row>
-      </v-container>
-      <v-container fluid style="max-width: 100%">
-        <v-row dense class="d-flex justify-space-between">
-          <v-col cols="12" sm="6" class="pa-2">
-            <LineChartJS
-              :CHARTDATA="CANETCABRUT"
-              title="Évolution du CA Brut et du CA Net (Par Date)"
-              IconName="mdi-chart-ppf"
-              IconColor="blue"
-            />
-          </v-col>
-          <v-col cols="12" sm="6" class="pa-2">
-            <BarChartJS
-              :CHARTDATA="PMVGLOBALS"
-              title="Situation du PVM : Nobles Graves Et Le  Stérile (Par Date)"
-              IconName="mdi-chart-box"
-              IconColor="pink"
-            />
-          </v-col>
-        </v-row>
-      </v-container>
-      <v-container fluid style="max-width: 100%">
-        <v-row dense class="d-flex justify-space-between">
-          <v-col cols="12" sm="6" class="pa-2">
-            <BarChartJS
-              :CHARTDATA="TOP6CLIENTS"
-              title="Analyse du CA Brut pour les 6 principaux clients (Par Date)"
-              IconName="mdi-chart-box-multiple"
-              IconColor="red"
-            />
-          </v-col>
-
-          <v-col cols="12" sm="6" class="pa-2">
-            <BarChartJS
-              :CHARTDATA="CREANCERECOUVREMENTENCAISSEMENT"
-              title="Performance des Créances Commerciales et du Recouvrement (Par Date)"
-              IconName="mdi-chart-areaspline"
-              IconColor="brown"
-            />
-          </v-col>
-        </v-row>
-      </v-container>
-
-      <v-container fluid style="max-width: 100%">
-        <v-row dense class="d-flex justify-space-between">
-          <v-col cols="12" sm="6" class="pa-2">
-            <div
-              style="
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                margin-top: 5%;
-              "
+      <div v-if="LoadingContent" class="mt-12 pt-2">
+        <v-container fluid>
+          <v-row dense>
+            <v-col
+              v-for="(Frow, index) in FirstRowCard"
+              :key="index"
+              cols="12"
+              sm="3"
+              md="2"
+              class="pa-2"
             >
-              <DonutsChartJS
-                :CHARTDATA="VOLPARPRODUIT"
-                title="État des Ventes par Produit en Tonnes (Par Date)"
-                IconName="mdi-chart-pie"
-                IconColor="orange"
+              <InfoCard
+                :Title="Frow.Title"
+                :TextNumber="Frow.TextNumber"
+                :Icon="Frow.Icon"
+                :IconColor="Frow.IconColor"
               />
-            </div>
-          </v-col>
+            </v-col>
+          </v-row>
+        </v-container>
 
-          <v-col cols="12" sm="6" class="pa-2">
-            <div
-              style="
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                margin-top: 5%;
-              "
+        <v-container fluid style="max-width: 70% !important">
+          <v-row dense>
+            <v-col
+              v-for="(Srow, index) in SecondRowCard"
+              :key="index"
+              cols="12"
+              sm="3"
+              class="pa-2 mx-auto"
             >
-              <DonutsChartJS
-                :CHARTDATA="CAPARPRODUIT"
-                title="État des Ventes par Produit en CA NET (Par Date)"
-                IconName="mdi-chart-pie"
-                IconColor="orange"
+              <InfoCard
+                :Title="Srow.Title"
+                :TextNumber="Srow.TextNumber"
+                :Icon="Srow.Icon"
+                :IconColor="Srow.IconColor"
               />
-            </div>
-          </v-col>
-        </v-row>
-      </v-container>
+            </v-col>
+          </v-row>
+        </v-container>
 
-      <v-container fluid style="max-width: 100%; margin-left: 22% !important">
-        <v-row dense class="d-flex align-center">
-          <v-col cols="auto" class="pa-0">
-            <h2 class="text-center text-decoration-underline mt-6">
-              <v-icon color="pink">mdi-account-multiple-check</v-icon>
-              Bilan des Objectifs Commerciaux Annuels Avec la Réalisation du
-              <span class="text-pink"
-                >{{ Title.debutDate }} <span class="text-black">au </span>
-                <span class="text-pink">{{ Title.finDate }}</span>
-              </span>
-            </h2>
-          </v-col>
-        </v-row>
-      </v-container>
+        <v-container
+          fluid
+          style="max-width: 100%"
+          class="animate__animated animate__fadeInUp"
+        >
+          <v-row dense class="d-flex justify-space-between">
+            <v-col cols="12" sm="12" class="pa-2">
+              <h2 class="text-center text-decoration-underline">
+                <v-icon color="pink">mdi-table-large</v-icon> Tableau de Bord
+                des Indicateurs Commerciaux par Graphiques : du
+                <span class="text-pink"
+                  >{{ Title.debutDate }} <span class="text-black">au </span>
+                  <span class="text-pink">{{ Title.finDate }}</span>
+                </span>
+              </h2>
+            </v-col>
+          </v-row>
+        </v-container>
 
-      <v-container fluid style="max-width: 100%">
-        <v-row dense class="d-flex justify-space-between">
-          <v-col cols="12" sm="6" class="pa-2">
-            <DataTABLE
-              :Headers="TOneHeaders"
-              :DATA="TOneDATA"
-              DATATABLETITLE="Tableau des Objectifs et réalisations Ventes (Par Date)"
-              TABLEICON="mdi-bag-checked"
-              TABLECOLORICON="blue"
-            />
-          </v-col>
-          <v-col cols="12" sm="6" class="pa-2">
-            <DataTABLE
-              :Headers="TTwoHeaders"
-              :DATA="TTwoDATA"
-              DATATABLETITLE="Tableau des Objectifs et Réalisation Créances Clients (Par Mois)"
-              :reverse="true"
-              TABLEICON="mdi-account-group"
-              TABLECOLORICON="purple"
-            />
-          </v-col>
-        </v-row>
-      </v-container>
-      <v-container fluid style="max-width: 100%">
-        <v-row dense class="d-flex justify-space-between">
-          <v-col cols="12" sm="6" class="pa-2">
-            <DataTABLE
-              :Headers="TTreeHeaders"
-              :DATA="TTreeDATA"
-              DATATABLETITLE="Tableau PVM par Catégorie (Par Date)"
-              TABLEICON="mdi-chart-bar"
-              TABLECOLORICON="red"
-            />
-          </v-col>
-          <v-col cols="12" sm="6" class="pa-2">
-            <DataTABLE
-              :Headers="TFourHeaders"
-              :DATA="TFourDATA"
-              DATATABLETITLE="Tableau des Objectifs et Réalisations Recouvrement(Par Mois)"
-              TABLEICON="mdi-cash-fast"
-              TABLECOLORICON="green"
-            />
-          </v-col>
-        </v-row>
-      </v-container>
+        <v-container
+          fluid
+          style="max-width: 100%"
+          class="animate__animated animate__fadeInUp"
+        >
+          <v-row dense class="d-flex justify-space-between">
+            <v-col cols="12" sm="6" class="pa-2">
+              <BarChartJS
+                :CHARTDATA="COMMANDDEMANDEANDCOMMANDLIVRE"
+                title="Analyse des Commandes Demandées et Livrées (Par Date)"
+                IconName="mdi-poll"
+                IconColor="purple"
+              />
+            </v-col>
+            <v-col cols="12" sm="6" class="pa-2">
+              <BarChartJS
+                :CHARTDATA="QNTENTANDM3"
+                title="Volume de Vente : Tonnes et Mètres Cubes (Par Date)"
+                IconName="mdi-chart-tree"
+                IconColor="green"
+              />
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-container fluid style="max-width: 100%">
+          <v-row dense class="d-flex justify-space-between">
+            <v-col cols="12" sm="6" class="pa-2">
+              <LineChartJS
+                :CHARTDATA="CANETCABRUT"
+                title="Évolution du CA Brut et du CA Net (Par Date)"
+                IconName="mdi-chart-ppf"
+                IconColor="blue"
+              />
+            </v-col>
+            <v-col cols="12" sm="6" class="pa-2">
+              <BarChartJS
+                :CHARTDATA="PMVGLOBALS"
+                title="Situation du PVM : Nobles Graves Et Le  Stérile (Par Date)"
+                IconName="mdi-chart-box"
+                IconColor="pink"
+              />
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-container fluid style="max-width: 100%">
+          <v-row dense class="d-flex justify-space-between">
+            <v-col cols="12" sm="6" class="pa-2">
+              <BarChartJS
+                :CHARTDATA="TOP6CLIENTS"
+                title="Analyse du CA Brut pour les 6 principaux clients (Par Date)"
+                IconName="mdi-chart-box-multiple"
+                IconColor="red"
+              />
+            </v-col>
+
+            <v-col cols="12" sm="6" class="pa-2">
+              <BarChartJS
+                :CHARTDATA="CREANCERECOUVREMENTENCAISSEMENT"
+                title="Performance des Créances Commerciales et du Recouvrement (Par Date)"
+                IconName="mdi-chart-areaspline"
+                IconColor="brown"
+              />
+            </v-col>
+          </v-row>
+        </v-container>
+
+        <v-container fluid style="max-width: 100%">
+          <v-row dense class="d-flex justify-space-between">
+            <v-col cols="12" sm="6" class="pa-2">
+              <div
+                style="
+                  width: 100%;
+                  display: flex;
+                  justify-content: center;
+                  margin-top: 5%;
+                "
+              >
+                <DonutsChartJS
+                  :CHARTDATA="VOLPARPRODUIT"
+                  title="État des Ventes par Produit en Tonnes (Par Date)"
+                  IconName="mdi-chart-pie"
+                  IconColor="orange"
+                />
+              </div>
+            </v-col>
+
+            <v-col cols="12" sm="6" class="pa-2">
+              <div
+                style="
+                  width: 100%;
+                  display: flex;
+                  justify-content: center;
+                  margin-top: 5%;
+                "
+              >
+                <DonutsChartJS
+                  :CHARTDATA="CAPARPRODUIT"
+                  title="État des Ventes par Produit en CA NET (Par Date)"
+                  IconName="mdi-chart-pie"
+                  IconColor="orange"
+                />
+              </div>
+            </v-col>
+          </v-row>
+        </v-container>
+
+        <v-container fluid style="max-width: 100%">
+          <v-row dense class="d-flex align-center mx-auto">
+            <v-col cols="auto" class="pa-0 mx-auto">
+              <h2 class="text-center text-decoration-underline mt-6 mx-auto">
+                <v-icon color="pink">mdi-table-large</v-icon> Tableau de Bord
+                des Indicateurs Commerciaux par Graphiques : du
+                <span class="text-pink"
+                  >{{ Title.debutDate }} <span class="text-black">au </span>
+                  <span class="text-pink">{{ Title.finDate }}</span>
+                </span>
+              </h2>
+            </v-col>
+          </v-row>
+        </v-container>
+
+        <v-container fluid style="max-width: 100%">
+          <v-row dense class="d-flex justify-space-between">
+            <v-col cols="12" sm="6" class="pa-2">
+              <DataTABLE
+                :Headers="TOneHeaders"
+                :DATA="TOneDATA"
+                DATATABLETITLE="Tableau des Objectifs et réalisations Ventes (Par Date)"
+                TABLEICON="mdi-bag-checked"
+                TABLECOLORICON="blue"
+              />
+            </v-col>
+            <v-col cols="12" sm="6" class="pa-2">
+              <DataTABLE
+                :Headers="TTwoHeaders"
+                :DATA="TTwoDATA"
+                DATATABLETITLE="Tableau des Objectifs et Réalisation Créances Clients (Par Mois)"
+                :reverse="true"
+                TABLEICON="mdi-account-group"
+                TABLECOLORICON="purple"
+              />
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-container fluid style="max-width: 100%">
+          <v-row dense class="d-flex justify-space-between">
+            <v-col cols="12" sm="6" class="pa-2">
+              <DataTABLE
+                :Headers="TTreeHeaders"
+                :DATA="TTreeDATA"
+                DATATABLETITLE="Tableau PVM par Catégorie (Par Date)"
+                TABLEICON="mdi-chart-bar"
+                TABLECOLORICON="red"
+              />
+            </v-col>
+            <v-col cols="12" sm="6" class="pa-2">
+              <DataTABLE
+                :Headers="TFourHeaders"
+                :DATA="TFourDATA"
+                DATATABLETITLE="Tableau des Objectifs et Réalisations Recouvrement(Par Mois)"
+                TABLEICON="mdi-cash-fast"
+                TABLECOLORICON="green"
+              />
+            </v-col>
+          </v-row>
+        </v-container>
+      </div>
     </div>
   </div>
 </template>
@@ -277,6 +305,9 @@ export default {
   computed: {
     Title() {
       return this.$store.getters.getTtitleContent;
+    },
+    isDrawerOpen() {
+      return this.$store.getters.GetDrawerState; // Assuming you store drawer state in Vuex
     },
   },
   methods: {
@@ -1171,19 +1202,39 @@ export default {
 </script>
 
 <style scoped>
-.v-container {
-  margin-left: var(--v-navigation-drawer-width, 256px) !important;
-  width: calc(100% - var(--v-navigation-drawer-width, 256px)) !important;
-  transition: margin-left 0.2s ease, width 0.2s ease;
+.v-btn {
+  box-shadow: none;
 }
 
-@media (max-width: 1264px) {
-  .v-container {
-    margin-left: 0 !important;
-    width: 100% !important;
+.content-with-drawer {
+  margin-left: 15% !important;
+  width: calc(100% - 280px) !important;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.content-full-width {
+  margin-left: 0;
+  margin: auto;
+  width: 95%;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+/* Update your existing container styles */
+.v-container {
+  width: 100%;
+  max-width: 100% !important;
+  padding: 16px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+  .content-with-drawer {
+    margin-left: 240px; /* Adjusted for smaller drawer width on mobile */
+    width: calc(100% - 240px);
   }
 }
 
+/* Your existing styles remain the same */
 .v-btn {
   box-shadow: none;
 }
