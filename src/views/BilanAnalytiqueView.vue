@@ -318,7 +318,15 @@ export default {
       try {
         this.LoadingContent = false;
         this.SpinnerLoader = true;
-        const response = await axiosInstance.post("/API/V1/BalanceSheet", DATA);
+        const response = await axiosInstance.post(
+          "/API/V1/BalanceSheet",
+          DATA,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         const { METRICS_ONE, METRICS_TWO, COMMANDEGRAPH } =
           response.data.Metrics;
 
@@ -478,7 +486,7 @@ export default {
               label: "Recouvrement Commerciale",
               data: [
                 ...response.data.PERFORMANCECREANCEGRAPH
-                  .GRAPHCREANCEHRECOUVREMENT,
+                  .GRAPHRECOUVREMENTCOMMERCIAL,
               ],
               backgroundColor: ["#F57C00"],
             },
@@ -604,7 +612,7 @@ export default {
         this.TTreeDATA[2].Key2 =
           response.data.TABLES_DATA_OBJECTIFS.PMV_STERILE_OBJECTIF;
         this.TTreeDATA[2].Key3 =
-          response.data.TABLES_DATA_OBJECTIFS["PMV STERILE"];
+          response.data.TABLES_DATA_OBJECTIFS.PMV_STERILE;
 
         // ############################################################################
 
@@ -614,7 +622,7 @@ export default {
           response.data.TABLES_DATA_OBJECTIFS.RECOUVREMENT;
 
         this.TFourDATA[1].Key2 =
-          response.data.TABLES_DATA_OBJECTIFS["ENCAISSEMENT  OBJECTIF"];
+          response.data.TABLES_DATA_OBJECTIFS.ENCAISSEMENT_OBJECTIF;
         this.TFourDATA[1].Key3 =
           response.data.TABLES_DATA_OBJECTIFS.ENCAISSEMENT_FINANCIER;
 

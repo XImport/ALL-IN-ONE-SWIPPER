@@ -11,6 +11,7 @@ import Axios from "./Axios"
 import Router from "./router"
 import Store from './Store'
 import 'animate.css';
+import CORS from "cors"
 
 const vuetify = createVuetify({
   components,
@@ -21,6 +22,7 @@ const app = createApp(App)
 
 app.use(Axios)
 app.use(Store)
+app.use(CORS)
 app.use(Router)
 app.use(vuetify)
 app.mount('#app')

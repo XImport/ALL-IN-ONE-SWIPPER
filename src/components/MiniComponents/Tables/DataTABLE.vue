@@ -146,7 +146,7 @@ export default {
       return percentage < 70 ? { color: "orange" } : { color: "green" };
     },
     formatNumber(value) {
-      return value.toLocaleString();
+      return value.toFixed(2);
     },
 
     calculateKey4(key2, key3) {
