@@ -29,6 +29,7 @@
         ]"
         block
         variant="text"
+        :to="menu.to"
         @click="activeItem = menu.title.toLowerCase()"
       >
         <template #prepend>
@@ -82,19 +83,23 @@ export default {
         {
           title: "Bilan Analytique",
           icon: "mdi-chart-bar",
+          to: "/",
         },
         {
           title: "Données Clients",
           icon: "mdi-database",
+          to: "/donnesclients",
         },
-        {
-          title: "Suivi des créances",
-          icon: "mdi-account-group",
-        },
-        {
-          title: "Contrôle des seuils",
-          icon: "mdi-chart-box",
-        },
+        // {
+        //   title: "Suivi des créances",
+        //   icon: "mdi-account-group",
+        //    to : "/donnesclients"
+        // },
+        // {
+        //   title: "Contrôle des seuils",
+        //   icon: "mdi-chart-box",
+        //    to : "/donnesclients"
+        // },
       ],
       menuControles: [
         {

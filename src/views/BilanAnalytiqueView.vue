@@ -1,6 +1,10 @@
 <template>
   <div>
-    <AppHeaderBar :DATA="DATA" :FetchQuery="FetchQuery" />
+    <AppHeaderBar
+      :DATA="DATA"
+      :FetchQuery="FetchQuery"
+      :StaticInfo="{ icon: 'mdi-chart-tree', title: 'Bilan Analytics' }"
+    />
     <div
       style="position: fixed; top: 300px; left: 0%; z-index: 5 !important"
       v-show="!isDrawerOpen"

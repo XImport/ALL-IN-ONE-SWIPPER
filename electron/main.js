@@ -8,7 +8,7 @@ function createWindow() {
     const win = new BrowserWindow({
       width: 1800,
       height: 1000,
-      title : "All In One Swipper",
+      title : "All In One Swiper",
       autoHideMenuBar : false,
       webPreferences: {
         nodeIntegration: true,

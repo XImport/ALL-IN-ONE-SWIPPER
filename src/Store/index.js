@@ -5,7 +5,9 @@ export default createStore({
   state: {
    title : {debutDate : "",finDate : ""},
    Dialog : false,
-   Drawer : true
+   Drawer : true,
+   ClientDialog : false,
+   OneClientData : {},
   },
   
   getters: {
@@ -17,6 +19,12 @@ export default createStore({
    },
    GetDrawerState(state){
     return state.Drawer
+   },
+   GetClientDialog(state){
+    return state.ClientDialog
+   },
+   GetOneClientData(state){
+    return state.OneClientData
    }
    
   },
@@ -31,6 +39,12 @@ export default createStore({
     },
     ChangeDrawerState(state){
       state.Drawer = !state.Drawer
+    },
+    ChangeClientDialog(state){
+      state.ClientDialog = !state.ClientDialog
+    },
+    ChangeOneClientData(state,payload){
+      state.OneClientData = payload
     }
    
   },

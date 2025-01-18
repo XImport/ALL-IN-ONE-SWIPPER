@@ -5,8 +5,8 @@
         <!-- Title Section -->
         <v-col cols="auto" class="mr-auto" style="margin-left: 20%">
           <h2 class="text-decoration-underline">
-            <v-icon class="pr-2" color="green">mdi-chart-tree</v-icon>Bilan
-            Analytique
+            <v-icon class="pr-2" color="green">{{ StaticInfo.icon }}</v-icon>
+            {{ StaticInfo.title }}
 
             <v-img
               src="https://cdn-icons-png.flaticon.com/512/167/167485.png"
@@ -132,7 +132,7 @@ import { fr } from "date-fns/locale"; // Import French locale
 
 export default {
   name: "BilanAnalytique",
-  props: ["FetchQuery", "DATA"],
+  props: ["FetchQuery", "DATA", "StaticInfo"],
   components: { VueDatePicker },
   mounted() {
     this.DATA.FinDate = this.enddate;
