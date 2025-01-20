@@ -4,7 +4,7 @@
       :value="DATA"
       paginator
       :rows="10"
-      :rowsPerPageOptions="[5, 10, 20, 50]"
+      :rowsPerPageOptions="[5, 10, 50, 100]"
       resizableColumns
       columnResizeMode="expand"
       tableStyle="min-width: 100%"
@@ -35,9 +35,9 @@
       </template> -->
 
       <Column
-        field="key1"
+        field="code"
         :header="Headers.H1"
-        style="width: 10%"
+        style="max-width: 5% !important"
         :sortable="true"
         filterMatchMode="contains"
         class="font-weight-bold"
@@ -53,9 +53,9 @@
       </Column>
 
       <Column
-        field="key2"
+        field="name"
         :header="Headers.H2"
-        style="width: 20%"
+        style="width: 10%"
         :sortable="true"
         filterMatchMode="contains"
         class="font-weight-bold"
@@ -72,7 +72,7 @@
       </Column>
 
       <Column
-        field="key3"
+        field="secteur"
         :header="Headers.H3"
         style="width: 15%"
         :sortable="true"
@@ -89,7 +89,7 @@
       </Column>
 
       <Column
-        field="key4"
+        field="representant"
         :header="Headers.H4"
         style="width: 15%"
         :sortable="true"
@@ -106,7 +106,7 @@
       </Column>
 
       <Column
-        field="key5"
+        field="email"
         :header="Headers.H5"
         style="width: 20%"
         :sortable="true"
@@ -124,7 +124,7 @@
       </Column>
 
       <Column
-        field="key6"
+        field="phonenumber"
         :header="Headers.H6"
         style="width: 10%"
         :sortable="true"
@@ -141,7 +141,7 @@
       </Column>
 
       <Column
-        field="key7"
+        field="entrydate"
         :header="Headers.H7"
         style="width: 10%"
         :sortable="true"
@@ -190,19 +190,19 @@ export default {
     return {
       filters: {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        key1: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        key2: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        key3: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        key4: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        key5: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        key6: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        key7: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        code: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        secteur: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        representant: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        email: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        phonenumber: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        entrydate: { value: null, matchMode: FilterMatchMode.CONTAINS },
       },
     };
   },
   methods: {
     viewDetails(rowData) {
-      console.log("Viewing details for:", rowData.key2);
+      console.log("Viewing details for:", rowData.name);
       this.$store.commit("ChangeClientDialog");
       this.$store.commit("ChangeOneClientData", rowData);
     },

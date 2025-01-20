@@ -73,6 +73,7 @@ import AppHeaderBar from "../components/GlobalComponents/AppHeaderBar.vue";
 import TableJS from "../components/MiniComponents/Tables/TableJS.vue";
 import TableCompo from "../components/MiniComponents/Tables/TableCompo.vue";
 import DialogClientsDetails from "../components/MiniComponents/DialogClientsDetails.vue";
+import axiosInstance from "../Axios";
 export default {
   components: {
     AppHeaderBar,
@@ -84,8 +85,56 @@ export default {
     ChangeDrawerState() {
       this.$store.commit("ChangeDrawerState");
     },
-    FetchQuery() {
-      console.log("hello world");
+    async FetchQuery(DATA) {
+      try {
+        const response = await axiosInstance.post("/API/V1/InfoClients", DATA, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        // Replace NaN with null before parsing
+        const cleanedData = response.data.replace(/: NaN/g, ": null");
+        const jsonData = JSON.parse(cleanedData);
+        console.log(jsonData);
+        const transformedData = jsonData.INFO_CLIENTS.map((client) => ({
+          code: client.CODE?.toString() || "",
+          name: client["NOM DU CLIENT"] || "",
+          secteur: client["SECTEUR D'ACTIVITE"] || "",
+          representant: client.REPRESENTANT || "",
+          email: client.EMAIL || "",
+          location: client.LOCALISATION || "",
+          phonenumber: client["NUMERO TELEPHONE"] || "",
+          entrydate: client["DATE D'EMCHEMENT"]?.split("T")[0] || "",
+          caBrut: client["CA BRUT"] || 0,
+          volume: client["Qté en T"] || 0,
+          suivipar: client["SUIVI PAR"] || "",
+          coutTransport: client["COUT TRANSPORT"] || 0,
+          typegarantie: client["TYPE DE GARANTIE"] || "",
+          Modereglement: client["MODE DE REGLEMENT"] || "", // Replace "looooool" with a proper value
+          plafond: client["PLAFOND MENSUELLE"] || 0,
+          etatfinancier: client["ETAT FINANCIERE"] || "",
+          uniteVente: client["UNITE VENTE"] || "",
+          pourcentagefacturation: client["POURCENTANGE FACTURATION"] || 0,
+          TarificationProduits: {
+            grainderiz: client["GRAIN DE RIZ"] || 0,
+            gravetteg1: client["GRAVETTE G1"] || 0,
+            gravetteg2: client["GRAVETTE G2"] || 0,
+            sableconcassage04: client["SABLE CONCASSAGE 0-4"] || 0,
+            sableconcassage02: client["SABLE CONCASSAGE 0-2"] || 0,
+            toutvenant0315: client["TOUT VENANT 0-31.5"] || 0,
+            toutvenant040: client["TOUT VENANT 0-40"] || 0,
+            toutvenant060: client["TOUT VENANT 0-60"] || 0,
+            toutvenant0100: client["TOUT VENANT 0-100"] || 0,
+            sterile: client["STERILE"] || 0,
+            sterilefin: client["STERILE FIN"] || 0,
+          },
+        }));
+
+        this.DATATABLE = transformedData;
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
   computed: {
@@ -95,7 +144,10 @@ export default {
     filterDATA() {
       return this.DATATABLE.filter((name) => {
         return Object.values(name).some((value) =>
-          value.toString().toLowerCase().includes(this.filterText.toLowerCase())
+          value
+            ?.toString()
+            .toLowerCase()
+            .includes(this.filterText.toLowerCase())
         );
       });
     },
@@ -110,184 +162,37 @@ export default {
 
       DATATABLE: [
         {
-          key1: "C001",
-          key2: "Jean Dupont",
-          key3: "Commerce",
-          key4: "Marie Lemoine",
-          key5: "jean.dupont@example.com",
-          key6: "0123456789",
-          key7: "2023-01-01",
-        },
-        {
-          key1: "C002",
-          key2: "Claire Martin",
-          key3: "Technologie",
-          key4: "Paul Girard",
-          key5: "claire.martin@example.com",
-          key6: "0987654321",
-          key7: "2023-01-10",
-        },
-        {
-          key1: "C003",
-          key2: "Luc Lefevre",
-          key3: "Finance",
-          key4: "Sophie Durand",
-          key5: "luc.lefevre@example.com",
-          key6: "0765432109",
-          key7: "2023-02-02",
-        },
-        {
-          key1: "C004",
-          key2: "Alice Durand",
-          key3: "Marketing",
-          key4: "Jean Lefevre",
-          key5: "alice.durand@example.com",
-          key6: "0678901234",
-          key7: "2023-03-15",
-        },
-        {
-          key1: "C005",
-          key2: "David Moreau",
-          key3: "Informatique",
-          key4: "Catherine Gauthier",
-          key5: "david.moreau@example.com",
-          key6: "0654321098",
-          key7: "2023-04-20",
-        },
-        {
-          key1: "C006",
-          key2: "Emma Dupuis",
-          key3: "Energie",
-          key4: "Vincent Girard",
-          key5: "emma.dupuis@example.com",
-          key6: "0612345678",
-          key7: "2023-05-10",
-        },
-        {
-          key1: "C007",
-          key2: "Pauline Lefevre",
-          key3: "Marketing",
-          key4: "Julien Bonnet",
-          key5: "pauline.lefevre@example.com",
-          key6: "0765439876",
-          key7: "2023-06-11",
-        },
-        {
-          key1: "C008",
-          key2: "Martin Lefevre",
-          key3: "Design",
-          key4: "Alice Lambert",
-          key5: "martin.lefevre@example.com",
-          key6: "0732456789",
-          key7: "2023-07-05",
-        },
-        {
-          key1: "C009",
-          key2: "Lucie Bonnet",
-          key3: "Management",
-          key4: "Michel Guerin",
-          key5: "lucie.bonnet@example.com",
-          key6: "0698765432",
-          key7: "2023-08-01",
-        },
-        {
-          key1: "C010",
-          key2: "Sophie Gauthier",
-          key3: "E-commerce",
-          key4: "Julien Dupont",
-          key5: "sophie.gauthier@example.com",
-          key6: "0654327654",
-          key7: "2023-09-14",
-        },
-        {
-          key1: "C011",
-          key2: "Nicolas Martin",
-          key3: "Logistique",
-          key4: "Pauline Lefevre",
-          key5: "nicolas.martin@example.com",
-          key6: "0612348765",
-          key7: "2023-10-20",
-        },
-        {
-          key1: "C012",
-          key2: "Camille Boucher",
-          key3: "Communication",
-          key4: "Bernard Lemoine",
-          key5: "camille.boucher@example.com",
-          key6: "0756789876",
-          key7: "2023-11-02",
-        },
-        {
-          key1: "C013",
-          key2: "Henri Lefevre",
-          key3: "Technologie",
-          key4: "Marie Girard",
-          key5: "henri.lefevre@example.com",
-          key6: "0789654321",
-          key7: "2023-12-12",
-        },
-        {
-          key1: "C014",
-          key2: "Isabelle Bonnet",
-          key3: "Marketing",
-          key4: "Antoine Boucher",
-          key5: "isabelle.bonnet@example.com",
-          key6: "0678906789",
-          key7: "2024-01-07",
-        },
-        {
-          key1: "C015",
-          key2: "Thomas Martin",
-          key3: "Business",
-          key4: "Hélène Lefevre",
-          key5: "thomas.martin@example.com",
-          key6: "0634567890",
-          key7: "2024-02-08",
-        },
-        {
-          key1: "C016",
-          key2: "Marie Bernard",
-          key3: "Finance",
-          key4: "Louis Lemoine",
-          key5: "marie.bernard@example.com",
-          key6: "0676543210",
-          key7: "2024-03-15",
-        },
-        {
-          key1: "C017",
-          key2: "Gerard Lefevre",
-          key3: "Informatique",
-          key4: "Sophie Lefevre",
-          key5: "gerard.lefevre@example.com",
-          key6: "0765438765",
-          key7: "2024-04-18",
-        },
-        {
-          key1: "C018",
-          key2: "Alice Gauthier",
-          key3: "Commerce",
-          key4: "Michel Dupont",
-          key5: "alice.gauthier@example.com",
-          key6: "0698765432",
-          key7: "2024-05-22",
-        },
-        {
-          key1: "C019",
-          key2: "Vincent Bonnet",
-          key3: "Design",
-          key4: "Catherine Lefevre",
-          key5: "vincent.bonnet@example.com",
-          key6: "0789654321",
-          key7: "2024-06-03",
-        },
-        {
-          key1: "C020",
-          key2: "Julien Gauthier",
-          key3: "Consulting",
-          key4: "Nathalie Lefevre",
-          key5: "julien.gauthier@example.com",
-          key6: "0678901234",
-          key7: "2024-07-01",
+          code: null,
+          name: null,
+          secteur: null,
+          representant: null,
+          email: null,
+          localisation: null,
+          phonenumber: null,
+          entrydate: null,
+          caBrut: null,
+          suivipar: null,
+          volume: null,
+          coutTransport: null,
+          typegarantie: null,
+          Modereglement: null,
+          plafond: null,
+          etatfinancier: null,
+          uniteVente: null,
+          pourcentagefacturation: null,
+          TarificationProduits: {
+            grainderiz: null,
+            gravetteg1: null,
+            gravetteg2: null,
+            sableconcassage04: null,
+            sableconcassage02: null,
+            toutvenant0315: null,
+            toutvenant040: null,
+            toutvenant060: null,
+            toutvenant0100: null,
+            sterile: null,
+            sterilefin: null,
+          },
         },
       ],
 

@@ -4,16 +4,16 @@
       <!-- Header -->
       <v-card-title class="d-flex align-center pa-6 bg-grey-lighten-4">
         <v-avatar size="48" class="mr-4">
-          <v-img
-            src="https://kalsisolar.com/images/543955831.jpg"
-            alt="Customer avatar"
-            class="rounded-lg"
-          ></v-img>
+          <v-avatar color="brown" size="large">
+            <span class="text-h5">{{
+              ClientDialogDATA?.name?.slice(0, 3) || "NA"
+            }}</span>
+          </v-avatar>
         </v-avatar>
         <div class="flex-grow-1">
           <div class="d-flex align-center mb-1">
             <span class="text-h5 font-weight-medium">{{
-              ClientDialogDATA.key2
+              ClientDialogDATA.name
             }}</span>
           </div>
           <div class="d-flex align-center">
@@ -30,7 +30,7 @@
               color="light-green-lighten-1"
               class="font-weight-medium"
             >
-              {{ ClientDialogDATA.key3 }}
+              {{ ClientDialogDATA.secteur }}
             </v-chip>
           </div>
         </div>
@@ -47,143 +47,276 @@
         <v-row class="d-flex justify-space-between align-center text-center">
           <v-col cols="3">
             <div class="text-h6 font-weight-bold mb-1">
-              {{ (125458.32).toLocaleString() }}
+              {{ ClientDialogDATA.caBrut?.toLocaleString() || "NA" }}
             </div>
             <div class="text-caption text-grey-darken-1">CA BRUT</div>
           </v-col>
           <v-col cols="3">
             <div class="text-h6 font-weight-bold mb-1">
-              {{ (15458.32).toLocaleString() }}
+              {{ ClientDialogDATA.volume?.toLocaleString() || "NA" }}
             </div>
             <div class="text-caption text-grey-darken-1">VOLUME LIVREE</div>
           </v-col>
           <v-col cols="3">
-            <div class="text-h6 font-weight-bold mb-1">Départ</div>
-            <div class="text-caption text-grey-darken-1">MODE LIVRAISON</div>
+            <div class="text-h6 font-weight-bold mb-1">
+              {{ (421214.21).toLocaleString() }}
+            </div>
+            <div class="text-caption text-grey-darken-1">Créance Client</div>
           </v-col>
           <v-col cols="3">
-            <div class="text-h6 font-weight-bold mb-1">Tonne</div>
-            <div class="text-caption text-grey-darken-1">UNITE DE VENTE</div>
+            <div class="text-h6 font-weight-bold mb-1">
+              {{ ClientDialogDATA.coutTransport?.toLocaleString() || "NA" }}
+            </div>
+            <div class="text-caption text-grey-darken-1">Cout Transport</div>
           </v-col>
         </v-row>
       </v-card-text>
 
       <!-- Customer Details -->
       <v-card-text class="pa-6">
-        <h3 class="text-h6 font-weight-medium mb-6">Customer Details</h3>
+        <h3 class="text-h6 font-weight-medium mb-6">Détails du client</h3>
         <v-row>
           <v-col cols="6">
             <div class="mb-6">
-              <div class="text-caption text-grey-darken-1 mb-1">Source</div>
-              <div class="text-body-1">{{ customer.source }}</div>
+              <div class="text-caption text-grey-darken-1 mb-1">
+                Répresentant
+              </div>
+              <div class="text-body-1">{{ ClientDialogDATA.representant }}</div>
             </div>
             <div class="mb-6">
               <div class="text-caption text-grey-darken-1 mb-1">
                 Phone Number
               </div>
-              <div class="text-body-1">{{ customer.phone }}</div>
+              <div class="text-body-1">{{ ClientDialogDATA.phonenumber }}</div>
             </div>
             <div>
               <div class="text-caption text-grey-darken-1 mb-1">Email</div>
-              <div
-                v-for="email in customer.emails"
-                :key="email"
-                class="text-body-1"
-              >
-                {{ email }}
+              <div class="text-body-1">
+                {{ ClientDialogDATA.email }}
               </div>
+            </div>
+          </v-col>
+
+          <v-col cols="6">
+            <div class="mb-6">
+              <div class="text-caption text-grey-darken-1 mb-1">
+                Localisation
+              </div>
+              <div class="text-body-1">{{ ClientDialogDATA.location }}</div>
+            </div>
+            <div class="mb-6">
+              <div class="text-caption text-grey-darken-1 mb-1">Suivi Par</div>
+              <div class="text-body-1">
+                <v-chip color="green">{{ ClientDialogDATA.suivipar }}</v-chip>
+              </div>
+            </div>
+            <div>
+              <div class="text-caption text-grey-darken-1 mb-1">
+                Date D'emchement
+              </div>
+              <div class="text-body-1">{{ ClientDialogDATA.entrydate }}</div>
             </div>
           </v-col>
           <v-col cols="6">
             <div class="mb-6">
-              <div class="text-caption text-grey-darken-1 mb-1">Location</div>
-              <div class="text-body-1">{{ customer.location }}</div>
+              <div class="text-caption text-grey-darken-1 mb-1">
+                Type de Garantie
+              </div>
+              <div class="text-body-1">{{ ClientDialogDATA.typegarantie }}</div>
             </div>
+
+            <div></div>
+          </v-col>
+          <v-col cols="6">
             <div class="mb-6">
               <div class="text-caption text-grey-darken-1 mb-1">
-                Language Spoken
+                Pourcentange du Facturation
               </div>
-              <div class="text-body-1">{{ customer.languages.join(", ") }}</div>
+              <div class="text-body-1 font-weight-bold">
+                {{
+                  (
+                    ClientDialogDATA.pourcentagefacturation * 100
+                  ).toLocaleString()
+                }}
+                %
+              </div>
             </div>
-            <div>
-              <div class="text-caption text-grey-darken-1 mb-1">Timezone</div>
-              <div class="text-body-1">{{ customer.timezone }}</div>
+
+            <div></div>
+          </v-col>
+          <v-col cols="6">
+            <div class="mb-6">
+              <div class="text-caption text-grey-darken-1 mb-1">
+                Mode de Réglement
+              </div>
+              <div class="text-body-1">
+                <v-chip color="green">{{
+                  ClientDialogDATA.Modereglement
+                }}</v-chip>
+              </div>
             </div>
+
+            <div></div>
+          </v-col>
+          <v-col cols="6">
+            <div class="mb-6">
+              <div class="text-caption text-grey-darken-1 mb-1">
+                Unite de Vente
+              </div>
+              <div class="text-body-1">{{ ClientDialogDATA.uniteVente }}</div>
+            </div>
+
+            <div></div>
+          </v-col>
+          <v-col cols="6">
+            <div class="mb-6">
+              <div class="text-caption text-grey-darken-1 mb-1">
+                Plafond Mensuelle
+              </div>
+              <div class="text-body-1">
+                {{
+                  ClientDialogDATA.plafond?.toLocaleString() ||
+                  ClientDialogDATA.plafond
+                }}
+              </div>
+            </div>
+
+            <div></div>
+          </v-col>
+          <v-col cols="6">
+            <div class="mb-6">
+              <div class="text-caption text-grey-darken-1 mb-1">
+                Etat Financiere du Client
+              </div>
+              <div class="text-body-1">
+                <v-chip color="orange">{{
+                  ClientDialogDATA.etatfinancier
+                }}</v-chip>
+              </div>
+            </div>
+
+            <div></div>
           </v-col>
         </v-row>
       </v-card-text>
 
-      <!-- Active Ticket -->
-      <v-card-text class="pa-6">
+      <v-card-text class="pa-4">
+        <!-- Header Section -->
         <div class="d-flex justify-space-between align-center mb-6">
-          <h3 class="text-h6 font-weight-medium">Active Ticket</h3>
-          <v-btn
-            color="primary"
-            variant="text"
-            class="text-none"
-            prepend-icon="mdi-ticket"
-          >
-            View More Tickets
-          </v-btn>
+          <h3 class="text-h6 primary--text">Tarification des Produits</h3>
         </div>
-        <v-card variant="outlined" class="rounded-lg">
-          <v-card-text class="pa-4">
-            <div class="d-flex align-center mb-4">
-              <span class="text-subtitle-1 font-weight-medium">
-                #{{ customer.activeTicket.id }}
-              </span>
-              <span class="ml-2 text-body-1">{{
-                customer.activeTicket.title
-              }}</span>
-              <v-chip
-                color="primary"
-                size="small"
-                class="ml-auto font-weight-medium"
-              >
-                Open
-              </v-chip>
-            </div>
-            <v-row>
-              <v-col cols="4">
-                <div class="text-caption text-grey-darken-1 mb-1">
-                  Ticket Type
-                </div>
-                <div class="d-flex align-center">
-                  <v-icon size="small" color="grey-darken-1" class="mr-2">
-                    mdi-help-circle-outline
-                  </v-icon>
-                  <span class="text-body-2">Question</span>
-                </div>
-              </v-col>
-              <v-col cols="4">
-                <div class="text-caption text-grey-darken-1 mb-1">Priority</div>
-                <v-chip
-                  size="small"
-                  color="warning"
-                  variant="flat"
-                  class="font-weight-medium"
-                >
-                  Medium
-                </v-chip>
-              </v-col>
-              <v-col cols="4">
-                <div class="text-caption text-grey-darken-1 mb-1">
-                  Request Date
-                </div>
-                <div class="text-body-2">
-                  {{ customer.activeTicket.requestDate }}
-                </div>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
+
+        <!-- Product Cards Grid -->
+        <v-row>
+          <!-- Individual Product Cards -->
+          <v-col cols="12" sm="6" lg="4">
+            <ProductPrice
+              :product="{
+                productname: 'GRAIN DE RIZ',
+                price: ClientDialogDATA.TarificationProduits.grainderiz,
+              }"
+            />
+          </v-col>
+
+          <v-col cols="12" sm="6" lg="4">
+            <ProductPrice
+              :product="{
+                productname: 'GRAVETTE G1',
+                price: ClientDialogDATA.TarificationProduits.gravetteg1,
+              }"
+            />
+          </v-col>
+
+          <v-col cols="12" sm="6" lg="4">
+            <ProductPrice
+              :product="{
+                productname: 'GRAVETTE G2',
+                price: ClientDialogDATA.TarificationProduits.gravetteg2,
+              }"
+            />
+          </v-col>
+
+          <v-col cols="12" sm="6" lg="4">
+            <ProductPrice
+              :product="{
+                productname: 'SABLE CONCASSAGE 0-4',
+                price: ClientDialogDATA.TarificationProduits.sableconcassage04,
+              }"
+            />
+          </v-col>
+
+          <v-col cols="12" sm="6" lg="4">
+            <ProductPrice
+              :product="{
+                productname: 'SABLE CONCASSAGE 0-2',
+                price: ClientDialogDATA.TarificationProduits.sableconcassage02,
+              }"
+            />
+          </v-col>
+
+          <v-col cols="12" sm="6" lg="4">
+            <ProductPrice
+              :product="{
+                productname: 'TOUT VENANT 0-31,5',
+                price: ClientDialogDATA.TarificationProduits.toutvenant0315,
+              }"
+            />
+          </v-col>
+
+          <v-col cols="12" sm="6" lg="4">
+            <ProductPrice
+              :product="{
+                productname: 'TOUT VENANT 0-40',
+                price: ClientDialogDATA.TarificationProduits.toutvenant040,
+              }"
+            />
+          </v-col>
+
+          <v-col cols="12" sm="6" lg="4">
+            <ProductPrice
+              :product="{
+                productname: 'TOUT VENANT 0-60',
+                price: ClientDialogDATA.TarificationProduits.toutvenant060,
+              }"
+            />
+          </v-col>
+
+          <v-col cols="12" sm="6" lg="4">
+            <ProductPrice
+              :product="{
+                productname: 'TOUT VENANT 0-100',
+                price: ClientDialogDATA.TarificationProduits.toutvenant0100,
+              }"
+            />
+          </v-col>
+
+          <v-col cols="12" sm="6" lg="4">
+            <ProductPrice
+              :product="{
+                productname: 'STERILE',
+                price: ClientDialogDATA.TarificationProduits.sterile,
+              }"
+            />
+          </v-col>
+
+          <v-col cols="12" sm="6" lg="4">
+            <ProductPrice
+              :product="{
+                productname: 'STERILE FIN',
+                price: ClientDialogDATA.TarificationProduits.sterilefin,
+              }"
+            />
+          </v-col>
+        </v-row>
       </v-card-text>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
+import ProductPrice from "./ProductPrice.vue";
 export default {
+  components: { ProductPrice },
   computed: {
     ClientDialog() {
       return this.$store.getters.GetClientDialog;
@@ -191,6 +324,15 @@ export default {
     ClientDialogDATA() {
       return this.$store.getters.GetOneClientData;
     },
+    // DetectColorByCatégorie(catégorie) {
+    //   if (catégorie == "Nobles") {
+    //     return "text-green";
+    //   }
+    //   if (catégorie == "Graves") {
+    //     return "text-grey";
+    //   }
+    //   return "text-orange";
+    // },
   },
   methods: {
     ChangeDialogState() {
@@ -199,9 +341,43 @@ export default {
     closeDialog() {
       this.$store.commit("ChangeClientDialog");
     },
+    DetectColorByCatégorie(catégorie) {
+      switch (catégorie) {
+        case "Nobles":
+          return "text-green";
+        case "Graves":
+          return "text-orange";
+        case "Stérile":
+          return "text-red";
+        default:
+          return "text-grey-darken-1";
+      }
+    },
+
+    getCategoryColor(category) {
+      const colors = {
+        Nobles: "primary",
+        Graves: "secondary",
+        Stérile: "success",
+        // Add more categories as needed
+        default: "grey-darken-1",
+      };
+      return colors[category] || colors.default;
+    },
+    getCategoryTextColor(category) {
+      const colors = {
+        Nobles: "text-green",
+        Graves: "text-orange",
+        Stérile: "text-red",
+        // Add more categories as needed
+        default: "text-grey-darken-1",
+      };
+      return colors[category] || colors.default;
+    },
   },
   data() {
     return {
+      hover: false,
       shortcuts: [
         { action: "Ouvrir les Paramètres", key: "Ctrl + S" },
         { action: "Actualiser", key: "Ctrl + R" },
@@ -227,6 +403,78 @@ export default {
           requestDate: "03/18/2023, 09:00AM",
         },
       },
+      Produits: [
+        {
+          id: 1,
+          productname: "Grain de Riz",
+          price: 28,
+          catégorie: "Graves",
+          codeProduct: "Grz",
+        },
+        {
+          id: 2,
+          productname: "Gravette G1",
+          price: 40,
+          catégorie: "Nobles",
+          codeProduct: "Gr1",
+        },
+        {
+          id: 3,
+          productname: "Gravette G2",
+          price: 40,
+          catégorie: "Nobles",
+          codeProduct: "Gr2",
+        },
+        {
+          id: 4,
+          productname: "Sable Concassage 0-4",
+          price: 40,
+          catégorie: "Nobles",
+          codeProduct: "Sable 0-4",
+        },
+        {
+          id: 5,
+          productname: "Tout Venant 0-31.5",
+          price: 28,
+          catégorie: "Graves",
+          codeProduct: "Tv0315",
+        },
+        {
+          id: 6,
+          productname: "Tout Venant 0-40",
+          price: 28,
+          catégorie: "Graves",
+          codeProduct: "Tv040",
+        },
+        {
+          id: 7,
+          productname: "Tout Venant 0-60",
+          price: 28,
+          catégorie: "Graves",
+          codeProduct: "Tv060",
+        },
+        {
+          id: 8,
+          productname: "Tout Venant 0-100",
+          price: 28,
+          catégorie: "Graves",
+          codeProduct: "Tv0100",
+        },
+        {
+          id: 9,
+          productname: "Stérile",
+          price: 15,
+          catégorie: "Stérile",
+          codeProduct: "Stérile",
+        },
+        {
+          id: 10,
+          productname: "Stérile Fin",
+          price: 25,
+          catégorie: "Stérile",
+          codeProduct: "StérileFin",
+        },
+      ],
     };
   },
 };
@@ -238,5 +486,18 @@ export default {
 }
 .v-card-text:last-child {
   border-bottom: none;
+}
+
+.v-card.on-hover {
+  transform: translateY(-4px);
+  transition: all 0.3s ease-in-out;
+}
+
+.v-card {
+  transition: all 0.3s ease-in-out;
+}
+
+.bg-grey-lighten-4 {
+  background-color: rgb(243, 246, 249) !important;
 }
 </style>
