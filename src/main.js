@@ -32,7 +32,32 @@ const app = createApp(App)
 
 app.use(Axios)
 app.use(Store)
-app.use(PrimeVue)
+app.use(PrimeVue,{
+  locale: {
+    startsWith: 'Commence par',
+    contains: 'Contient',
+    notContains: 'Ne contient pas',
+    endsWith: 'Se termine par',
+    equals: 'Égal à',
+    notEquals: 'Différent de',
+    noFilter: 'Pas de filtre',
+    filter: 'Filtrer',
+    lt: 'Moins que',
+    lte: 'Inférieur ou égal à',
+    gt: 'Supérieur à',
+    gte: 'Supérieur ou égal à',
+    dateIs: 'Date égale à',
+    dateIsNot: 'Date différente de',
+    dateBefore: 'Date avant',
+    dateAfter: 'Date après',
+    clear: 'Effacer',
+    apply: 'Appliquer',
+    matchAll: 'Correspondre à tout',
+    matchAny: 'Correspondre à un',
+    addRule: 'Ajouter une règle',
+    removeRule: 'Supprimer la règle',
+  }
+})
 
 
 

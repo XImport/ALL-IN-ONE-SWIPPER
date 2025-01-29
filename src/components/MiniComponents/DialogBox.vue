@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="Dialog" width="600" persistent>
+  <v-dialog v-model="Dialog" width="800" persistent>
     <v-card class="rounded-lg">
       <v-card-title class="bg-indigo-darken-3 py-4">
         <v-icon icon="mdi-information-box" class="me-2" />

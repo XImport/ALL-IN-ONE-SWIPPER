@@ -1,5 +1,11 @@
 <template>
-  <v-dialog v-model="ClientDialog" width="950" persistent>
+  <v-navigation-drawer
+    v-model="ClientDialog"
+    width="950"
+    location="right"
+    app
+    temporary
+  >
     <v-card min-width="950px" class="mx-auto rounded-lg">
       <!-- Header -->
       <v-card-title class="d-flex align-center pa-6 bg-grey-lighten-4">
@@ -213,7 +219,7 @@
             <ProductPrice
               :product="{
                 productname: 'GRAIN DE RIZ',
-                price: ClientDialogDATA.TarificationProduits.grainderiz,
+                price: ClientDialogDATA.TarificationProduits?.grainderiz,
               }"
             />
           </v-col>
@@ -222,7 +228,7 @@
             <ProductPrice
               :product="{
                 productname: 'GRAVETTE G1',
-                price: ClientDialogDATA.TarificationProduits.gravetteg1,
+                price: ClientDialogDATA.TarificationProduits?.gravetteg1,
               }"
             />
           </v-col>
@@ -231,7 +237,7 @@
             <ProductPrice
               :product="{
                 productname: 'GRAVETTE G2',
-                price: ClientDialogDATA.TarificationProduits.gravetteg2,
+                price: ClientDialogDATA.TarificationProduits?.gravetteg2,
               }"
             />
           </v-col>
@@ -240,7 +246,7 @@
             <ProductPrice
               :product="{
                 productname: 'SABLE CONCASSAGE 0-4',
-                price: ClientDialogDATA.TarificationProduits.sableconcassage04,
+                price: ClientDialogDATA.TarificationProduits?.sableconcassage04,
               }"
             />
           </v-col>
@@ -249,7 +255,7 @@
             <ProductPrice
               :product="{
                 productname: 'SABLE CONCASSAGE 0-2',
-                price: ClientDialogDATA.TarificationProduits.sableconcassage02,
+                price: ClientDialogDATA.TarificationProduits?.sableconcassage02,
               }"
             />
           </v-col>
@@ -258,7 +264,7 @@
             <ProductPrice
               :product="{
                 productname: 'TOUT VENANT 0-31,5',
-                price: ClientDialogDATA.TarificationProduits.toutvenant0315,
+                price: ClientDialogDATA.TarificationProduits?.toutvenant0315,
               }"
             />
           </v-col>
@@ -267,7 +273,7 @@
             <ProductPrice
               :product="{
                 productname: 'TOUT VENANT 0-40',
-                price: ClientDialogDATA.TarificationProduits.toutvenant040,
+                price: ClientDialogDATA.TarificationProduits?.toutvenant040,
               }"
             />
           </v-col>
@@ -276,7 +282,7 @@
             <ProductPrice
               :product="{
                 productname: 'TOUT VENANT 0-60',
-                price: ClientDialogDATA.TarificationProduits.toutvenant060,
+                price: ClientDialogDATA.TarificationProduits?.toutvenant060,
               }"
             />
           </v-col>
@@ -285,7 +291,7 @@
             <ProductPrice
               :product="{
                 productname: 'TOUT VENANT 0-100',
-                price: ClientDialogDATA.TarificationProduits.toutvenant0100,
+                price: ClientDialogDATA.TarificationProduits?.toutvenant0100,
               }"
             />
           </v-col>
@@ -294,7 +300,7 @@
             <ProductPrice
               :product="{
                 productname: 'STERILE',
-                price: ClientDialogDATA.TarificationProduits.sterile,
+                price: ClientDialogDATA.TarificationProduits?.sterile,
               }"
             />
           </v-col>
@@ -303,14 +309,14 @@
             <ProductPrice
               :product="{
                 productname: 'STERILE FIN',
-                price: ClientDialogDATA.TarificationProduits.sterilefin,
+                price: ClientDialogDATA.TarificationProduits?.sterilefin,
               }"
             />
           </v-col>
         </v-row>
       </v-card-text>
     </v-card>
-  </v-dialog>
+  </v-navigation-drawer>
 </template>
 
 <script>

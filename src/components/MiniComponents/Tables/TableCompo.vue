@@ -9,6 +9,8 @@
       columnResizeMode="expand"
       tableStyle="min-width: 100%"
       showGridlines
+      :showFilterMatchModes="true"
+      :show-filter-operator="false"
       responsiveLayout="scroll"
       v-model:filters="filters"
       filterDisplay="menu"
@@ -176,7 +178,7 @@
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode, FilterOperator } from "primevue/api";
 
 export default {
   name: "ClientTable",
@@ -189,14 +191,40 @@ export default {
   data() {
     return {
       filters: {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        code: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        secteur: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        representant: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        email: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        phonenumber: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        entrydate: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        code: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
+        },
+
+        name: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
+        },
+
+        secteur: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
+        },
+
+        representant: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
+        },
+
+        email: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
+        },
+
+        phonenumber: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
+        },
+
+        entrydate: {
+          operator: FilterOperator.AND,
+          constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
+        },
       },
     };
   },
@@ -268,6 +296,14 @@ export default {
   padding-left: 2.5rem;
 }
 
+:deep(.p-column-filter-add-rule) {
+  display: none !important;
+}
+
+.p-column-filter-overlay-menu .p-column-filter-add-rule {
+  padding: 0.5rem 1rem;
+  display: none !important;
+}
 /* ::v-deep .v-data-table-header {
   background-color: #dcdcdc;
 }

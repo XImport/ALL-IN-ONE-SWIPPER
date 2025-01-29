@@ -124,7 +124,7 @@ export default {
         }
       });
 
-      exportToExcel(rows, "DATA.xlsx");
+      exportToExcel(rows, `${this.title}.xlsx`);
     },
   },
 };

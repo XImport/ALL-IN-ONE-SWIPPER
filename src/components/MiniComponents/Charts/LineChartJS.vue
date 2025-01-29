@@ -189,8 +189,7 @@ export default {
         });
         rows.push(row);
       });
-
-      exportToExcel(rows, "DATA.xlsx");
+      exportToExcel(rows, `${this.title}.xlsx`);
     },
   },
 };
