@@ -215,7 +215,7 @@ export default {
           secteur: client["SECTEUR D'ACTIVITE"] || "",
           representant: client.REPRESENTANT || "",
           email: client.EMAIL || "",
-          location: client.LOCALISATION || "",
+          location: client.LOCALISATION || "", // :::::
           phonenumber: client["NUMERO TELEPHONE"] || "",
           entrydate: client["DATE D'EMCHEMENT"]?.split("T")[0] || "",
           caBrut: client["CA BRUT"] || 0,
@@ -227,8 +227,15 @@ export default {
           plafond: client["PLAFOND MENSUELLE"] || 0,
           etatfinancier: client["ETAT FINANCIERE"] || "",
           uniteVente: client["UNITE VENTE"] || "",
+          ISTRANSPORTEUR: client["TRANSPORTEUR"],
           pourcentagefacturation: client["POURCENTANGE FACTURATION"] || 0,
+          TransportPrice: client["Transport"] || 0,
+          Modedepaiement: client["Mode de Paiement"] || 0,
+
+          CTransport: client["Transport Frs"] || 0,
           TarificationProduits: {
+            gabion: client["GABION"] || 0,
+            filtre: client["FILTRE"] || 0,
             grainderiz: client["GRAIN DE RIZ"] || 0,
             gravetteg1: client["GRAVETTE G1"] || 0,
             gravetteg2: client["GRAVETTE G2"] || 0,

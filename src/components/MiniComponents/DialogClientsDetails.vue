@@ -1,363 +1,545 @@
 <template>
   <v-navigation-drawer
-    v-model="ClientDialog"
-    width="950"
+    v-model="dialogModel"
+    width="900"
     location="right"
-    app
     temporary
   >
-    <v-card min-width="950px" class="mx-auto rounded-lg">
+    <v-container class="pa-2">
       <!-- Header -->
-      <v-card-title class="d-flex align-center pa-6 bg-grey-lighten-4">
-        <v-avatar size="48" class="mr-4">
-          <v-avatar color="brown" size="large">
-            <span class="text-h5">{{
-              ClientDialogDATA?.name?.slice(0, 3) || "NA"
-            }}</span>
-          </v-avatar>
-        </v-avatar>
-        <div class="flex-grow-1">
-          <div class="d-flex align-center mb-1">
-            <span class="text-h5 font-weight-medium">{{
-              ClientDialogDATA.name
-            }}</span>
-          </div>
-          <div class="d-flex align-center">
-            <v-icon size="small" class="mr-2">mdi-wrench</v-icon>
-            <v-chip
-              size="small"
-              color="orange-lighten-1"
-              class="mr-2 font-weight-medium"
-            >
-              Secteur D'activité
-            </v-chip>
-            <v-chip
-              size="small"
-              color="light-green-lighten-1"
-              class="font-weight-medium"
-            >
-              {{ ClientDialogDATA.secteur }}
-            </v-chip>
-          </div>
-        </div>
+      <v-row no-gutters class="pa-2 align-center justify-center">
+        <h3
+          class="text-h6 font-weight-medium text-decoration-underline font-weight-bold text-center"
+        >
+          Informations client:
+        </h3>
         <v-btn
           icon="mdi-close"
-          variant="text"
-          @click="closeDialog()"
-          class="ml-2"
-        ></v-btn>
-      </v-card-title>
+          variant="outlined"
+          density="compact"
+          class="ml-4"
+          @click="closeDialog"
+        />
+      </v-row>
 
-      <!-- Stats -->
-      <v-card-text class="pa-6">
-        <v-row class="d-flex justify-space-between align-center text-center">
-          <v-col cols="3">
-            <div class="text-h6 font-weight-bold mb-1">
-              {{ ClientDialogDATA.caBrut?.toLocaleString() || "NA" }}
-            </div>
-            <div class="text-caption text-grey-darken-1">CA BRUT</div>
-          </v-col>
-          <v-col cols="3">
-            <div class="text-h6 font-weight-bold mb-1">
-              {{ ClientDialogDATA.volume?.toLocaleString() || "NA" }}
-            </div>
-            <div class="text-caption text-grey-darken-1">VOLUME LIVREE</div>
-          </v-col>
-          <v-col cols="3">
-            <div class="text-h6 font-weight-bold mb-1">
-              {{ (421214.21).toLocaleString() }}
-            </div>
-            <div class="text-caption text-grey-darken-1">Créance Client</div>
-          </v-col>
-          <v-col cols="3">
-            <div class="text-h6 font-weight-bold mb-1">
-              {{ ClientDialogDATA.coutTransport?.toLocaleString() || "NA" }}
-            </div>
-            <div class="text-caption text-grey-darken-1">Cout Transport</div>
-          </v-col>
+      <v-divider class="my-1" />
+
+      <!-- Client Profile -->
+      <!-- <div class="d-flex align-center pa-2 justify-center">
+        <v-avatar color="red" size="42" class="mr-2">
+          <span class="text-body-1 white--text">{{
+            splitText(clientData.name)
+          }}</span>
+        </v-avatar>
+        <div>
+          <h4 class="text-subtitle-1 font-weight-medium mb-1">
+            {{ clientName }}
+          </h4>
+          <div class="d-flex gap-1">
+            <v-chip size="x-small" density="comfortable" class="px-2 bg-orange">
+              {{ clientData.secteur }}
+            </v-chip>
+            <v-chip
+              size="x-small"
+              density="comfortable"
+              class="px-4 ml-2 bg-green"
+            >
+              {{ clientData.etatfinancier }}
+            </v-chip>
+          </div>
+        </div>
+      </div> -->
+      <div class="bg-grey-lighten-5 justify-center mx-auto py-2">
+        <div class="d-flex align-center pa-2 justify-center">
+          <h3>{{ clientName }}</h3>
+          <span
+            class="text-body-2 font-weight-medium ml-2"
+            v-if="clientData.etatfinancier == 'VIP'"
+            ><v-chip color="green">
+              {{ clientData.etatfinancier }}
+            </v-chip></span
+          >
+
+          <span
+            class="text-body-2 font-weight-medium ml-2"
+            v-if="clientData.etatfinancier == 'DANGEROUS'"
+            ><v-chip color="red">
+              {{ clientData.etatfinancier }}
+            </v-chip></span
+          >
+
+          <span
+            class="text-body-2 font-weight-medium ml-2"
+            v-if="clientData.etatfinancier == 'Fiable'"
+            ><v-chip color="orange">
+              {{ clientData.etatfinancier }}
+            </v-chip></span
+          >
+          <span
+            class="text-body-2 font-weight-medium ml-2"
+            v-if="clientData.etatfinancier == 'Nocive'"
+            ><v-chip color="blue">
+              {{ clientData.etatfinancier }}
+            </v-chip></span
+          >
+          <span
+            class="text-body-2 font-weight-medium ml-2"
+            v-if="clientData.etatfinancier == 'Nouveau'"
+            ><v-chip color="grey">
+              {{ clientData.etatfinancier }}
+            </v-chip></span
+          >
+        </div>
+      </div>
+      <!-- ------------------------------ -->
+
+      <!-- Stats Overview -->
+      <v-container class="pa-1 border rounded my-2" style="max-width: 98%">
+        <v-row no-gutters>
+          <template v-for="(stat, index) in computedStats" :key="index">
+            <v-col cols="6" sm="3" class="text-center py-2">
+              <div class="text-caption text-medium-emphasis">
+                {{ stat.label }}
+              </div>
+              <div class="text-subtitle-2 font-weight-bold">
+                {{ stat.value }}
+              </div>
+            </v-col>
+            <template v-if="index < computedStats.length - 1">
+              <v-divider vertical />
+            </template>
+          </template>
         </v-row>
-      </v-card-text>
+      </v-container>
 
       <!-- Customer Details -->
-      <v-card-text class="pa-6">
-        <h3 class="text-h6 font-weight-medium mb-6">Détails du client</h3>
-        <v-row>
-          <v-col cols="6">
-            <div class="mb-6">
-              <div class="text-caption text-grey-darken-1 mb-1">
-                Répresentant
-              </div>
-              <div class="text-body-1">{{ ClientDialogDATA.representant }}</div>
-            </div>
-            <div class="mb-6">
-              <div class="text-caption text-grey-darken-1 mb-1">
-                Phone Number
-              </div>
-              <div class="text-body-1">{{ ClientDialogDATA.phonenumber }}</div>
-            </div>
-            <div>
-              <div class="text-caption text-grey-darken-1 mb-1">Email</div>
-              <div class="text-body-1">
-                {{ ClientDialogDATA.email }}
-              </div>
-            </div>
-          </v-col>
+      <div class="px-2 py-2 d-flex align-center justify-center">
+        <h3
+          class="text-h6 font-weight-medium text-center font-weight-bold text-decoration-underline"
+        >
+          Détail du Client
+        </h3>
+      </div>
 
-          <v-col cols="6">
-            <div class="mb-6">
-              <div class="text-caption text-grey-darken-1 mb-1">
-                Localisation
-              </div>
-              <div class="text-body-1">{{ ClientDialogDATA.location }}</div>
-            </div>
-            <div class="mb-6">
-              <div class="text-caption text-grey-darken-1 mb-1">Suivi Par</div>
-              <div class="text-body-1">
-                <v-chip color="green">{{ ClientDialogDATA.suivipar }}</v-chip>
-              </div>
-            </div>
-            <div>
-              <div class="text-caption text-grey-darken-1 mb-1">
-                Date D'emchement
-              </div>
-              <div class="text-body-1">{{ ClientDialogDATA.entrydate }}</div>
-            </div>
-          </v-col>
-          <v-col cols="6">
-            <div class="mb-6">
-              <div class="text-caption text-grey-darken-1 mb-1">
-                Type de Garantie
-              </div>
-              <div class="text-body-1">{{ ClientDialogDATA.typegarantie }}</div>
-            </div>
+      <v-container class="pa-2 bg-grey-lighten-5 rounded">
+        <v-row dense>
+          <template v-for="(detail, index) in computedDetails" :key="index">
+            <v-col cols="12" sm="6">
+              <v-sheet
+                class="pa-3 d-flex justify-space-between align-center rounded bg-white"
+              >
+                <span class="text-caption text-medium-emphasis">{{
+                  detail.label
+                }}</span>
+                <span
+                  class="text-body-2 font-weight-medium ml-2"
+                  v-if="
+                    detail.value != 'VIP' &&
+                    detail.value != 'DANGEROUS' &&
+                    detail.value != 'Fiable' &&
+                    detail.value != 'Nocive' &&
+                    detail.value != 'Nouveau' &&
+                    detail.value != 'COMMERCIAL' &&
+                    detail.value != 'CRJ' &&
+                    detail.value != 'H.RECOUVREMENT' &&
+                    detail.value != 'Client Rendu'
+                  "
+                  >{{ detail.value }}</span
+                >
 
-            <div></div>
-          </v-col>
-          <v-col cols="6">
-            <div class="mb-6">
-              <div class="text-caption text-grey-darken-1 mb-1">
-                Pourcentange du Facturation
-              </div>
-              <div class="text-body-1 font-weight-bold">
-                {{
-                  (
-                    ClientDialogDATA.pourcentagefacturation * 100
-                  ).toLocaleString()
-                }}
-                %
-              </div>
-            </div>
+                <span
+                  class="text-body-2 font-weight-medium ml-2"
+                  v-if="detail.value == 'COMMERCIAL'"
+                  ><v-chip color="green" size="x-small">
+                    {{ detail.value }}
+                  </v-chip></span
+                >
 
-            <div></div>
-          </v-col>
-          <v-col cols="6">
-            <div class="mb-6">
-              <div class="text-caption text-grey-darken-1 mb-1">
-                Mode de Réglement
-              </div>
-              <div class="text-body-1">
-                <v-chip color="green">{{
-                  ClientDialogDATA.Modereglement
-                }}</v-chip>
-              </div>
-            </div>
+                <span
+                  class="text-body-2 font-weight-medium ml-2"
+                  v-if="detail.value == 'CRJ'"
+                  ><v-chip color="orange" size="x-small">
+                    {{ detail.value }}
+                  </v-chip></span
+                >
 
-            <div></div>
-          </v-col>
-          <v-col cols="6">
-            <div class="mb-6">
-              <div class="text-caption text-grey-darken-1 mb-1">
-                Unite de Vente
-              </div>
-              <div class="text-body-1">{{ ClientDialogDATA.uniteVente }}</div>
-            </div>
+                <span
+                  class="text-body-2 font-weight-medium ml-2"
+                  v-if="detail.value == 'H.RECOUVREMENT'"
+                  ><v-chip color="yellow" size="x-small">
+                    {{ detail.value }}
+                  </v-chip></span
+                >
 
-            <div></div>
-          </v-col>
-          <v-col cols="6">
-            <div class="mb-6">
-              <div class="text-caption text-grey-darken-1 mb-1">
-                Plafond Mensuelle
-              </div>
-              <div class="text-body-1">
-                {{
-                  ClientDialogDATA.plafond?.toLocaleString() ||
-                  ClientDialogDATA.plafond
-                }}
-              </div>
-            </div>
+                <span
+                  class="text-body-2 font-weight-medium ml-2"
+                  v-if="detail.value == 'VIP'"
+                  ><v-chip color="green" size="x-small">
+                    {{ detail.value }}
+                  </v-chip></span
+                >
 
-            <div></div>
-          </v-col>
-          <v-col cols="6">
-            <div class="mb-6">
-              <div class="text-caption text-grey-darken-1 mb-1">
-                Etat Financiere du Client
-              </div>
-              <div class="text-body-1">
-                <v-chip color="orange">{{
-                  ClientDialogDATA.etatfinancier
-                }}</v-chip>
-              </div>
-            </div>
+                <span
+                  class="text-body-2 font-weight-medium ml-2"
+                  v-if="detail.value == 'DANGEROUS'"
+                  ><v-chip color="red" size="x-small">
+                    {{ detail.value }}
+                  </v-chip></span
+                >
+                <span
+                  class="text-body-2 font-weight-medium ml-2"
+                  v-if="detail.value == 'Fiable'"
+                  ><v-chip color="orange" size="x-small">
+                    {{ detail.value }}
+                  </v-chip></span
+                >
+                <span
+                  class="text-body-2 font-weight-medium ml-2 text-black"
+                  v-if="detail.value == 'Nocive'"
+                  ><v-chip color="blue" size="x-small">
+                    {{ detail.value }}
+                  </v-chip></span
+                >
 
-            <div></div>
-          </v-col>
+                <span
+                  class="text-body-2 font-weight-medium ml-2"
+                  v-if="detail.value == 'Nouveau'"
+                  ><v-chip color="grey" size="x-small">
+                    {{ detail.value }}
+                  </v-chip></span
+                >
+              </v-sheet>
+            </v-col>
+          </template>
         </v-row>
-      </v-card-text>
 
-      <v-card-text class="pa-4">
-        <!-- Header Section -->
-        <div class="d-flex justify-space-between align-center mb-6">
-          <h3 class="text-h6 primary--text">Tarification des Produits</h3>
-        </div>
-
-        <!-- Product Cards Grid -->
-        <v-row>
-          <!-- Individual Product Cards -->
-          <v-col cols="12" sm="6" lg="4">
-            <ProductPrice
-              :product="{
-                productname: 'GRAIN DE RIZ',
-                price: ClientDialogDATA.TarificationProduits?.grainderiz,
-              }"
+        <template v-for="(detail, index) in computedLastStats" :key="index">
+          <v-sheet
+            class="d-flex justify-space-between align-center pa-3 rounded bg-white mt-2"
+          >
+            <span class="text-caption text-medium-emphasis">{{
+              detail.label
+            }}</span>
+            <span class="text-body-2 font-weight-medium">{{
+              detail.value
+            }}</span>
+          </v-sheet>
+        </template>
+      </v-container>
+    </v-container>
+    <div class="px-2 pt-2 d-flex align-center justify-center">
+      <h3
+        class="text-subtitle-h6 font-weight-medium text-decoration-underline font-weight-bold"
+      >
+        Tarification des Produits :
+      </h3>
+    </div>
+    <v-container class="pa-2">
+      <v-row dense>
+        <template v-for="(detail, index) in computedPrices" :key="index">
+          <v-col cols="auto" sm="4" class="d-flex">
+            <v-sheet class="ma-1 rounded flex-grow-1" elevation="0">
+              <div class="pa-2 text-center">
+                <div class="text-subtitle-2 text-medium-emphasis mb-1">
+                  {{ detail.label }}
+                </div>
+                <div class="text-h6 font-weight-bold text-primary">
+                  {{ detail.value }}
+                </div>
+              </div>
+            </v-sheet>
+            <v-divider
+              v-if="index < computedPrices.length - 1"
+              vertical
+              class="my-2"
             />
           </v-col>
-
-          <v-col cols="12" sm="6" lg="4">
-            <ProductPrice
-              :product="{
-                productname: 'GRAVETTE G1',
-                price: ClientDialogDATA.TarificationProduits?.gravetteg1,
-              }"
-            />
-          </v-col>
-
-          <v-col cols="12" sm="6" lg="4">
-            <ProductPrice
-              :product="{
-                productname: 'GRAVETTE G2',
-                price: ClientDialogDATA.TarificationProduits?.gravetteg2,
-              }"
-            />
-          </v-col>
-
-          <v-col cols="12" sm="6" lg="4">
-            <ProductPrice
-              :product="{
-                productname: 'SABLE CONCASSAGE 0-4',
-                price: ClientDialogDATA.TarificationProduits?.sableconcassage04,
-              }"
-            />
-          </v-col>
-
-          <v-col cols="12" sm="6" lg="4">
-            <ProductPrice
-              :product="{
-                productname: 'SABLE CONCASSAGE 0-2',
-                price: ClientDialogDATA.TarificationProduits?.sableconcassage02,
-              }"
-            />
-          </v-col>
-
-          <v-col cols="12" sm="6" lg="4">
-            <ProductPrice
-              :product="{
-                productname: 'TOUT VENANT 0-31,5',
-                price: ClientDialogDATA.TarificationProduits?.toutvenant0315,
-              }"
-            />
-          </v-col>
-
-          <v-col cols="12" sm="6" lg="4">
-            <ProductPrice
-              :product="{
-                productname: 'TOUT VENANT 0-40',
-                price: ClientDialogDATA.TarificationProduits?.toutvenant040,
-              }"
-            />
-          </v-col>
-
-          <v-col cols="12" sm="6" lg="4">
-            <ProductPrice
-              :product="{
-                productname: 'TOUT VENANT 0-60',
-                price: ClientDialogDATA.TarificationProduits?.toutvenant060,
-              }"
-            />
-          </v-col>
-
-          <v-col cols="12" sm="6" lg="4">
-            <ProductPrice
-              :product="{
-                productname: 'TOUT VENANT 0-100',
-                price: ClientDialogDATA.TarificationProduits?.toutvenant0100,
-              }"
-            />
-          </v-col>
-
-          <v-col cols="12" sm="6" lg="4">
-            <ProductPrice
-              :product="{
-                productname: 'STERILE',
-                price: ClientDialogDATA.TarificationProduits?.sterile,
-              }"
-            />
-          </v-col>
-
-          <v-col cols="12" sm="6" lg="4">
-            <ProductPrice
-              :product="{
-                productname: 'STERILE FIN',
-                price: ClientDialogDATA.TarificationProduits?.sterilefin,
-              }"
-            />
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
+        </template>
+      </v-row>
+    </v-container>
   </v-navigation-drawer>
 </template>
 
 <script>
-import ProductPrice from "./ProductPrice.vue";
 export default {
-  components: { ProductPrice },
+  name: "DialogClientsDetails",
+
+  data() {
+    return {
+      clientTags: [
+        { label: "Nocive", color: "error" },
+        { label: "Transporteur", color: "warning" },
+      ],
+      details: [],
+      hover: false,
+    };
+  },
+
   computed: {
-    ClientDialog() {
-      return this.$store.getters.GetClientDialog;
+    splitText() {
+      return function (text) {
+        if (!text) return "";
+
+        const words = text.trim().split(/\s+/);
+
+        if (words.length === 1) {
+          return words[0].slice(0, 3).toUpperCase();
+        }
+
+        return words
+          .map((word) => word[0])
+          .join("")
+          .toUpperCase();
+      };
     },
-    ClientDialogDATA() {
+    dialogModel: {
+      get() {
+        return this.$store.getters.GetClientDialog;
+      },
+      set(value) {
+        this.$store.commit("ChangeClientDialog", value);
+      },
+    },
+
+    clientData() {
       return this.$store.getters.GetOneClientData;
     },
-    // DetectColorByCatégorie(catégorie) {
-    //   if (catégorie == "Nobles") {
-    //     return "text-green";
-    //   }
-    //   if (catégorie == "Graves") {
-    //     return "text-grey";
-    //   }
-    //   return "text-orange";
-    // },
+
+    clientName() {
+      return this.clientData?.name || "LAMLIH TRANS";
+    },
+
+    clientInitials() {
+      return "LT"; // You can compute this from client name
+    },
+
+    computedStats() {
+      const data = this.clientData || {};
+      return [
+        {
+          label: "CA BRUT",
+          value: this.formatCurrency(data.caBrut || 0),
+        },
+        {
+          label: "Quantité En T",
+          value: `${this.formatNumber(data.volume || 0)} T`,
+        },
+        {
+          label: "Créance Client",
+          value: this.formatCurrency(452123.21), // This should come from API
+        },
+        {
+          label: "Cout Transport",
+          value: this.formatCurrency(data.coutTransport || 0),
+        },
+      ];
+    },
+    computedDetails() {
+      const data = this.clientData || {};
+      return [
+        {
+          label: "CODE :",
+          value: this.formatCurrency(data.code || 0),
+        },
+        {
+          label: "Nom du Client :",
+          value: this.formatCurrency(data.name || 0),
+        },
+
+        {
+          label: "Secteur d'activité :",
+          value: `${this.formatNumber(data.secteur || 0)}`,
+        },
+        {
+          label: "Représentant (e) :",
+          value: `${this.formatNumber(data.representant || 0)}`,
+        },
+        {
+          label: "Email :",
+          value: `${this.formatNumber(data.email || 0)}`,
+        },
+        {
+          label: "Mode de Paiement :",
+          value: `${this.formatNumber(data.Modedepaiement || 0)}`,
+        },
+        {
+          label: "Mode de Réglement :",
+          value: `${this.formatNumber(data.Modereglement || 0)}`,
+        },
+        {
+          label: "Téléphone :",
+          value: `${this.formatNumber(data.phonenumber || 0)}`,
+        },
+
+        {
+          label: "Date D'entree :",
+          value: `${this.formatNumber(data.entrydate || 0)}`,
+        },
+        {
+          label: "Suivi Par : ",
+          value: `${this.formatNumber(data.suivipar || 0)}`,
+        },
+        {
+          label: "Type de Garantie : ",
+          value: `${this.formatNumber(data.typegarantie || 0)}`,
+        },
+        {
+          label: "Plaphond Accordé : ",
+          value: `${this.formatNumber(data.plafond || 0)}`,
+        },
+
+        {
+          label: "Etat Financiere :",
+          value: `${this.formatNumber(data.etatfinancier || 0)}`,
+        },
+        {
+          label: "% du Facturation :",
+          value: `${this.formatNumber(
+            data.pourcentagefacturation * 100 || 0
+          )} %`,
+        },
+
+        {
+          label: "Unité de Vente :",
+          value: `${this.formatNumber(data.uniteVente || 0)}`,
+        },
+        {
+          label: "Type de Livraison",
+          value: `${this.formatNumber(data.ISTRANSPORTEUR || 0)} `,
+        },
+      ];
+    },
+
+    computedLastStats() {
+      const data = this.clientData || {};
+      return [
+        {
+          label: "Localisation",
+          value: this.formatCurrency(data.location || 0),
+        },
+      ];
+    },
+    computedPrices() {
+      const data = this.clientData || {};
+      return [
+        {
+          label: "Prix Transport",
+          value: this.formatCurrency(data.TransportPrice || 0),
+        },
+
+        {
+          label: "Gabion",
+          value: this.formatCurrency(data.TarificationProduits?.gabion || 0),
+        },
+        {
+          label: "Filtre 0/250",
+          value: this.formatCurrency(data.TarificationProduits?.filtre || 0),
+        },
+        {
+          label: "Grain de Riz",
+          value: this.formatCurrency(
+            data.TarificationProduits?.grainderiz || 0
+          ),
+        },
+        {
+          label: "Gravette G1",
+          value: this.formatCurrency(
+            data.TarificationProduits?.gravetteg1 || 0
+          ),
+        },
+        {
+          label: "Gravette G2",
+          value: this.formatCurrency(
+            data.TarificationProduits?.gravetteg2 || 0
+          ),
+        },
+        {
+          label: "Sable Concassage 0-4",
+          value: this.formatCurrency(
+            data.TarificationProduits?.sableconcassage04 || 0
+          ),
+        },
+        {
+          label: "Sable Concassage 0-2",
+          value: this.formatCurrency(
+            data.TarificationProduits?.sableconcassage02 || 0
+          ),
+        },
+        {
+          label: "Tout Venant 0-31.5",
+          value: this.formatCurrency(
+            data.TarificationProduits?.toutvenant0315 || 0
+          ),
+        },
+        {
+          label: "Tout Venant 0-40",
+          value: this.formatCurrency(
+            data.TarificationProduits?.toutvenant040 || 0
+          ),
+        },
+        {
+          label: "Tout Venant 0-60",
+          value: this.formatCurrency(
+            data.TarificationProduits?.toutvenant060 || 0
+          ),
+        },
+        {
+          label: "Tout Venant 0-100",
+          value: this.formatCurrency(
+            data.TarificationProduits?.toutvenant0100 || 0
+          ),
+        },
+        {
+          label: "Stérile",
+          value: this.formatCurrency(data.TarificationProduits?.sterile || 0),
+        },
+        {
+          label: "Stérile Fin",
+          value: this.formatCurrency(
+            data.TarificationProduits?.sterilefin || 0
+          ),
+        },
+        {
+          label: "Cout Transport",
+          value: this.formatCurrency(data.CTransport || 0),
+        },
+      ];
+    },
   },
+
+  watch: {
+    clientData: {
+      immediate: true,
+      handler(newData) {
+        if (newData) {
+          this.updateClientDetails(newData);
+        }
+      },
+    },
+  },
+
   methods: {
-    ChangeDialogState() {
-      this.$store.commit("ChangeClientDialog");
-    },
     closeDialog() {
-      this.$store.commit("ChangeClientDialog");
+      this.dialogModel = false;
     },
-    DetectColorByCatégorie(catégorie) {
-      switch (catégorie) {
-        case "Nobles":
-          return "text-green";
-        case "Graves":
-          return "text-orange";
-        case "Stérile":
-          return "text-red";
-        default:
-          return "text-grey-darken-1";
-      }
+
+    formatCurrency(value) {
+      return `${value.toLocaleString()} `;
+    },
+
+    formatNumber(value) {
+      return value.toLocaleString();
+    },
+
+    updateClientDetails(data) {
+      // Update client details based on new data
+      this.details = [
+        { label: "Company", value: data.company || "-" },
+        { label: "Phone", value: data.phone || "-" },
+        { label: "Email", value: data.email || "-" },
+        { label: "Address", value: data.address || "-" },
+        // Add more details as needed
+      ];
     },
 
     getCategoryColor(category) {
@@ -365,145 +547,57 @@ export default {
         Nobles: "primary",
         Graves: "secondary",
         Stérile: "success",
-        // Add more categories as needed
         default: "grey-darken-1",
       };
       return colors[category] || colors.default;
     },
-    getCategoryTextColor(category) {
-      const colors = {
-        Nobles: "text-green",
-        Graves: "text-orange",
-        Stérile: "text-red",
-        // Add more categories as needed
-        default: "text-grey-darken-1",
-      };
-      return colors[category] || colors.default;
-    },
-  },
-  data() {
-    return {
-      hover: false,
-      shortcuts: [
-        { action: "Ouvrir les Paramètres", key: "Ctrl + S" },
-        { action: "Actualiser", key: "Ctrl + R" },
-      ],
-      customer: {
-        name: "Santi Cazorla",
-        studio: "Fikri Studio",
-        lastActivity: "5 days ago",
-        company: "Microsoft",
-        tickets: 16,
-        overdueTickets: 4,
-        avgResponseTime: "25:00",
-        totalResponseTime: "1:32:08",
-        source: "Contact us form",
-        phone: "(209) 555-0104",
-        emails: ["hello@santi.com", "ask.me@santi.com"],
-        location: "United Kingdom, Europe",
-        languages: ["English", "Italian"],
-        timezone: "UTC+07:00",
-        activeTicket: {
-          id: "TC-196",
-          title: "Defective Item Received",
-          requestDate: "03/18/2023, 09:00AM",
-        },
-      },
-      Produits: [
-        {
-          id: 1,
-          productname: "Grain de Riz",
-          price: 28,
-          catégorie: "Graves",
-          codeProduct: "Grz",
-        },
-        {
-          id: 2,
-          productname: "Gravette G1",
-          price: 40,
-          catégorie: "Nobles",
-          codeProduct: "Gr1",
-        },
-        {
-          id: 3,
-          productname: "Gravette G2",
-          price: 40,
-          catégorie: "Nobles",
-          codeProduct: "Gr2",
-        },
-        {
-          id: 4,
-          productname: "Sable Concassage 0-4",
-          price: 40,
-          catégorie: "Nobles",
-          codeProduct: "Sable 0-4",
-        },
-        {
-          id: 5,
-          productname: "Tout Venant 0-31.5",
-          price: 28,
-          catégorie: "Graves",
-          codeProduct: "Tv0315",
-        },
-        {
-          id: 6,
-          productname: "Tout Venant 0-40",
-          price: 28,
-          catégorie: "Graves",
-          codeProduct: "Tv040",
-        },
-        {
-          id: 7,
-          productname: "Tout Venant 0-60",
-          price: 28,
-          catégorie: "Graves",
-          codeProduct: "Tv060",
-        },
-        {
-          id: 8,
-          productname: "Tout Venant 0-100",
-          price: 28,
-          catégorie: "Graves",
-          codeProduct: "Tv0100",
-        },
-        {
-          id: 9,
-          productname: "Stérile",
-          price: 15,
-          catégorie: "Stérile",
-          codeProduct: "Stérile",
-        },
-        {
-          id: 10,
-          productname: "Stérile Fin",
-          price: 25,
-          catégorie: "Stérile",
-          codeProduct: "StérileFin",
-        },
-      ],
-    };
   },
 };
 </script>
 
-<style>
-.v-card-text {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-.v-card-text:last-child {
-  border-bottom: none;
+<style scoped>
+.border {
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
 }
 
-.v-card.on-hover {
-  transform: translateY(-4px);
-  transition: all 0.3s ease-in-out;
+.border-thin {
+  border: thin solid rgba(0, 0, 0, 0.12) !important;
 }
 
-.v-card {
-  transition: all 0.3s ease-in-out;
+/* Transition effects */
+.v-navigation-drawer {
+  transition: transform 0.3s ease-in-out;
 }
 
-.bg-grey-lighten-4 {
-  background-color: rgb(243, 246, 249) !important;
+/* .v-sheet {
+  transition: all 0.2s ease-in-out;
+} */
+
+.custom-nowrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Optional: adds '...' if text is too long */
 }
+
+.border {
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.v-navigation-drawer {
+  transition: transform 0.3s ease-in-out;
+}
+
+.custom-nowrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v-sheet {
+  transition: background-color 0.2s ease;
+}
+
+/* .v-sheet:hover {
+  background-color: rgb(250, 250, 250) !important;
+} */
 </style>

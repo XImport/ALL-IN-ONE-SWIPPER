@@ -1,56 +1,52 @@
 <template>
-  <div class="card">
+  <v-card class="elevation-2 rounded-lg">
     <DataTable
       :value="DATA"
+      v-model:filters="filters"
       paginator
       :rows="10"
       :rowsPerPageOptions="[5, 10, 50, 100]"
       resizableColumns
       columnResizeMode="expand"
-      tableStyle="min-width: 100%"
+      class="modern-datatable p-4"
       showGridlines
       :showFilterMatchModes="true"
-      :show-filter-operator="false"
-      responsiveLayout="scroll"
-      v-model:filters="filters"
       filterDisplay="menu"
       :globalFilterFields="[
-        'key1',
-        'key2',
-        'key3',
-        'key4',
-        'key5',
-        'key6',
-        'key7',
+        'code',
+        'name',
+        'secteur',
+        'representant',
+        'email',
+        'phonenumber',
+        'entrydate',
       ]"
+      responsiveLayout="scroll"
+      selectionMode="single"
+      dataKey="code"
     >
-      <!-- <template #header>
-        <div class="flex justify-center mx-auto">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" />
-            <InputText
-              v-model="filters.global.value"
-              placeholder="Rechercher..."
-            />
-          </span>
-        </div>
-      </template> -->
+      <!-- Global Search -->
 
       <Column
         field="code"
         :header="Headers.H1"
-        style="max-width: 5% !important"
+        style="max-width: 5%"
         :sortable="true"
         filterMatchMode="contains"
-        class="font-weight-bold"
       >
         <template #filter="{ filterModel, filterCallback }">
-          <InputText
+          <v-text-field
             v-model="filterModel.value"
             @input="filterCallback()"
             placeholder="Rechercher..."
-            class="p-column-filter"
-          />
+            hide-details
+            density="compact"
+            variant="outlined"
+            class="filter-input"
+          ></v-text-field>
+        </template>
+        <template #body="slotProps">
+          <div class="font-weight-medium">{{ slotProps.data.code }}</div>
         </template>
       </Column>
 
@@ -60,16 +56,22 @@
         style="width: 10%"
         :sortable="true"
         filterMatchMode="contains"
-        class="font-weight-bold"
       >
         <template #filter="{ filterModel, filterCallback }">
-          <InputText
+          <v-text-field
             v-model="filterModel.value"
             @input="filterCallback()"
             placeholder="Rechercher..."
-            class="p-column-filter"
-            :style="{ backgroundColor: '#f0f0f0' }"
-          />
+            hide-details
+            density="compact"
+            variant="outlined"
+            class="filter-input"
+          ></v-text-field>
+        </template>
+        <template #body="slotProps">
+          <div @click="viewDetails(slotProps.data)">
+            {{ slotProps.data.name }}
+          </div>
         </template>
       </Column>
 
@@ -81,12 +83,20 @@
         filterMatchMode="contains"
       >
         <template #filter="{ filterModel, filterCallback }">
-          <InputText
+          <v-text-field
             v-model="filterModel.value"
             @input="filterCallback()"
             placeholder="Rechercher..."
-            class="p-column-filter"
-          />
+            hide-details
+            density="compact"
+            variant="outlined"
+            class="filter-input"
+          ></v-text-field>
+        </template>
+        <template #body="slotProps">
+          <div @click="viewDetails(slotProps.data)">
+            {{ slotProps.data.secteur }}
+          </div>
         </template>
       </Column>
 
@@ -98,12 +108,20 @@
         filterMatchMode="contains"
       >
         <template #filter="{ filterModel, filterCallback }">
-          <InputText
+          <v-text-field
             v-model="filterModel.value"
             @input="filterCallback()"
             placeholder="Rechercher..."
-            class="p-column-filter"
-          />
+            hide-details
+            density="compact"
+            variant="outlined"
+            class="filter-input"
+          ></v-text-field>
+        </template>
+        <template #body="slotProps">
+          <div @click="viewDetails(slotProps.data)">
+            {{ slotProps.data.representant }}
+          </div>
         </template>
       </Column>
 
@@ -113,15 +131,22 @@
         style="width: 20%"
         :sortable="true"
         filterMatchMode="contains"
-        class="text-blue"
       >
         <template #filter="{ filterModel, filterCallback }">
-          <InputText
+          <v-text-field
             v-model="filterModel.value"
             @input="filterCallback()"
             placeholder="Rechercher..."
-            class="p-column-filter"
-          />
+            hide-details
+            density="compact"
+            variant="outlined"
+            class="filter-input"
+          ></v-text-field>
+        </template>
+        <template #body="slotProps">
+          <div @click="viewDetails(slotProps.data)" class="text-blue-500">
+            {{ slotProps.data.email }}
+          </div>
         </template>
       </Column>
 
@@ -133,12 +158,20 @@
         filterMatchMode="contains"
       >
         <template #filter="{ filterModel, filterCallback }">
-          <InputText
+          <v-text-field
             v-model="filterModel.value"
             @input="filterCallback()"
             placeholder="Rechercher..."
-            class="p-column-filter"
-          />
+            hide-details
+            density="compact"
+            variant="outlined"
+            class="filter-input"
+          ></v-text-field>
+        </template>
+        <template #body="slotProps">
+          <div @click="viewDetails(slotProps.data)">
+            {{ slotProps.data.phonenumber }}
+          </div>
         </template>
       </Column>
 
@@ -150,28 +183,24 @@
         filterMatchMode="contains"
       >
         <template #filter="{ filterModel, filterCallback }">
-          <InputText
+          <v-text-field
             v-model="filterModel.value"
             @input="filterCallback()"
             placeholder="Rechercher..."
-            class="p-column-filter"
-          />
-        </template>
-      </Column>
-
-      <Column header="Détail" style="width: 10%; margin-left: 50%">
-        <template #body="slotProps">
-          <v-btn
-            style="margin-left: 20%"
+            hide-details
             density="compact"
-            color="blue"
-            @click="viewDetails(slotProps.data)"
-            icon="mdi-dots-horizontal-circle"
-          ></v-btn>
+            variant="outlined"
+            class="filter-input"
+          ></v-text-field>
+        </template>
+        <template #body="slotProps">
+          <div @click="viewDetails(slotProps.data)">
+            {{ slotProps.data.entrydate }}
+          </div>
         </template>
       </Column>
     </DataTable>
-  </div>
+  </v-card>
 </template>
 
 <script>
