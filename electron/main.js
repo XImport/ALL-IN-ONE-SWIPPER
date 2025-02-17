@@ -9,7 +9,7 @@ function createWindow() {
       width: 1800,
       height: 1000,
       title : "All In One Swiper",
-      autoHideMenuBar : false,
+      autoHideMenuBar : true,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false

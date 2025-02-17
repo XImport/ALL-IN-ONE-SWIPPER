@@ -99,10 +99,10 @@
           <template v-for="(stat, index) in computedStats" :key="index">
             <v-col cols="6" sm="3" class="text-center py-2">
               <div class="text-caption text-medium-emphasis">
-                {{ stat.label }}
+                {{ stat.label }} <span style="font-size: x-small !important ; color: black !important;" v-if="stat.smlabel"> ( {{ stat.smlabel }} )</span>
               </div>
-              <div class="text-subtitle-2 font-weight-bold">
-                {{ stat.value }}
+              <div class="text-subtitle-2 font-weight-bold" >
+                {{ stat.value }} <span v-if="stat.label != 'Quantité En T'">dhs</span> 
               </div>
             </v-col>
             <template v-if="index < computedStats.length - 1">
@@ -326,7 +326,8 @@ export default {
         },
         {
           label: "Créance Client",
-          value: this.formatCurrency(452123.21), // This should come from API
+          smlabel : 'A Jour',
+          value: this.formatCurrency(data.creanceGlobal || 0), // This should come from API
         },
         {
           label: "Cout Transport",

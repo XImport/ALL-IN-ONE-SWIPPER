@@ -5,6 +5,7 @@
       :FetchQuery="FetchQuery"
       :StaticInfo="{ icon: 'mdi-database', title: 'Données Clients' }"
     />
+    
     <div
       style="position: fixed; top: 150px; left: 0%; z-index: 5 !important"
       v-show="!isDrawerOpen"
@@ -39,6 +40,7 @@
           indeterminate
           style="margin-top: 5%"
         ></v-progress-linear>
+       
         <div style="position: absolute; top: 30%; left: 40%">
           <div class="bg-white pa-12 rounded-xl">
             <h1 class="text-center text-decoration-underline">
@@ -93,6 +95,7 @@
                   </span>
                 </h2>
               </div>
+              
               <v-container
                 style="max-width: 70%; margin-right: 25%; margin-top: 0%"
               >
@@ -106,8 +109,10 @@
             </div>
           </div>
         </v-container>
+      
         <DialogClientsDetails />
         <TableCompo :DATA="filterDATA" :Headers="Headers" />
+        
       </div>
     </div>
   </div>
@@ -194,70 +199,108 @@ export default {
       this.$store.commit("ChangeDrawerState");
     },
     async FetchQuery(DATA) {
-      this.SpinnerLoader = true;
-      this.LoadingContent = false;
+  this.SpinnerLoader = true;
+  this.LoadingContent = false;
 
-      try {
-        const response = await axiosInstance.post("/API/V1/InfoClients", DATA, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+  try {
+    const response = await axiosInstance.post("/API/V1/InfoClients", DATA, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-        // Replace NaN with null before parsing
-        const cleanedData = response.data.replace(/: NaN/g, ": null");
-        const jsonData = JSON.parse(cleanedData);
-        console.log(jsonData);
-        this.EXPORTDATATABLE = jsonData.INFO_CLIENTS;
-        const transformedData = jsonData.INFO_CLIENTS.map((client) => ({
-          code: client.CODE?.toString() || "",
-          name: client["NOM DU CLIENT"] || "",
-          secteur: client["SECTEUR D'ACTIVITE"] || "",
-          representant: client.REPRESENTANT || "",
-          email: client.EMAIL || "",
-          location: client.LOCALISATION || "", // :::::
-          phonenumber: client["NUMERO TELEPHONE"] || "",
-          entrydate: client["DATE D'EMCHEMENT"]?.split("T")[0] || "",
-          caBrut: client["CA BRUT"] || 0,
-          volume: client["Qté en T"] || 0,
-          suivipar: client["SUIVI PAR"] || "",
-          coutTransport: client["COUT TRANSPORT"] || 0,
-          typegarantie: client["TYPE DE GARANTIE"] || "",
-          Modereglement: client["MODE DE REGLEMENT"] || "", // Replace "looooool" with a proper value
-          plafond: client["PLAFOND MENSUELLE"] || 0,
-          etatfinancier: client["ETAT FINANCIERE"] || "",
-          uniteVente: client["UNITE VENTE"] || "",
-          ISTRANSPORTEUR: client["TRANSPORTEUR"],
-          pourcentagefacturation: client["POURCENTANGE FACTURATION"] || 0,
-          TransportPrice: client["Transport"] || 0,
-          Modedepaiement: client["Mode de Paiement"] || 0,
+    // Handle the response data properly
+    let jsonData;
+    if (typeof response.data === 'string') {
+      // If the response is a string, replace NaN and parse
+      const cleanedData = response.data
+        .replace(/:\s*NaN/g, ': null')  // Handle NaN with spaces
+        .replace(/:\s*undefined/g, ': null'); // Also handle undefined
+      jsonData = JSON.parse(cleanedData);
+    } else {
+      // If the response is already an object, handle NaN values recursively
+      const replaceNaN = (obj) => {
+        if (Array.isArray(obj)) {
+          return obj.map(replaceNaN);
+        }
+        if (obj && typeof obj === 'object') {
+          const newObj = {};
+          for (const key in obj) {
+            newObj[key] = replaceNaN(obj[key]);
+          }
+          return newObj;
+        }
+        return Number.isNaN(obj) ? null : obj;
+      };
+      jsonData = replaceNaN(response.data);
+    }
 
-          CTransport: client["Transport Frs"] || 0,
-          TarificationProduits: {
-            gabion: client["GABION"] || 0,
-            filtre: client["FILTRE"] || 0,
-            grainderiz: client["GRAIN DE RIZ"] || 0,
-            gravetteg1: client["GRAVETTE G1"] || 0,
-            gravetteg2: client["GRAVETTE G2"] || 0,
-            sableconcassage04: client["SABLE CONCASSAGE 0-4"] || 0,
-            sableconcassage02: client["SABLE CONCASSAGE 0-2"] || 0,
-            toutvenant0315: client["TOUT VENANT 0-31.5"] || 0,
-            toutvenant040: client["TOUT VENANT 0-40"] || 0,
-            toutvenant060: client["TOUT VENANT 0-60"] || 0,
-            toutvenant0100: client["TOUT VENANT 0-100"] || 0,
-            sterile: client["STERILE"] || 0,
-            sterilefin: client["STERILE FIN"] || 0,
-          },
-        }));
+    // Check if there's a message in the response
+    if (jsonData.message) {
+      alert(jsonData.message);
+    }
 
-        this.DATATABLE = transformedData;
-        this.SpinnerLoader = false;
+    this.EXPORTDATATABLE = jsonData.INFO_CLIENTS;
+    const transformedData = jsonData.INFO_CLIENTS.map((client) => ({
+      code: client.CODE?.toString() || "",
+      name: client["NOM DU CLIENT"] || "",
+      secteur: client["SECTEUR D'ACTIVITE"] || "",
+      representant: client.REPRESENTANT || "",
+      email: client.EMAIL || "",
+      location: client.LOCALISATION || "",
+      phonenumber: client["NUMERO TELEPHONE"] || "",
+      entrydate: client["DATE D'EMCHEMENT"]?.split("T")[0] || "",
+      caBrut: client["CA BRUT"] || 0,
+      volume: client["Qté en T"] || 0,
+      suivipar: client["SUIVI PAR"] || "",
+      coutTransport: client["COUT TRANSPORT"] || 0,
+      typegarantie: client["TYPE DE GARANTIE"] || "",
+      Modereglement: client["MODE DE REGLEMENT"] || "",
+      plafond: client["PLAFOND MENSUELLE"] || 0,
+      etatfinancier: client["ETAT FINANCIERE"] || "",
+      uniteVente: client["UNITE VENTE"] || "",
+      ISTRANSPORTEUR: client["TRANSPORTEUR"] ?? false,
+      pourcentagefacturation: client["POURCENTANGE FACTURATION"] || 0,
+      TransportPrice: client["Transport"] || 0,
+      Modedepaiement: client["Mode de Paiement"] || 0,
+      creanceGlobal: client["CréanceClient"] || 0,
+      CTransport: client["Transport Frs"] || 0,
+      TarificationProduits: {
+        gabion: (client["GABION"]) || 0,
+        filtre: (client["FILTRE"]) || 0,
+        grainderiz: (client["GRAIN DE RIZ"]) || 0,
+        gravetteg1: (client["GRAVETTE G1"]) || 0,
+        gravetteg2: (client["GRAVETTE G2"]) || 0,
+        sableconcassage04: (client["SABLE CONCASSAGE 0-4"]) || 0,
+        sableconcassage02: (client["SABLE CONCASSAGE 0-2"]) || 0,
+        toutvenant0315: (client["TOUT VENANT 0-31.5"]) || 0,
+        toutvenant040: (client["TOUT VENANT 0-40"]) || 0,
+        toutvenant060: (client["TOUT VENANT 0-60"]) || 0,
+        toutvenant0100: (client["TOUT VENANT 0-100"]) || 0,
+        sterile: (client["STERILE"]) || 0,
+        sterilefin: (client["STERILE FIN"]) || 0,
+      },
+    }));
 
-        this.LoadingContent = true;
-      } catch (error) {
-        console.log(error);
-      }
-    },
+    this.DATATABLE = transformedData;
+    this.SpinnerLoader = false;
+    this.LoadingContent = true;
+
+  } catch (error) {
+    console.error('Error in FetchQuery:', error);
+    this.SpinnerLoader = false;
+    
+    // Handle 404 error and show message
+    if (error.response && error.response.status === 404) {
+      alert(error.response.data.message || " Les données recherchées ne sont pas accessibles.");
+      this.ErrorDialog = true
+    } else {
+      alert('An error occurred while fetching the data');
+    }
+    
+    this.LoadingContent = false;
+  }
+}
   },
   computed: {
     isDrawerOpen() {
@@ -284,7 +327,7 @@ export default {
       },
       LoadingContent: false,
       SpinnerLoader: false,
-
+      ErrorDialog : true,
       DATATABLE: [
         {
           code: null,
@@ -304,6 +347,7 @@ export default {
           plafond: null,
           etatfinancier: null,
           uniteVente: null,
+          creanceGlobal : null,
           pourcentagefacturation: null,
           TarificationProduits: {
             grainderiz: null,
@@ -361,6 +405,7 @@ export default {
         H27: "TOUT VENANT 0-100",
         H28: "STERILE",
         H29: "STERILE FIN",
+        H30 : "CréanceClient"
       },
     };
   },
