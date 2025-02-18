@@ -5,7 +5,7 @@
       :FetchQuery="FetchQuery"
       :StaticInfo="{ icon: 'mdi-database', title: 'Données Clients' }"
     />
-    
+ 
     <div
       style="position: fixed; top: 150px; left: 0%; z-index: 5 !important"
       v-show="!isDrawerOpen"
@@ -34,13 +34,14 @@
         'content-full-width': !isDrawerOpen,
       }"
     >
+  
       <div v-if="SpinnerLoader">
         <v-progress-linear
           color="yellow-darken-2"
           indeterminate
           style="margin-top: 5%"
         ></v-progress-linear>
-       
+      
         <div style="position: absolute; top: 30%; left: 40%">
           <div class="bg-white pa-12 rounded-xl">
             <h1 class="text-center text-decoration-underline">
@@ -123,6 +124,7 @@ import AppHeaderBar from "../components/GlobalComponents/AppHeaderBar.vue";
 import TableJS from "../components/MiniComponents/Tables/TableJS.vue";
 import TableCompo from "../components/MiniComponents/Tables/TableCompo.vue";
 import DialogClientsDetails from "../components/MiniComponents/DialogClientsDetails.vue";
+import DialogBox from "../components/MiniComponents/DialogBox.vue";
 import axiosInstance from "../Axios";
 import { exportToExcel } from "../utils";
 import * as XLSX from "xlsx";
@@ -132,6 +134,7 @@ export default {
     TableJS,
     TableCompo,
     DialogClientsDetails,
+    DialogBox
   },
   methods: {
     ExportToExcel(data, headers, filename = "INFO_CLIENTS_TABLE_DATA.xlsx") {
@@ -154,7 +157,7 @@ export default {
         [headers.H9]: item["TYPE DE GARANTIE"],
         [headers.H10]: item["MODE DE REGLEMENT"],
         [headers.H11]: item["PLAFOND MENSUELLE"],
-        [headers.H12]: item["LOCALISATIONT"],
+        [headers.H12]: item["LOCALISATION"],
         [headers.H13]: item["SUIVI PAR"],
         [headers.H14]: item["POURCENTANGE FACTURATION"],
         [headers.H15]: item["UNITE VENTE"],
@@ -247,7 +250,7 @@ export default {
       secteur: client["SECTEUR D'ACTIVITE"] || "",
       representant: client.REPRESENTANT || "",
       email: client.EMAIL || "",
-      location: client.LOCALISATION || "",
+      locations: client["LOCALISATION"] || "",
       phonenumber: client["NUMERO TELEPHONE"] || "",
       entrydate: client["DATE D'EMCHEMENT"]?.split("T")[0] || "",
       caBrut: client["CA BRUT"] || 0,
@@ -288,14 +291,26 @@ export default {
 
   } catch (error) {
     console.error('Error in FetchQuery:', error);
+
     this.SpinnerLoader = false;
     
     // Handle 404 error and show message
+
+    if (error.response) {
+          // Server responded with an error status
+          const errorMessage = error.response.data.Message || 'An error occurred';
+          alert(errorMessage);
+          this.SpinnerLoader = false
+       
+        
+        } 
+
+
     if (error.response && error.response.status === 404) {
       alert(error.response.data.message || " Les données recherchées ne sont pas accessibles.");
       this.ErrorDialog = true
     } else {
-      alert('An error occurred while fetching the data');
+      alert('Les données recherchées ne sont pas accessibles.');
     }
     
     this.LoadingContent = false;
@@ -335,7 +350,7 @@ export default {
           secteur: null,
           representant: null,
           email: null,
-          localisation: null,
+          locations: null,
           phonenumber: null,
           entrydate: null,
           caBrut: null,
@@ -372,7 +387,7 @@ export default {
         H4: "Représentant",
         H5: "Email",
         H6: "Numéro Télephone",
-        H7: "Date",
+        H7: "Date d'intégration",
       },
       Headers2: {
         H1: "CODE",

@@ -5,9 +5,42 @@
     location="right"
     temporary
   >
-    <v-container class="pa-2">
+  <div id="pdf-content">
+
+
+    <v-container class="pa-2" >
+      <v-img
+  width="100%"
+  aspect-ratio="16/9"
+  cover
+  src="https://i.postimg.cc/fbGvTyVy/Capture-d-cran-2025-02-12-141301.png"
+></v-img>
+      
+     
       <!-- Header -->
-      <v-row no-gutters class="pa-2 align-center justify-center">
+      <v-row no-gutters class="pa-2 align-center justify-center mt-6">
+
+
+   
+        <v-btn
+                            icon
+                            compact
+                            size="20"
+                            class="ml-2"
+                            style="margin-top: -1%;margin-right: 1.5%;"
+                            @click="exportToPDF(clientName)"
+                          
+                           
+                          >
+                            <v-img
+                              src="https://static-00.iconduck.com/assets.00/pdf-icon-1500x2048-5ftd129y.png"
+                              width="20"
+                              style="
+                                display: inline-block;
+                                vertical-align: middle;
+                              "
+                            ></v-img>
+                          </v-btn>
         <h3
           class="text-h6 font-weight-medium text-decoration-underline font-weight-bold text-center"
         >
@@ -23,7 +56,7 @@
       </v-row>
 
       <v-divider class="my-1" />
-
+   
       <!-- Client Profile -->
       <!-- <div class="d-flex align-center pa-2 justify-center">
         <v-avatar color="red" size="42" class="mr-2">
@@ -49,7 +82,7 @@
           </div>
         </div>
       </div> -->
-      <div class="bg-grey-lighten-5 justify-center mx-auto py-2">
+      <div class="bg-grey-lighten-5 justify-center mx-auto py-2 mt-6">
         <div class="d-flex align-center pa-2 justify-center">
           <h3>{{ clientName }}</h3>
           <span
@@ -67,6 +100,18 @@
               {{ clientData.etatfinancier }}
             </v-chip></span
           >
+          <span
+            class="text-body-2 font-weight-medium ml-2"
+            
+            >
+            
+            
+            
+            
+            
+            </span
+          >
+
 
           <span
             class="text-body-2 font-weight-medium ml-2"
@@ -89,6 +134,7 @@
               {{ clientData.etatfinancier }}
             </v-chip></span
           >
+       
         </div>
       </div>
       <!-- ------------------------------ -->
@@ -257,15 +303,26 @@
         </template>
       </v-row>
     </v-container>
+    <div style="height: 50px !important;" ></div>
+    <v-img
+  width="100%"
+  aspect-ratio="16/9"
+  cover
+  src="https://i.postimg.cc/VvL0YPW5/Capture-d-cran-2025-02-12-141404.png"
+></v-img>
+  </div>
   </v-navigation-drawer>
 </template>
 
 <script>
+import html2pdf from 'html2pdf.js';
+
 export default {
   name: "DialogClientsDetails",
 
   data() {
     return {
+      isExporting: false,
       clientTags: [
         { label: "Nocive", color: "error" },
         { label: "Transporteur", color: "warning" },
@@ -385,8 +442,8 @@ export default {
           value: `${this.formatNumber(data.typegarantie || 0)}`,
         },
         {
-          label: "Plaphond Accordé : ",
-          value: `${this.formatNumber(data.plafond || 0)}`,
+          label: "Plaphond Accordé (par Mois): ",
+          value: `${this.formatNumber(data.plafond || 0)} dhs`,
         },
 
         {
@@ -416,7 +473,7 @@ export default {
       return [
         {
           label: "Localisation",
-          value: this.formatCurrency(data.location || 0),
+          value: this.formatCurrency(data.locations || 0),
         },
       ];
     },
@@ -530,6 +587,46 @@ export default {
 
     formatNumber(value) {
       return value.toLocaleString();
+    },
+    async exportToPDF(ClientName) {
+      try {
+        this.isExporting = true;
+        
+        const element = document.getElementById('pdf-content');
+        const opt = {
+          margin: [2, 2, 2, 2],
+          filename: `Fiche_Client_${ClientName}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            letterRendering: true
+          },
+          jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait' 
+          }
+        };
+
+        // Add any custom styling for PDF
+        element.classList.add('pdf-export-mode');
+        
+        // Generate PDF
+        await html2pdf()
+          .set(opt)
+          .from(element)
+          .save();
+          
+        // Remove PDF-specific styling
+        element.classList.remove('pdf-export-mode');
+        
+      } catch (error) {
+        console.error('PDF Export Error:', error);
+        alert('Error exporting PDF. Please try again.');
+      } finally {
+        this.isExporting = false;
+      }
     },
 
     updateClientDetails(data) {

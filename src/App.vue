@@ -5,6 +5,9 @@
       <div>
         <!-- Content Goes Here  -->
         <NavigationDrawer v-if="Drawer" />
+        <div>
+        <DialogBox />
+      </div>
       </div>
     </v-main>
   </v-app>
@@ -12,9 +15,10 @@
 
 <script>
 import NavigationDrawer from "./components/GlobalComponents/NavigationDrawer.vue";
+import DialogBox from "./components/MiniComponents/DialogBox.vue";
 export default {
   name: "App",
-  components: { NavigationDrawer },
+  components: { NavigationDrawer,DialogBox },
   data() {
     return {
       // your data here
