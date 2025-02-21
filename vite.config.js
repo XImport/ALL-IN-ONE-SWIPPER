@@ -4,12 +4,11 @@ import electron from 'vite-plugin-electron'
 import path from 'path'
 
 export default defineConfig({
-  base: './',  // This is crucial for production builds
+  base: './',
   plugins: [
     vue(),
     electron([
       {
-        // Main process entry file
         entry: 'electron/main.js',
         onstart(options) {
           options.startup()
@@ -22,8 +21,21 @@ export default defineConfig({
     assetsDir: '.',
     rollupOptions: {
       output: {
-        format: 'cjs'
+        format: 'es',  // Changed from 'cjs' to 'es'
+        inlineDynamicImports: true
       }
+    },
+    target: 'esnext'
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext'
+    },
+    include: ['jspdf', 'html2pdf.js']
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src')
     }
   }
 })

@@ -5,7 +5,11 @@
     location="right"
     temporary
   >
-  <div id="pdf-content">
+  
+
+      
+
+  <div  id="pdf-content">
 
 
     <v-container class="pa-2" >
@@ -28,8 +32,8 @@
                             size="20"
                             class="ml-2"
                             style="margin-top: -1%;margin-right: 1.5%;"
-                            @click="exportToPDF(clientName)"
-                          
+                            @click="downloadPdf(clientName)"
+                           
                            
                           >
                             <v-img
@@ -57,31 +61,7 @@
 
       <v-divider class="my-1" />
    
-      <!-- Client Profile -->
-      <!-- <div class="d-flex align-center pa-2 justify-center">
-        <v-avatar color="red" size="42" class="mr-2">
-          <span class="text-body-1 white--text">{{
-            splitText(clientData.name)
-          }}</span>
-        </v-avatar>
-        <div>
-          <h4 class="text-subtitle-1 font-weight-medium mb-1">
-            {{ clientName }}
-          </h4>
-          <div class="d-flex gap-1">
-            <v-chip size="x-small" density="comfortable" class="px-2 bg-orange">
-              {{ clientData.secteur }}
-            </v-chip>
-            <v-chip
-              size="x-small"
-              density="comfortable"
-              class="px-4 ml-2 bg-green"
-            >
-              {{ clientData.etatfinancier }}
-            </v-chip>
-          </div>
-        </div>
-      </div> -->
+     
       <div class="bg-grey-lighten-5 justify-center mx-auto py-2 mt-6">
         <div class="d-flex align-center pa-2 justify-center">
           <h3>{{ clientName }}</h3>
@@ -311,18 +291,38 @@
   src="https://i.postimg.cc/VvL0YPW5/Capture-d-cran-2025-02-12-141404.png"
 ></v-img>
   </div>
+
+
+
+
   </v-navigation-drawer>
 </template>
 
 <script>
-import html2pdf from 'html2pdf.js';
+
+
+
+
+
+// import html2pdf from 'html2pdf.js';
+
+
+import { jsPDF } from 'jspdf';
+
+import html2pdf from 'html2pdf.js/dist/html2pdf.bundle.min'
+
+
 
 export default {
   name: "DialogClientsDetails",
-
+  components: {
+   
+  },
   data() {
     return {
       isExporting: false,
+      pdfRef: null,
+
       clientTags: [
         { label: "Nocive", color: "error" },
         { label: "Transporteur", color: "warning" },
@@ -577,23 +577,13 @@ export default {
   },
 
   methods: {
+
     closeDialog() {
       this.dialogModel = false;
     },
-
-    formatCurrency(value) {
-      return `${value.toLocaleString()} `;
-    },
-
-    formatNumber(value) {
-      return value.toLocaleString();
-    },
-    async exportToPDF(ClientName) {
-      try {
-        this.isExporting = true;
-        
-        const element = document.getElementById('pdf-content');
-        const opt = {
+    downloadPdf(ClientName) {
+  const element = document.getElementById('pdf-content');
+  const opt = {
           margin: [2, 2, 2, 2],
           filename: `Fiche_Client_${ClientName}.pdf`,
           image: { type: 'jpeg', quality: 0.98 },
@@ -609,25 +599,21 @@ export default {
           }
         };
 
-        // Add any custom styling for PDF
-        element.classList.add('pdf-export-mode');
-        
-        // Generate PDF
-        await html2pdf()
-          .set(opt)
-          .from(element)
-          .save();
-          
-        // Remove PDF-specific styling
-        element.classList.remove('pdf-export-mode');
-        
-      } catch (error) {
-        console.error('PDF Export Error:', error);
-        alert('Error exporting PDF. Please try again.');
-      } finally {
-        this.isExporting = false;
-      }
+  html2pdf().set(opt).from(element).save();
+},
+      
+    
+
+    formatCurrency(value) {
+      return `${value.toLocaleString()} `
     },
+      
+    formatNumber(value) {
+      return value.toLocaleString();
+    },
+
+
+  
 
     updateClientDetails(data) {
       // Update client details based on new data
@@ -648,8 +634,9 @@ export default {
         default: "grey-darken-1",
       };
       return colors[category] || colors.default;
-    },
+    
   },
+}
 };
 </script>
 
