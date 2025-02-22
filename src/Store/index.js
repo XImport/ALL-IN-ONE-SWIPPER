@@ -8,6 +8,7 @@ export default createStore({
    Drawer : true,
    ClientDialog : false,
    OneClientData : {},
+   Querys : {}
   },
   
   getters: {
@@ -25,6 +26,9 @@ export default createStore({
    },
    GetOneClientData(state){
     return state.OneClientData
+   },
+   GetQuerys(state){
+    return state.Querys
    }
    
   },
@@ -45,6 +49,9 @@ export default createStore({
     },
     ChangeOneClientData(state,payload){
       state.OneClientData = payload
+    },
+    ChangeQuerysData(state,payload){
+      state.Querys = payload
     }
    
   },

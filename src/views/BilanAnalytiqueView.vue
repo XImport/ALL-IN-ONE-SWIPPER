@@ -552,7 +552,7 @@ export default {
           this.SpinnerLoader = false
         } else {
           // Error in request setup
-          alert('Erreur lors de la configuration de la requête. Veuillez réessayer.');
+          alert('Les données recherchées ne sont pas accessibles.');
           this.SpinnerLoader = false
         }
 

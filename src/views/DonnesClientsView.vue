@@ -111,8 +111,8 @@
           </div>
         </v-container>
       
-        <DialogClientsDetails />
-        <TableCompo :DATA="filterDATA" :Headers="Headers" />
+        <DialogClientsDetails :Queries="DATA" />
+        <TableCompo :DATA="filterDATA" :Headers="Headers"    />
         
       </div>
     </div>
@@ -213,6 +213,7 @@ export default {
     });
 
     // Handle the response data properly
+    this.$store.commit("ChangeQuerysData",DATA)
     let jsonData;
     if (typeof response.data === 'string') {
       // If the response is a string, replace NaN and parse

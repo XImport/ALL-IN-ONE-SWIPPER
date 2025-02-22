@@ -5,319 +5,297 @@
     location="right"
     temporary
   >
-  
+    <div id="pdf-content">
+      <v-container class="pa-2">
+        <v-img
+          width="100%"
+          aspect-ratio="16/9"
+          cover
+          src="https://i.postimg.cc/fbGvTyVy/Capture-d-cran-2025-02-12-141301.png"
+        ></v-img>
 
-      
-
-  <div  id="pdf-content">
-
-
-    <v-container class="pa-2" >
-      <v-img
-  width="100%"
-  aspect-ratio="16/9"
-  cover
-  src="https://i.postimg.cc/fbGvTyVy/Capture-d-cran-2025-02-12-141301.png"
-></v-img>
-      
-     
-      <!-- Header -->
-      <v-row no-gutters class="pa-2 align-center justify-center mt-6">
-
-
+        <!-- Header -->
+        <v-container>
+  <v-row no-gutters class="pa-2 align-center">
+    <!-- Left side - Date -->
    
-        <v-btn
-                            icon
-                            compact
-                            size="20"
-                            class="ml-2"
-                            style="margin-top: -1%;margin-right: 1.5%;"
-                            @click="downloadPdf(clientName)"
-                           
-                           
-                          >
-                            <v-img
-                              src="https://static-00.iconduck.com/assets.00/pdf-icon-1500x2048-5ftd129y.png"
-                              width="20"
-                              style="
-                                display: inline-block;
-                                vertical-align: middle;
-                              "
-                            ></v-img>
-                          </v-btn>
-        <h3
-          class="text-h6 font-weight-medium text-decoration-underline font-weight-bold text-center"
-        >
-          Informations client:
-        </h3>
-        <v-btn
-          icon="mdi-close"
-          variant="outlined"
-          density="compact"
-          class="ml-4"
-          @click="closeDialog"
-        />
-      </v-row>
 
-      <v-divider class="my-1" />
-   
-     
-      <div class="bg-grey-lighten-5 justify-center mx-auto py-2 mt-6">
-        <div class="d-flex align-center pa-2 justify-center">
-          <h3>{{ clientName }}</h3>
-          <span
-            class="text-body-2 font-weight-medium ml-2"
-            v-if="clientData.etatfinancier == 'VIP'"
-            ><v-chip color="green">
-              {{ clientData.etatfinancier }}
-            </v-chip></span
-          >
-
-          <span
-            class="text-body-2 font-weight-medium ml-2"
-            v-if="clientData.etatfinancier == 'DANGEROUS'"
-            ><v-chip color="red">
-              {{ clientData.etatfinancier }}
-            </v-chip></span
-          >
-          <span
-            class="text-body-2 font-weight-medium ml-2"
-            
-            >
-            
-            
-            
-            
-            
-            </span
-          >
-
-
-          <span
-            class="text-body-2 font-weight-medium ml-2"
-            v-if="clientData.etatfinancier == 'Fiable'"
-            ><v-chip color="orange">
-              {{ clientData.etatfinancier }}
-            </v-chip></span
-          >
-          <span
-            class="text-body-2 font-weight-medium ml-2"
-            v-if="clientData.etatfinancier == 'Nocive'"
-            ><v-chip color="blue">
-              {{ clientData.etatfinancier }}
-            </v-chip></span
-          >
-          <span
-            class="text-body-2 font-weight-medium ml-2"
-            v-if="clientData.etatfinancier == 'Nouveau'"
-            ><v-chip color="grey">
-              {{ clientData.etatfinancier }}
-            </v-chip></span
-          >
-       
-        </div>
-      </div>
-      <!-- ------------------------------ -->
-
-      <!-- Stats Overview -->
-      <v-container class="pa-1 border rounded my-2" style="max-width: 98%">
-        <v-row no-gutters>
-          <template v-for="(stat, index) in computedStats" :key="index">
-            <v-col cols="6" sm="3" class="text-center py-2">
-              <div class="text-caption text-medium-emphasis">
-                {{ stat.label }} <span style="font-size: x-small !important ; color: black !important;" v-if="stat.smlabel"> ( {{ stat.smlabel }} )</span>
-              </div>
-              <div class="text-subtitle-2 font-weight-bold" >
-                {{ stat.value }} <span v-if="stat.label != 'Quantité En T'">dhs</span> 
-              </div>
-            </v-col>
-            <template v-if="index < computedStats.length - 1">
-              <v-divider vertical />
-            </template>
-          </template>
-        </v-row>
-      </v-container>
-
-      <!-- Customer Details -->
-      <div class="px-2 py-2 d-flex align-center justify-center">
-        <h3
-          class="text-h6 font-weight-medium text-center font-weight-bold text-decoration-underline"
-        >
-          Détail du Client
-        </h3>
-      </div>
-
-      <v-container class="pa-2 bg-grey-lighten-5 rounded">
-        <v-row dense>
-          <template v-for="(detail, index) in computedDetails" :key="index">
-            <v-col cols="12" sm="6">
-              <v-sheet
-                class="pa-3 d-flex justify-space-between align-center rounded bg-white"
-              >
-                <span class="text-caption text-medium-emphasis">{{
-                  detail.label
-                }}</span>
-                <span
-                  class="text-body-2 font-weight-medium ml-2"
-                  v-if="
-                    detail.value != 'VIP' &&
-                    detail.value != 'DANGEROUS' &&
-                    detail.value != 'Fiable' &&
-                    detail.value != 'Nocive' &&
-                    detail.value != 'Nouveau' &&
-                    detail.value != 'COMMERCIAL' &&
-                    detail.value != 'CRJ' &&
-                    detail.value != 'H.RECOUVREMENT' &&
-                    detail.value != 'Client Rendu'
-                  "
-                  >{{ detail.value }}</span
-                >
-
-                <span
-                  class="text-body-2 font-weight-medium ml-2"
-                  v-if="detail.value == 'COMMERCIAL'"
-                  ><v-chip color="green" size="x-small">
-                    {{ detail.value }}
-                  </v-chip></span
-                >
-
-                <span
-                  class="text-body-2 font-weight-medium ml-2"
-                  v-if="detail.value == 'CRJ'"
-                  ><v-chip color="orange" size="x-small">
-                    {{ detail.value }}
-                  </v-chip></span
-                >
-
-                <span
-                  class="text-body-2 font-weight-medium ml-2"
-                  v-if="detail.value == 'H.RECOUVREMENT'"
-                  ><v-chip color="yellow" size="x-small">
-                    {{ detail.value }}
-                  </v-chip></span
-                >
-
-                <span
-                  class="text-body-2 font-weight-medium ml-2"
-                  v-if="detail.value == 'VIP'"
-                  ><v-chip color="green" size="x-small">
-                    {{ detail.value }}
-                  </v-chip></span
-                >
-
-                <span
-                  class="text-body-2 font-weight-medium ml-2"
-                  v-if="detail.value == 'DANGEROUS'"
-                  ><v-chip color="red" size="x-small">
-                    {{ detail.value }}
-                  </v-chip></span
-                >
-                <span
-                  class="text-body-2 font-weight-medium ml-2"
-                  v-if="detail.value == 'Fiable'"
-                  ><v-chip color="orange" size="x-small">
-                    {{ detail.value }}
-                  </v-chip></span
-                >
-                <span
-                  class="text-body-2 font-weight-medium ml-2 text-black"
-                  v-if="detail.value == 'Nocive'"
-                  ><v-chip color="blue" size="x-small">
-                    {{ detail.value }}
-                  </v-chip></span
-                >
-
-                <span
-                  class="text-body-2 font-weight-medium ml-2"
-                  v-if="detail.value == 'Nouveau'"
-                  ><v-chip color="grey" size="x-small">
-                    {{ detail.value }}
-                  </v-chip></span
-                >
-              </v-sheet>
-            </v-col>
-          </template>
-        </v-row>
-
-        <template v-for="(detail, index) in computedLastStats" :key="index">
-          <v-sheet
-            class="d-flex justify-space-between align-center pa-3 rounded bg-white mt-2"
-          >
-            <span class="text-caption text-medium-emphasis">{{
-              detail.label
-            }}</span>
-            <span class="text-body-2 font-weight-medium">{{
-              detail.value
-            }}</span>
-          </v-sheet>
-        </template>
-      </v-container>
-    </v-container>
-    <div class="px-2 pt-2 d-flex align-center justify-center">
-      <h3
-        class="text-subtitle-h6 font-weight-medium text-decoration-underline font-weight-bold"
+    <!-- Center - PDF button and Informations client text -->
+    <v-col cols="12" class="d-flex justify-center align-center" >
+      <v-btn
+        icon
+        size="20"
+        class="ml-2"
+        @click="downloadPdf(clientName)"
       >
-        Tarification des Produits :
+        <v-img
+          src="https://static-00.iconduck.com/assets.00/pdf-icon-1500x2048-5ftd129y.png"
+          width="20"
+          style="display: inline-block; vertical-align: middle"
+        ></v-img>
+      </v-btn>
+
+      <h3 class="text-h6 font-weight-medium text-decoration-underline font-weight-bold text-center mx-4 mb-0">
+        Informations client:
       </h3>
-    </div>
-    <v-container class="pa-2">
-      <v-row dense>
-        <template v-for="(detail, index) in computedPrices" :key="index">
-          <v-col cols="auto" sm="4" class="d-flex">
-            <v-sheet class="ma-1 rounded flex-grow-1" elevation="0">
-              <div class="pa-2 text-center">
-                <div class="text-subtitle-2 text-medium-emphasis mb-1">
-                  {{ detail.label }}
+      <v-btn
+        icon="mdi-close"
+        variant="outlined"
+        density="compact"
+        @click="closeDialog"
+      />
+    </v-col>
+
+    <!-- Right side - Close button -->
+    <v-col cols="0" class="text-right" style="margin-right: 3%;margin-top: -3%;">
+      <h5 class="text-decoration-underline">Tanger Le: {{ Queries.FinDate }}</h5>
+    </v-col>
+  </v-row>
+</v-container>
+
+        <v-divider class="my-1" />
+
+        <div class="bg-grey-lighten-5 justify-center mx-auto py-2 mt-6">
+          <div class="d-flex align-center pa-2 justify-center">
+            <h3>{{ clientName }}</h3>
+            <span
+              class="text-body-2 font-weight-medium ml-2"
+              v-if="clientData.etatfinancier == 'VIP'"
+              ><v-chip color="green">
+                {{ clientData.etatfinancier }}
+              </v-chip></span
+            >
+
+            <span
+              class="text-body-2 font-weight-medium ml-2"
+              v-if="clientData.etatfinancier == 'DANGEROUS'"
+              ><v-chip color="red">
+                {{ clientData.etatfinancier }}
+              </v-chip></span
+            >
+            <span class="text-body-2 font-weight-medium ml-2"> </span>
+
+            <span
+              class="text-body-2 font-weight-medium ml-2"
+              v-if="clientData.etatfinancier == 'Fiable'"
+              ><v-chip color="orange">
+                {{ clientData.etatfinancier }}
+              </v-chip></span
+            >
+            <span
+              class="text-body-2 font-weight-medium ml-2"
+              v-if="clientData.etatfinancier == 'Nocive'"
+              ><v-chip color="blue">
+                {{ clientData.etatfinancier }}
+              </v-chip></span
+            >
+            <span
+              class="text-body-2 font-weight-medium ml-2"
+              v-if="clientData.etatfinancier == 'Nouveau'"
+              ><v-chip color="grey">
+                {{ clientData.etatfinancier }}
+              </v-chip></span
+            >
+          </div>
+        </div>
+        <!-- ------------------------------ -->
+
+        <!-- Stats Overview -->
+        <v-container class="pa-1 border rounded my-2" style="max-width: 98%">
+          <v-row no-gutters>
+            <template v-for="(stat, index) in computedStats" :key="index">
+              <v-col cols="6" sm="3" class="text-center py-2">
+                <div class="text-caption text-medium-emphasis">
+                  {{ stat.label }}
+                  <span
+                    style="
+                      font-size: x-small !important ;
+                      color: black !important;
+                    "
+                    v-if="stat.smlabel"
+                  >
+                    ( {{ stat.smlabel }} )</span
+                  >
                 </div>
-                <div class="text-h6 font-weight-bold text-primary">
-                  {{ detail.value }}
+                <div class="text-subtitle-2 font-weight-bold">
+                  {{ stat.value }}
+                  <span v-if="stat.label != 'Quantité En T'">dhs</span>
                 </div>
-              </div>
+              </v-col>
+              <template v-if="index < computedStats.length - 1">
+                <v-divider vertical />
+              </template>
+            </template>
+          </v-row>
+        </v-container>
+
+        <!-- Customer Details -->
+        <div class="px-2 py-2 d-flex align-center justify-center">
+          <h3
+            class="text-h6 font-weight-medium text-center font-weight-bold text-decoration-underline"
+          >
+            Détail du Client
+          </h3>
+        </div>
+
+        <v-container class="pa-2 bg-grey-lighten-5 rounded">
+          <v-row dense>
+            <template v-for="(detail, index) in computedDetails" :key="index">
+              <v-col cols="12" sm="6">
+                <v-sheet
+                  class="pa-3 d-flex justify-space-between align-center rounded bg-white"
+                >
+                  <span class="text-caption text-medium-emphasis">{{
+                    detail.label
+                  }}</span>
+                  <span
+                    class="text-body-2 font-weight-medium ml-2"
+                    v-if="
+                      detail.value != 'VIP' &&
+                      detail.value != 'DANGEROUS' &&
+                      detail.value != 'Fiable' &&
+                      detail.value != 'Nocive' &&
+                      detail.value != 'Nouveau' &&
+                      detail.value != 'COMMERCIAL' &&
+                      detail.value != 'CRJ' &&
+                      detail.value != 'H.RECOUVREMENT' &&
+                      detail.value != 'Client Rendu'
+                    "
+                    >{{ detail.value }}</span
+                  >
+
+                  <span
+                    class="text-body-2 font-weight-medium ml-2"
+                    v-if="detail.value == 'COMMERCIAL'"
+                    ><v-chip color="green" size="x-small">
+                      {{ detail.value }}
+                    </v-chip></span
+                  >
+
+                  <span
+                    class="text-body-2 font-weight-medium ml-2"
+                    v-if="detail.value == 'CRJ'"
+                    ><v-chip color="orange" size="x-small">
+                      {{ detail.value }}
+                    </v-chip></span
+                  >
+
+                  <span
+                    class="text-body-2 font-weight-medium ml-2"
+                    v-if="detail.value == 'H.RECOUVREMENT'"
+                    ><v-chip color="yellow" size="x-small">
+                      {{ detail.value }}
+                    </v-chip></span
+                  >
+
+                  <span
+                    class="text-body-2 font-weight-medium ml-2"
+                    v-if="detail.value == 'VIP'"
+                    ><v-chip color="green" size="x-small">
+                      {{ detail.value }}
+                    </v-chip></span
+                  >
+
+                  <span
+                    class="text-body-2 font-weight-medium ml-2"
+                    v-if="detail.value == 'DANGEROUS'"
+                    ><v-chip color="red" size="x-small">
+                      {{ detail.value }}
+                    </v-chip></span
+                  >
+                  <span
+                    class="text-body-2 font-weight-medium ml-2"
+                    v-if="detail.value == 'Fiable'"
+                    ><v-chip color="orange" size="x-small">
+                      {{ detail.value }}
+                    </v-chip></span
+                  >
+                  <span
+                    class="text-body-2 font-weight-medium ml-2 text-black"
+                    v-if="detail.value == 'Nocive'"
+                    ><v-chip color="blue" size="x-small">
+                      {{ detail.value }}
+                    </v-chip></span
+                  >
+
+                  <span
+                    class="text-body-2 font-weight-medium ml-2"
+                    v-if="detail.value == 'Nouveau'"
+                    ><v-chip color="grey" size="x-small">
+                      {{ detail.value }}
+                    </v-chip></span
+                  >
+                </v-sheet>
+              </v-col>
+            </template>
+          </v-row>
+
+          <template v-for="(detail, index) in computedLastStats" :key="index">
+            <v-sheet
+              class="d-flex justify-space-between align-center pa-3 rounded bg-white mt-2"
+            >
+              <span class="text-caption text-medium-emphasis">{{
+                detail.label
+              }}</span>
+              <span class="text-body-2 font-weight-medium">{{
+                detail.value
+              }}</span>
             </v-sheet>
-            <v-divider
-              v-if="index < computedPrices.length - 1"
-              vertical
-              class="my-2"
-            />
-          </v-col>
-        </template>
-      </v-row>
-    </v-container>
-    <div style="height: 50px !important;" ></div>
-    <v-img
-  width="100%"
-  aspect-ratio="16/9"
-  cover
-  src="https://i.postimg.cc/VvL0YPW5/Capture-d-cran-2025-02-12-141404.png"
-></v-img>
-  </div>
-
-
-
-
+          </template>
+        </v-container>
+      </v-container>
+      <div class="px-2 pt-2 d-flex align-center justify-center">
+        <h3
+          class="text-subtitle-h6 font-weight-medium text-decoration-underline font-weight-bold"
+        >
+          Tarification des Produits :
+        </h3>
+      </div>
+      <v-container class="pa-2">
+        <v-row dense>
+          <template v-for="(detail, index) in computedPrices" :key="index">
+            <v-col cols="auto" sm="4" class="d-flex">
+              <v-sheet class="ma-1 rounded flex-grow-1" elevation="0">
+                <div class="pa-2 text-center">
+                  <div class="text-subtitle-2 text-medium-emphasis mb-1">
+                    {{ detail.label }}
+                  </div>
+                  <div class="text-h6 font-weight-bold text-primary">
+                    {{ detail.value }}
+                  </div>
+                </div>
+              </v-sheet>
+              <v-divider
+                v-if="index < computedPrices.length - 1"
+                vertical
+                class="my-2"
+              />
+            </v-col>
+          </template>
+        </v-row>
+      </v-container>
+      <div style="height: 50px !important"></div>
+      <v-img
+        width="100%"
+        aspect-ratio="16/9"
+        cover
+        src="https://i.postimg.cc/VvL0YPW5/Capture-d-cran-2025-02-12-141404.png"
+      ></v-img>
+    </div>
   </v-navigation-drawer>
 </template>
 
 <script>
-
-
-
-
-
 // import html2pdf from 'html2pdf.js';
 
+import { jsPDF } from "jspdf";
 
-import { jsPDF } from 'jspdf';
-
-import html2pdf from 'html2pdf.js/dist/html2pdf.bundle.min'
-
-
+import html2pdf from "html2pdf.js/dist/html2pdf.bundle.min";
 
 export default {
   name: "DialogClientsDetails",
-  components: {
-   
-  },
+  components: {},
+  
   data() {
     return {
       isExporting: false,
@@ -333,6 +311,9 @@ export default {
   },
 
   computed: {
+    Queries (){
+      return this.$store.getters.GetQuerys
+    },
     splitText() {
       return function (text) {
         if (!text) return "";
@@ -383,7 +364,7 @@ export default {
         },
         {
           label: "Créance Client",
-          smlabel : 'A Jour',
+          smlabel: "A Jour",
           value: this.formatCurrency(data.creanceGlobal || 0), // This should come from API
         },
         {
@@ -577,43 +558,37 @@ export default {
   },
 
   methods: {
-
     closeDialog() {
       this.dialogModel = false;
     },
     downloadPdf(ClientName) {
-  const element = document.getElementById('pdf-content');
-  const opt = {
-          margin: [2, 2, 2, 2],
-          filename: `Fiche_Client_${ClientName}.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { 
-            scale: 2,
-            useCORS: true,
-            letterRendering: true
-          },
-          jsPDF: { 
-            unit: 'mm', 
-            format: 'a4', 
-            orientation: 'portrait' 
-          }
-        };
+      const element = document.getElementById("pdf-content");
+      const opt = {
+        margin: [2, 2, 2, 2],
+        filename: `Fiche_Client_${ClientName}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          letterRendering: true,
+        },
+        jsPDF: {
+          unit: "mm",
+          format: "a4",
+          orientation: "portrait",
+        },
+      };
 
-  html2pdf().set(opt).from(element).save();
-},
-      
-    
+      html2pdf().set(opt).from(element).save();
+    },
 
     formatCurrency(value) {
-      return `${value.toLocaleString()} `
+      return `${value.toLocaleString()} `;
     },
-      
+
     formatNumber(value) {
       return value.toLocaleString();
     },
-
-
-  
 
     updateClientDetails(data) {
       // Update client details based on new data
@@ -634,9 +609,8 @@ export default {
         default: "grey-darken-1",
       };
       return colors[category] || colors.default;
-    
+    },
   },
-}
 };
 </script>
 
