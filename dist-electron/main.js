@@ -1,35 +1,25 @@
-import { app, BrowserWindow } from "electron";
-import path from "path";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-function createWindow() {
-  const win = new BrowserWindow({
+import { app as e, BrowserWindow as t } from "electron";
+import i from "path";
+import { fileURLToPath as r } from "url";
+const a = r(import.meta.url), l = i.dirname(a);
+function o() {
+  const n = new t({
     width: 1800,
     height: 1e3,
     title: "All In One Swiper",
-    autoHideMenuBar: false,
+    autoHideMenuBar: !0,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
+      nodeIntegration: !0,
+      contextIsolation: !1
     }
   });
-  if (process.env.VITE_DEV_SERVER_URL) {
-    win.loadURL(process.env.VITE_DEV_SERVER_URL);
-  } else {
-    win.loadFile(path.join(__dirname, "../dist/index.html"));
-  }
+  process.env.VITE_DEV_SERVER_URL ? n.loadURL(process.env.VITE_DEV_SERVER_URL) : n.loadFile(i.join(l, "../dist/index.html"));
 }
-app.whenReady().then(() => {
-  createWindow();
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
+e.whenReady().then(() => {
+  o(), e.on("activate", () => {
+    t.getAllWindows().length === 0 && o();
   });
 });
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+e.on("window-all-closed", () => {
+  process.platform !== "darwin" && e.quit();
 });

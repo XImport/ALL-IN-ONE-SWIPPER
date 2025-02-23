@@ -212,6 +212,10 @@ export default {
       },
     });
 
+    if(response.data.Message){
+            alert(response.data.Message)
+          }
+
     // Handle the response data properly
     this.$store.commit("ChangeQuerysData",DATA)
     let jsonData;
@@ -296,7 +300,9 @@ export default {
     this.SpinnerLoader = false;
     
     // Handle 404 error and show message
-
+    if(error.status == 404){
+          alert("Les données recherchées ne sont pas accessibles")
+        }
     if (error.response) {
           // Server responded with an error status
           const errorMessage = error.response.data.Message || 'An error occurred';

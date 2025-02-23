@@ -225,8 +225,10 @@ export default {
 
 
 
-
-
+          if(response.data.Message){
+            alert(response.data.Message)
+          }
+        
         const { METRICS_ONE, METRICS_TWO, COMMANDEGRAPH } =
           response.data.Metrics;
 
@@ -539,6 +541,11 @@ export default {
           typeof response.data
         );
       } catch (error) {
+        if(error.status == 404){
+          alert("Les données recherchées ne sont pas accessibles")
+        }
+
+        
         if (error.response) {
           // Server responded with an error status
           const errorMessage = error.response.data.Message || 'An error occurred';
