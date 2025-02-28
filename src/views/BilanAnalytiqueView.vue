@@ -1,7 +1,7 @@
 <template>
   <div>
     <AppHeaderBar :DATA="DATA" :FetchQuery="FetchQuery"
-      :StaticInfo="{ icon: 'mdi-chart-tree', title: 'Bilan Analytics' }" />
+      :StaticInfo="{ icon: 'mdi-chart-tree', title: 'Bilan Analytics' }" :GoButton="true" />
     <div style="position: fixed; top: 300px; left: 0%; z-index: 5 !important" v-show="!isDrawerOpen">
       <v-btn icon="mdi-arrow-collapse-right" elevation="3" @click="ChangeDrawerState()" size="x-large"></v-btn>
     </div>

@@ -41,7 +41,7 @@
               locale="fr"
               cancelText="Annuler"
             />
-            <v-tooltip text="Consulter des données" location="top">
+            <v-tooltip text="Consulter des données" location="top" v-if="GoButton">
               <template v-slot:activator="{ props }">
                 <v-btn
                   icon
@@ -132,7 +132,7 @@ import { fr } from "date-fns/locale"; // Import French locale
 
 export default {
   name: "BilanAnalytique",
-  props: ["FetchQuery", "DATA", "StaticInfo"],
+  props: ["FetchQuery", "DATA", "StaticInfo" , "GoButton"],
   components: { VueDatePicker },
   mounted() {
     this.DATA.FinDate = this.enddate;

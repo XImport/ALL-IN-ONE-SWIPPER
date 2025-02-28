@@ -4,6 +4,7 @@
       :DATA="DATA"
       :FetchQuery="FetchQuery"
       :StaticInfo="{ icon: 'mdi-database', title: 'Données Clients' }"
+      :GoButton="true"
     />
  
     <div
