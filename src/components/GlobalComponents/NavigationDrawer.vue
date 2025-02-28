@@ -90,16 +90,12 @@ export default {
           icon: "mdi-database",
           to: "/donnesclients",
         },
-        // {
-        //   title: "Suivi des créances",
-        //   icon: "mdi-account-group",
-        //    to : "/donnesclients"
-        // },
-        // {
-        //   title: "Contrôle des seuils",
-        //   icon: "mdi-chart-box",
-        //    to : "/donnesclients"
-        // },
+        {
+          title: "Analyse Client",
+          icon: "mdi-chart-pie",
+          to: "/analyseclient",
+        },
+       
       ],
       menuControles: [
         {
