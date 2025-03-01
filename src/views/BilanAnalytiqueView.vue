@@ -1,16 +1,34 @@
 <template>
   <div>
-    <AppHeaderBar :DATA="DATA" :FetchQuery="FetchQuery"
-      :StaticInfo="{ icon: 'mdi-chart-tree', title: 'Bilan Analytics' }" :GoButton="true" />
-    <div style="position: fixed; top: 300px; left: 0%; z-index: 5 !important" v-show="!isDrawerOpen">
-      <v-btn icon="mdi-arrow-collapse-right" elevation="3" @click="ChangeDrawerState()" size="x-large"></v-btn>
+    <AppHeaderBar
+      :DATA="DATA"
+      :FetchQuery="FetchQuery"
+      :StaticInfo="{ icon: 'mdi-chart-tree', title: 'Bilan Analytics' }"
+      :GoButton="true"
+    />
+    <div
+      style="position: fixed; top: 300px; left: 0%; z-index: 5 !important"
+      v-show="!isDrawerOpen"
+    >
+      <v-btn
+        icon="mdi-arrow-collapse-right"
+        elevation="3"
+        @click="ChangeDrawerState()"
+        size="x-large"
+      ></v-btn>
     </div>
-    <div :class="{
-      'content-with-drawer': isDrawerOpen,
-      'content-full-width': !isDrawerOpen,
-    }">
+    <div
+      :class="{
+        'content-with-drawer': isDrawerOpen,
+        'content-full-width': !isDrawerOpen,
+      }"
+    >
       <div v-if="SpinnerLoader">
-        <v-progress-linear color="yellow-darken-2" indeterminate style="margin-top: 5%"></v-progress-linear>
+        <v-progress-linear
+          color="yellow-darken-2"
+          indeterminate
+          style="margin-top: 5%"
+        ></v-progress-linear>
         <div style="position: absolute; top: 30%; left: 40%">
           <div class="bg-white pa-12 rounded-xl">
             <h1 class="text-center text-decoration-underline">
@@ -21,8 +39,16 @@
         </div>
       </div>
       <!-- Cards container -->
-      <div style="position: fixed; top: 300px; left: 15%; z-index: 5 !important" v-show="isDrawerOpen">
-        <v-btn icon="mdi-arrow-collapse-left" elevation="3" @click="ChangeDrawerState()" size="x-large"></v-btn>
+      <div
+        style="position: fixed; top: 300px; left: 15%; z-index: 5 !important"
+        v-show="isDrawerOpen"
+      >
+        <v-btn
+          icon="mdi-arrow-collapse-left"
+          elevation="3"
+          @click="ChangeDrawerState()"
+          size="x-large"
+        ></v-btn>
       </div>
       <div>
         <DialogBox />
@@ -31,29 +57,55 @@
       <div v-if="LoadingContent" class="mt-12 pt-2">
         <v-container fluid>
           <v-row dense>
-            <v-col v-for="(Frow, index) in FirstRowCard" :key="index" cols="12" sm="3" md="2" class="pa-2">
-              <InfoCard :Title="Frow.Title" :TextNumber="Frow.TextNumber" :Icon="Frow.Icon"
-                :IconColor="Frow.IconColor" />
+            <v-col
+              v-for="(Frow, index) in FirstRowCard"
+              :key="index"
+              cols="12"
+              sm="3"
+              md="2"
+              class="pa-2"
+            >
+              <InfoCard
+                :Title="Frow.Title"
+                :TextNumber="Frow.TextNumber"
+                :Icon="Frow.Icon"
+                :IconColor="Frow.IconColor"
+              />
             </v-col>
           </v-row>
         </v-container>
 
         <v-container fluid style="max-width: 70% !important">
           <v-row dense>
-            <v-col v-for="(Srow, index) in SecondRowCard" :key="index" cols="12" sm="3" class="pa-2 mx-auto">
-              <InfoCard :Title="Srow.Title" :TextNumber="Srow.TextNumber" :Icon="Srow.Icon"
-                :IconColor="Srow.IconColor" />
+            <v-col
+              v-for="(Srow, index) in SecondRowCard"
+              :key="index"
+              cols="12"
+              sm="3"
+              class="pa-2 mx-auto"
+            >
+              <InfoCard
+                :Title="Srow.Title"
+                :TextNumber="Srow.TextNumber"
+                :Icon="Srow.Icon"
+                :IconColor="Srow.IconColor"
+              />
             </v-col>
           </v-row>
         </v-container>
 
-        <v-container fluid style="max-width: 100%" class="animate__animated animate__fadeInUp">
+        <v-container
+          fluid
+          style="max-width: 100%"
+          class="animate__animated animate__fadeInUp"
+        >
           <v-row dense class="d-flex justify-space-between">
             <v-col cols="12" sm="12" class="pa-2">
               <h2 class="text-center text-decoration-underline">
                 <v-icon color="pink">mdi-table-large</v-icon> Tableau de Bord
                 des Indicateurs Commerciaux par Graphiques : du
-                <span class="text-pink">{{ Title.debutDate }} <span class="text-black">au </span>
+                <span class="text-pink"
+                  >{{ Title.debutDate }} <span class="text-black">au </span>
                   <span class="text-pink">{{ Title.finDate }}</span>
                 </span>
               </h2>
@@ -61,41 +113,70 @@
           </v-row>
         </v-container>
 
-        <v-container fluid style="max-width: 100%" class="animate__animated animate__fadeInUp">
+        <v-container
+          fluid
+          style="max-width: 100%"
+          class="animate__animated animate__fadeInUp"
+        >
           <v-row dense class="d-flex justify-space-between">
             <v-col cols="12" sm="6" class="pa-2">
-              <BarChartJS :CHARTDATA="COMMANDDEMANDEANDCOMMANDLIVRE"
-                title="Analyse des Commandes Demandées et Livrées (Par Date)" IconName="mdi-poll" IconColor="purple" />
+              <BarChartJS
+                :CHARTDATA="COMMANDDEMANDEANDCOMMANDLIVRE"
+                title="Analyse des Commandes Demandées et Livrées (Par Date)"
+                IconName="mdi-poll"
+                IconColor="purple"
+              />
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
-              <BarChartJS :CHARTDATA="QNTENTANDM3" title="Volume de Vente : Tonnes et Mètres Cubes (Par Date)"
-                IconName="mdi-chart-tree" IconColor="green" />
+              <BarChartJS
+                :CHARTDATA="QNTENTANDM3"
+                title="Volume de Vente : Tonnes et Mètres Cubes (Par Date)"
+                IconName="mdi-chart-tree"
+                IconColor="green"
+              />
             </v-col>
           </v-row>
         </v-container>
         <v-container fluid style="max-width: 100%">
           <v-row dense class="d-flex justify-space-between">
             <v-col cols="12" sm="6" class="pa-2">
-              <LineChartJS :CHARTDATA="CANETCABRUT" title="Évolution du CA Brut et du CA Net (Par Date)"
-                IconName="mdi-chart-ppf" IconColor="blue" />
+              <LineChartJS
+                :CHARTDATA="CANETCABRUT"
+                title="Évolution du CA Brut et du CA Net (Par Date)"
+                IconName="mdi-chart-ppf"
+                IconColor="blue"
+                :Min="2200000"
+                :Max="2800000"
+              />
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
-              <BarChartJS :CHARTDATA="PMVGLOBALS" title="Situation du PVM : Nobles Graves Et Le  Stérile (Par Date)"
-                IconName="mdi-chart-box" IconColor="pink" />
+              <BarChartJS
+                :CHARTDATA="PMVGLOBALS"
+                title="Situation du PVM : Nobles Graves Et Le  Stérile (Par Date)"
+                IconName="mdi-chart-box"
+                IconColor="pink"
+              />
             </v-col>
           </v-row>
         </v-container>
         <v-container fluid style="max-width: 100%">
           <v-row dense class="d-flex justify-space-between">
             <v-col cols="12" sm="6" class="pa-2">
-              <BarChartJS :CHARTDATA="TOP6CLIENTS" title="Analyse du CA Brut pour les 6 principaux clients (Par Date)"
-                IconName="mdi-chart-box-multiple" IconColor="red" />
+              <BarChartJS
+                :CHARTDATA="TOP6CLIENTS"
+                title="Analyse du CA Brut pour les 6 principaux clients (Par Date)"
+                IconName="mdi-chart-box-multiple"
+                IconColor="red"
+              />
             </v-col>
 
             <v-col cols="12" sm="6" class="pa-2">
-              <BarChartJS :CHARTDATA="CREANCERECOUVREMENTENCAISSEMENT"
+              <BarChartJS
+                :CHARTDATA="CREANCERECOUVREMENTENCAISSEMENT"
                 title="Performance des Créances Commerciales et du Recouvrement (Par Date)"
-                IconName="mdi-chart-areaspline" IconColor="brown" />
+                IconName="mdi-chart-areaspline"
+                IconColor="brown"
+              />
             </v-col>
           </v-row>
         </v-container>
@@ -103,26 +184,38 @@
         <v-container fluid style="max-width: 100%">
           <v-row dense class="d-flex justify-space-between">
             <v-col cols="12" sm="6" class="pa-2">
-              <div style="
+              <div
+                style="
                   width: 100%;
                   display: flex;
                   justify-content: center;
                   margin-top: 5%;
-                ">
-                <DonutsChartJS :CHARTDATA="VOLPARPRODUIT" title="État des Ventes par Produit en Tonnes (Par Date)"
-                  IconName="mdi-chart-pie" IconColor="orange" />
+                "
+              >
+                <DonutsChartJS
+                  :CHARTDATA="VOLPARPRODUIT"
+                  title="État des Ventes par Produit en Tonnes (Par Date)"
+                  IconName="mdi-chart-pie"
+                  IconColor="orange"
+                />
               </div>
             </v-col>
 
             <v-col cols="12" sm="6" class="pa-2">
-              <div style="
+              <div
+                style="
                   width: 100%;
                   display: flex;
                   justify-content: center;
                   margin-top: 5%;
-                ">
-                <DonutsChartJS :CHARTDATA="CAPARPRODUIT" title="État des Ventes par Produit en CA NET (Par Date)"
-                  IconName="mdi-chart-pie" IconColor="orange" />
+                "
+              >
+                <DonutsChartJS
+                  :CHARTDATA="CAPARPRODUIT"
+                  title="État des Ventes par Produit en CA NET (Par Date)"
+                  IconName="mdi-chart-pie"
+                  IconColor="orange"
+                />
               </div>
             </v-col>
           </v-row>
@@ -134,7 +227,8 @@
               <h2 class="text-center text-decoration-underline mt-6 mx-auto">
                 <v-icon color="pink">mdi-table-large</v-icon> Tableau de Bord
                 des Indicateurs Commerciaux par Graphiques : du
-                <span class="text-pink">{{ Title.debutDate }} <span class="text-black">au </span>
+                <span class="text-pink"
+                  >{{ Title.debutDate }} <span class="text-black">au </span>
                   <span class="text-pink">{{ Title.finDate }}</span>
                 </span>
               </h2>
@@ -145,27 +239,45 @@
         <v-container fluid style="max-width: 100%">
           <v-row dense class="d-flex justify-space-between">
             <v-col cols="12" sm="6" class="pa-2">
-              <DataTABLE :Headers="TOneHeaders" :DATA="TOneDATA"
-                DATATABLETITLE="Tableau des Objectifs et réalisations Ventes (Par Date)" TABLEICON="mdi-bag-checked"
-                TABLECOLORICON="blue" />
+              <DataTABLE
+                :Headers="TOneHeaders"
+                :DATA="TOneDATA"
+                DATATABLETITLE="Tableau des Objectifs et réalisations Ventes (Par Date)"
+                TABLEICON="mdi-bag-checked"
+                TABLECOLORICON="blue"
+              />
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
-              <DataTABLE :Headers="TTwoHeaders" :DATA="TTwoDATA"
-                DATATABLETITLE="Tableau des Objectifs et Réalisation Créances Clients (Par Mois)" :reverse="true"
-                TABLEICON="mdi-account-group" TABLECOLORICON="purple" />
+              <DataTABLE
+                :Headers="TTwoHeaders"
+                :DATA="TTwoDATA"
+                DATATABLETITLE="Tableau des Objectifs et Réalisation Créances Clients (Par Mois)"
+                :reverse="true"
+                TABLEICON="mdi-account-group"
+                TABLECOLORICON="purple"
+              />
             </v-col>
           </v-row>
         </v-container>
         <v-container fluid style="max-width: 100%">
           <v-row dense class="d-flex justify-space-between">
             <v-col cols="12" sm="6" class="pa-2">
-              <DataTABLE :Headers="TTreeHeaders" :DATA="TTreeDATA" DATATABLETITLE="Tableau PVM par Catégorie (Par Date)"
-                TABLEICON="mdi-chart-bar" TABLECOLORICON="red" />
+              <DataTABLE
+                :Headers="TTreeHeaders"
+                :DATA="TTreeDATA"
+                DATATABLETITLE="Tableau PVM par Catégorie (Par Date)"
+                TABLEICON="mdi-chart-bar"
+                TABLECOLORICON="red"
+              />
             </v-col>
             <v-col cols="12" sm="6" class="pa-2">
-              <DataTABLE :Headers="TFourHeaders" :DATA="TFourDATA"
-                DATATABLETITLE="Tableau des Objectifs et Réalisations Recouvrement(Par Mois)" TABLEICON="mdi-cash-fast"
-                TABLECOLORICON="green" />
+              <DataTABLE
+                :Headers="TFourHeaders"
+                :DATA="TFourDATA"
+                DATATABLETITLE="Tableau des Objectifs et Réalisations Recouvrement(Par Mois)"
+                TABLEICON="mdi-cash-fast"
+                TABLECOLORICON="green"
+              />
             </v-col>
           </v-row>
         </v-container>
@@ -196,7 +308,7 @@ export default {
     DataTABLE,
     DialogBox,
   },
-  created() { },
+  created() {},
   computed: {
     Title() {
       return this.$store.getters.getTtitleContent;
@@ -223,12 +335,10 @@ export default {
           }
         );
 
+        if (response.data.Message) {
+          alert(response.data.Message);
+        }
 
-
-          if(response.data.Message){
-            alert(response.data.Message)
-          }
-        
         const { METRICS_ONE, METRICS_TWO, COMMANDEGRAPH } =
           response.data.Metrics;
 
@@ -487,7 +597,7 @@ export default {
 
         this.TTwoDATA[2].Key2 =
           response.data.TABLES_DATA_OBJECTIFS[
-          "CREANCE_H.RECOUVREMENT_OBJECTIF"
+            "CREANCE_H.RECOUVREMENT_OBJECTIF"
           ];
         this.TTwoDATA[2].Key3 =
           response.data.TABLES_DATA_OBJECTIFS["CREANCE_H.RECOUVREMENT"];
@@ -541,33 +651,29 @@ export default {
           typeof response.data
         );
       } catch (error) {
-        if(error.status == 404){
-          alert("Les données recherchées ne sont pas accessibles")
+        if (error.status == 404) {
+          alert("Les données recherchées ne sont pas accessibles");
         }
 
-        
         if (error.response) {
           // Server responded with an error status
-          const errorMessage = error.response.data.Message || 'An error occurred';
+          const errorMessage =
+            error.response.data.Message || "An error occurred";
           alert(errorMessage);
-          this.SpinnerLoader = false
-       
-        
+          this.SpinnerLoader = false;
         } else if (error.request) {
           // Request was made but no response received
-          alert('Aucune réponse reçue du serveur. Veuillez réessayer.');
-          this.SpinnerLoader = false
+          alert("Aucune réponse reçue du serveur. Veuillez réessayer.");
+          this.SpinnerLoader = false;
         } else {
           // Error in request setup
-          alert('Les données recherchées ne sont pas accessibles.');
-          this.SpinnerLoader = false
+          alert("Les données recherchées ne sont pas accessibles.");
+          this.SpinnerLoader = false;
         }
 
         // Log error for debugging
-        console.error('Balance Sheet Error:', error);
+        console.error("Balance Sheet Error:", error);
         throw error; // Re-throw if you need to handle it further up
-
-
       }
     },
   },

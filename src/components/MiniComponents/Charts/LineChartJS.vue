@@ -1,27 +1,38 @@
 <template>
-  <h4 class="text-center text-decoration-underline">
-    <v-icon :color="IconColor">{{ IconName }}</v-icon> {{ title }}
-    <v-tooltip text="Exporter Vers Excel" location="top" activator="parent">
-      <template v-slot:activator="{ props }">
-        <v-btn
-          icon
-          compact
-          size="20"
-          class="ml-2"
-          v-bind="props"
-          @click="ExportToExcel"
-        >
-          <v-img
-            src="https://static-00.iconduck.com/assets.00/ms-excel-icon-2048x2026-nws24wyy.png"
-            width="25"
-            class=""
-            style="display: inline-block; vertical-align: middle"
-          ></v-img>
-        </v-btn>
-      </template>
-    </v-tooltip>
-  </h4>
-  <Line id="my-line-chart-id" :options="chartOptions" :data="chartData" />
+  <div class="chart-container">
+    <h4 class="text-center text-decoration-underline d-flex align-center justify-center">
+      <v-icon :color="IconColor" class="mr-2">{{ IconName }}</v-icon>
+      <span>{{ title }}</span>
+      <v-tooltip location="top">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            icon
+            density="comfortable"
+            size="small"
+            class="ml-2"
+            v-bind="props"
+            @click="ExportToExcel"
+            variant="text"
+          >
+            <v-img
+              src="https://static-00.iconduck.com/assets.00/ms-excel-icon-2048x2026-nws24wyy.png"
+              width="22"
+              height="22"
+            ></v-img>
+          </v-btn>
+        </template>
+        <span>Exporter Vers Excel</span>
+      </v-tooltip>
+    </h4>
+    <div class="chart-wrapper">
+      <Line 
+        id="my-line-chart-id" 
+        :options="chartOptions" 
+        :data="chartData"
+        :height="chartHeight" 
+      />
+    </div>
+  </div>
 </template>
 
 <script>
@@ -37,9 +48,9 @@ import {
   PointElement,
   Filler,
 } from "chart.js";
-// Import the annotation plugin
 import annotationPlugin from "chartjs-plugin-annotation";
 import { exportToExcel } from "../../../utils"; // Adjust the path if needed
+
 ChartJS.register(
   Title,
   Tooltip,
@@ -49,22 +60,68 @@ ChartJS.register(
   LinearScale,
   PointElement,
   Filler,
-  annotationPlugin // Register the plugin
+  annotationPlugin
 );
 
 export default {
   name: "LineChart",
   components: { Line },
-  props: ["CHARTDATA", "title", "IconName", "IconColor"],
+  props: {
+    CHARTDATA: {
+      type: Object,
+      required: true
+    },
+    title: {
+      type: String,
+      default: "Line Chart"
+    },
+    IconName: {
+      type: String,
+      default: "mdi-chart-line"
+    },
+    IconColor: {
+      type: String,
+      default: "primary"
+    },
+    Unite: {
+      type: String,
+      default: "dhs"
+    },
+    Min: {
+      type: Number,
+      default: null
+    },
+    Max: {
+      type: Number,
+      default: null
+    },
+    chartHeight: {
+      type: Number,
+      default: 380
+    }
+  },
   data() {
     return {
       chartData: this.CHARTDATA,
       chartOptions: {
         responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
         plugins: {
           legend: {
             display: true,
-            position: "top", // Options: 'top', 'bottom', 'left', 'right'
+            position: "top",
+            labels: {
+              usePointStyle: true,
+              padding: 15,
+              boxWidth: 10,
+              font: {
+                size: 11
+              }
+            }
           },
           title: {
             display: false,
@@ -75,108 +132,130 @@ export default {
           },
           tooltip: {
             enabled: true,
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            titleColor: '#333',
+            bodyColor: '#666',
+            borderColor: '#ddd',
+            borderWidth: 1,
+            padding: 10,
+            usePointStyle: true,
             callbacks: {
               label: function (context) {
                 const value = context.raw;
-                return `représente: ${new Intl.NumberFormat().format(value)}`;
+                const label = context.dataset.label || '';
+                return `${label}: ${new Intl.NumberFormat().format(value)}`;
               },
             },
           },
           annotation: {
-            annotations: {
-              // Min Target Line
-              minTargetLine: {
-                type: "line",
-                yMin: 2200000, // Minimum value for the target line
-                yMax: 2200000, // Same value as yMin for a horizontal line
-                borderColor: "#ec1f0e", // Color of the minimum target line
-                borderWidth: 2, // Thickness of the line
-                label: {
-                  content: "Min Target Line", // Label for the minimum target line
-                  enabled: true,
-                  position: "center", // Position of the label
-                  font: {
-                    size: 14,
-                    weight: "bold",
-                  },
-                  color: "red",
-                },
-                // Add interactivity with listeners
-                listeners: {
-                  enter: function (context) {
-                    // Programmatically set tooltip content when the line is hovered
-                    const tooltip = context.chart.tooltip;
-                    tooltip.setActiveElements(
-                      [
-                        {
-                          datasetIndex: 0,
-                          element: context.element,
-                        },
-                      ],
-                      {
-                        x: context.element.x,
-                        y: context.element.y,
-                      }
-                    );
-                    tooltip.update(); // Ensure the tooltip gets updated
-                  },
-                  leave: function (context) {
-                    // Hide tooltip when the cursor leaves the line
-                    const tooltip = context.chart.tooltip;
-                    tooltip.setActiveElements([], { x: 0, y: 0 });
-                    tooltip.update();
-                  },
-                },
-              },
-
-              // Max Target Line
-              maxTargetLine: {
-                type: "line",
-                yMin: 2700000, // Maximum value for the target line
-                yMax: 2700000, // Same value as yMin for a horizontal line
-                borderColor: "#00bd1a", // Color of the maximum target line
-                borderWidth: 2, // Thickness of the line
-                label: {
-                  content: "Max Target Line", // Label for the maximum target line
-                  enabled: true,
-                  position: "center", // Position of the label
-                  font: {
-                    size: 14,
-                    weight: "bold",
-                  },
-                  color: "blue",
-                },
-              },
-            },
+            annotations: this.getAnnotations()
           },
         },
         layout: {
           padding: {
-            top: 20,
+            top: 30,
             bottom: 10,
             left: 15,
-            right: 15,
+            right: 20,
           },
         },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              maxRotation: 45,
+              minRotation: 45
+            }
+          },
+          y: {
+            beginAtZero: false,
+            grid: {
+              color: 'rgba(0, 0, 0, 0.05)'
+            },
+            ticks: {
+              callback: function(value) {
+                return new Intl.NumberFormat().format(value);
+              }
+            }
+          }
+        },
+        elements: {
+          line: {
+            tension: 0.3 // Smoother curves
+          },
+          point: {
+            radius: 3,
+            hoverRadius: 6
+          }
+        }
       },
     };
   },
-  watch: {
-    CHARTDATA: {
-      deep: true,
-      immediate: true,
-      handler(newData) {
-        // Ensure the chartData is updated reactively
-        this.chartData = {
-          ...newData,
-          datasets: newData.datasets.map((dataset) => ({
-            ...dataset, // Keep the dataset configuration (e.g., colors)
-          })),
-        };
-      },
-    },
-  },
   methods: {
+    getAnnotations() {
+      const annotations = {};
+      
+      if (this.Min !== null) {
+        annotations.minTargetLine = {
+          type: "line",
+          yMin: this.Min,
+          yMax: this.Min,
+          borderColor: "#ec1f0e",
+          borderWidth: 2,
+          borderDash: [5, 5],
+          label: {
+            content: `"Min ${(this.Min).toLocaleString(2)} ${this.Unite}"`,
+            display: true,
+            position: "end",
+            backgroundColor: 'rgba(236, 31, 14, 0.8)',
+            font: {
+              size: 11,
+              weight: "bold",
+            },
+            color: "white",
+            padding: 5
+          }
+        };
+      }
+      
+      if (this.Max !== null) {
+        annotations.maxTargetLine = {
+          type: "line",
+          yMin: this.Max,
+          yMax: this.Max,
+          borderColor: "#00bd1a",
+          borderWidth: 2,
+          borderDash: [5, 5],
+          label: {
+            content: `"Max ${(this.Max).toLocaleString(2)} ${this.Unite}"`,
+            display: true,
+            position: "end",
+            backgroundColor: 'rgba(0, 189, 26, 0.8)',
+            font: {
+              size: 11,
+              weight: "bold",
+            },
+            color: "white",
+            padding: 5
+          }
+        };
+      }
+      
+      return annotations;
+    },
+    updateAnnotations() {
+      this.chartOptions = {
+        ...this.chartOptions,
+        plugins: {
+          ...this.chartOptions.plugins,
+          annotation: {
+            annotations: this.getAnnotations()
+          }
+        }
+      };
+    },
     ExportToExcel() {
       const rows = [];
       const { labels, datasets } = this.chartData;
@@ -192,5 +271,55 @@ export default {
       exportToExcel(rows, `${this.title}.xlsx`);
     },
   },
+  watch: {
+    CHARTDATA: {
+      deep: true,
+      immediate: true,
+      handler(newData) {
+        this.chartData = {
+          ...newData,
+          datasets: newData.datasets.map((dataset) => ({
+            ...dataset,
+            pointBackgroundColor: dataset.borderColor || dataset.backgroundColor,
+            pointBorderColor: '#fff',
+            pointBorderWidth: 1,
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: dataset.borderColor || dataset.backgroundColor,
+            pointHoverBorderWidth: 2
+          })),
+        };
+      },
+    },
+    Min() {
+      this.updateAnnotations();
+    },
+    Max() {
+      this.updateAnnotations();
+    }
+  },
+  mounted() {
+    this.updateAnnotations();
+  }
 };
 </script>
+
+<style scoped>
+.chart-container {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100% !important;
+  overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  .chart-wrapper {
+    height: 350px !important; /* Adjusted for smaller screens */
+  }
+}
+</style>

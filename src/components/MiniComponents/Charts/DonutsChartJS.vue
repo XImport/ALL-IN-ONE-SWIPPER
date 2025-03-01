@@ -1,7 +1,7 @@
 <template>
   <div
     class="donut-container"
-    style="max-width: 427px; height: auto; margin-top: -50px"
+    style="max-width: 427px; height: auto;"
   >
     <h4 class="text-center text-decoration-underline">
       <v-icon :color="IconColor">{{ IconName }}</v-icon> {{ title }}
