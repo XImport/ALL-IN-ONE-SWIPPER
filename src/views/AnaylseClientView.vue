@@ -79,14 +79,15 @@
       </MultiSelect>
     </v-container>
     <v-container>
-      <h2 class="text-center text-decoration-underline" style="margin-top: -2%;">
-        <span class="text-red">
-          Partie 1 :
-        </span>
-       
+      <h2 class="text-center text-decoration-underline" style="margin-top: -2%">
+        <span class="text-red"> Partie 1 : </span>
+
         <span
-          >Analyse Commerciale ( <span class="text-pink"> Ventes, Produits, Prix, Volume, Prix
-            Client,Marge bénéficiaire ...</span>)</span
+          >Analyse Commerciale (
+          <span class="text-pink">
+            Ventes, Produits, Prix, Volume, Prix Client,Marge bénéficiaire
+            ...</span
+          >)</span
         >
       </h2>
     </v-container>
@@ -109,6 +110,7 @@
             title="Quantité Vendue : Tonnes et Mètres Cubes"
             IconName="mdi-chart-tree"
             IconColor="green"
+            UNITE="du Volume Global"
           />
         </v-col>
       </v-row>
@@ -119,6 +121,7 @@
             title="Analyse du PVM : Nobles, Graves et Stérile "
             IconName="mdi-chart-ppf"
             IconColor="blue"
+                UNITE="dhs/Tonne"
           />
         </v-col>
         <v-col cols="12" sm="6">
@@ -127,6 +130,7 @@
             title="Répartition du Volume de Vente par Produits"
             IconName="mdi-chart-tree"
             IconColor="green"
+              UNITE="Tonne du Volume Global"
           />
         </v-col>
       </v-row>
@@ -135,18 +139,20 @@
         <v-col cols="12" sm="6">
           <BarCHART
             :CHARTDATA="PRODUCTS_MARGIN"
-            title="Distribution des Coûts et Prix de Vente selon les Produits "
+            title="Distribution des Coûts et Prix de Vente selon les Produits (dhs) "
             IconName="mdi-chart-ppf"
             IconColor="blue"
+             UNITE="dhs"
           />
         </v-col>
         <v-col cols="12" sm="6">
           <div>
             <BarCHART
               :CHARTDATA="PRODUCTS_MARGIN_POURCENTANGE"
-              title="Marge Bénéficiaire : Distribution en Pourcentage par Produit"
+              title="Marge Bénéficiaire : Distribution en Pourcentage par Produit (%)"
               IconName="mdi-chart-pie"
               IconColor="orange"
+               UNITE="%"
             />
           </div>
         </v-col>
@@ -172,17 +178,18 @@
       </v-row>
     </v-container>
     <v-container>
-      <h2 class="text-center text-decoration-underline" style="margin-top: -2%;">
-        <span class="text-red">
-          Partie 2 :
-        </span>
-       
+      <h2 class="text-center text-decoration-underline" style="margin-top: -2%">
+        <span class="text-red"> Partie 2 : </span>
+
         <span
-          >Analyse Paiement ( <span class="text-pink"> Délai de Paiement, Créances Clients, Recouvrement Effectuer... </span>)</span
+          >Analyse Paiement (
+          <span class="text-pink">
+            Délai de Paiement, Créances Clients, Recouvrement Effectuer... </span
+          >)</span
         >
       </h2>
     </v-container>
-    <v-container style="max-width: 95%;">
+    <v-container style="max-width: 95%">
       <v-row no-gutters>
         <v-col cols="12" sm="6">
           <LineChartJS
@@ -271,116 +278,74 @@ export default defineComponent({
         ],
       },
       DELAI_PAIEMENT_VS_RECOUVREMENT: {
-  labels: [
-    "Janvier",
-    "Février",
-    "Mars",
-    "Avril",
-    "Mai",
-    "Juin",
-    "Juillet",
-    "Août",
-    "Septembre",
-    "Octobre",
-    "Novembre",
-    "Décembre",
-  ],
-  datasets: [
-    {
-      label: "Délai de Paiement Accordé (jours)",
-      data: [
-        60, 60, 60, 70, 90, 70, 100, 80, 80, 70, 60, 60,
-      ],
-      backgroundColor: ["#0c38a5"],
+        labels: [
+          "Janvier",
+          "Février",
+          "Mars",
+          "Avril",
+          "Mai",
+          "Juin",
+          "Juillet",
+          "Août",
+          "Septembre",
+          "Octobre",
+          "Novembre",
+          "Décembre",
+        ],
+        datasets: [
+          {
+            label: "Délai de Paiement Accordé (jours)",
+            data: [60, 60, 60, 70, 90, 70, 100, 80, 80, 70, 60, 60],
+            backgroundColor: ["#0c38a5"],
             borderColor: "#0c38a5",
-    },
-    {
-      label: "Date de Recouvrement Effectué (jours)",
-      data: [
-        20, 35, 50, 25, 95, 30, 120, 60, 30, 45, 35, 0,
-      ],
-      backgroundColor: ["#eca90e"],
-      borderColor: "#eca90e",
-    },
-  ],
-},
+          },
+          {
+            label: "Date de Recouvrement Effectué (jours)",
+            data: [20, 35, 50, 25, 95, 30, 120, 60, 30, 45, 35, 0],
+            backgroundColor: ["#eca90e"],
+            borderColor: "#eca90e",
+          },
+        ],
+      },
 
-
-
-
-
-
-
-
-CREANCE_CA: {
-  labels: [
-    "Janvier",
-    "Février",
-    "Mars",
-    "Avril",
-    "Mai",
-    "Juin",
-    "Juillet",
-    "Août",
-    "Septembre",
-    "Octobre",
-    "Novembre",
-    "Décembre",
-  ],
-  datasets: [
-    {
-      label: "SOMME DU CREANCE CLIENT",
-      data: [
-        3277180.43, 2593602.01, 2949653.39, 1881976.92, 3184468.64,
-        2236468.42, 2162396.08, 2933008.64, 2027596.52, 1617562.78,
-        2427159.58, 2036549.39,
-      ],
-      backgroundColor: ["#0c38a5"],
-      borderColor: "#0c38a5",
-    },
-    {
-      label: "SOMME DU CA BRUT",
-      data: [
-        3177180.43, 2493602.01, 2849653.39, 1781976.92, 3084468.64,
-        2136468.42, 2062396.08, 2833008.64, 1927596.52, 1517562.78,
-        2327159.58, 1936549.39,
-      ],
-      backgroundColor: ["#eca90e"],
-      borderColor: "#eca90e",
-    },
-  ],
-},
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      CREANCE_CA: {
+        labels: [
+          "Janvier",
+          "Février",
+          "Mars",
+          "Avril",
+          "Mai",
+          "Juin",
+          "Juillet",
+          "Août",
+          "Septembre",
+          "Octobre",
+          "Novembre",
+          "Décembre",
+        ],
+        datasets: [
+          {
+            label: "SOMME DU CREANCE CLIENT",
+            data: [
+              3277180.43, 2593602.01, 2949653.39, 1881976.92, 3184468.64,
+              2236468.42, 2162396.08, 2933008.64, 2027596.52, 1617562.78,
+              2427159.58, 2036549.39,
+            ],
+            backgroundColor: ["#0c38a5"],
+            borderColor: "#0c38a5",
+          },
+          {
+            label: "SOMME DU CA BRUT",
+            data: [
+              3177180.43, 2493602.01, 2849653.39, 1781976.92, 3084468.64,
+              2136468.42, 2062396.08, 2833008.64, 1927596.52, 1517562.78,
+              2327159.58, 1936549.39,
+            ],
+            backgroundColor: ["#eca90e"],
+            borderColor: "#eca90e",
+          },
+        ],
+      },
 
       CANETCABRUT: {
         labels: [
@@ -625,7 +590,7 @@ CREANCE_CA: {
         ],
         datasets: [
           {
-            label: "Cout de Revien",
+            label: "Cout de Revient",
             data: [
               150, 120, 100, 130, 110, 140, 125, 150, 145, 130, 135, 120, 115,
             ],
@@ -770,7 +735,117 @@ CREANCE_CA: {
 
         // Store the response data in Vuex
         this.$store.commit("ChangeQuerysData", DATA);
+        const CA = {
+          labels: [...response.data.CAGRAPH.GRAPHCADATESS],
+          datasets: [
+            {
+              label: "SOMME DU CA BRUT",
+              data: [...response.data.CAGRAPH.GRAPHCABRUT],
+              backgroundColor: ["#0c38a5"],
+              borderColor: "#0c38a5",
+            },
 
+            {
+              label: "SOMME DU CA NET",
+              data: [...response.data.CAGRAPH.GRAPHCANET],
+              backgroundColor: ["#eca90e"],
+              borderColor: "#eca90e",
+            },
+          ],
+        };
+        const QNT = {
+          labels: [...response.data.VOLGRAPH.GRAPHVOLDATES],
+          datasets: [
+            {
+              label: "QUANTITE EN T",
+              data: [...response.data.VOLGRAPH.GRAPHVOLQNTENT],
+              backgroundColor: ["#08a06e"],
+            },
+            {
+              label: "QUANTITE EN M3",
+              data: [...response.data.VOLGRAPH.GRAPHVOLQNTENM3],
+              backgroundColor: ["#f50750"],
+            },
+          ],
+        };
+        const PMV = {
+          labels: [...response.data.PMVGRAPH.PMVDATES],
+          datasets: [
+            {
+              label: "PVM NOBLES",
+              data: [...response.data.PMVGRAPH.PMVNOBLES],
+              backgroundColor: ["#008000"],
+            },
+            {
+              label: "PVM GRAVES",
+              data: [...response.data.PMVGRAPH.PMVGRAVES],
+              backgroundColor: ["#FFA500"],
+            },
+            {
+              label: "PVM STERILE",
+              data: [...response.data.PMVGRAPH.PMVSTERILE],
+              backgroundColor: ["#FF0000"],
+            },
+          ],
+        };
+        const VOLUMEBYPRODUCTS = {
+          labels: response.data.QNTBYPRODUITGRAPH.PRODUITS, // Use product names as labels
+          datasets: [
+            {
+              label: "Quantité",
+              data: response.data.QNTBYPRODUITGRAPH.QNTBYPRODUIT,
+              backgroundColor: ["#ff6384", "#36a2eb", "#ffce56"],
+            },
+          ],
+        };
+        const VOLPARPRODUIT = {
+          labels: [...response.data.QNTBYPRODUITGRAPH.PRODUITS],
+          datasets: [
+            {
+              label: "Volume Par Produits",
+              data: [...response.data.QNTBYPRODUITGRAPH.QNTBYPRODUIT],
+             
+            },
+          ],
+        };
+
+        const PRODUCTS_MARGIN_PRICES =  {
+        labels:  [...response.data.CHARTCOUTREVIENWITHPRIXVENTE.PRODUCTSNAME],
+        datasets: [
+          {
+            label: "Cout de Revient",
+            data: [...response.data.CHARTCOUTREVIENWITHPRIXVENTE.COUTREVIEN],
+           
+            
+          },
+          {
+            label: "Prix de Vente",
+            data: [...response.data.CHARTCOUTREVIENWITHPRIXVENTE.PRIXVENTE],
+           
+         
+          },
+        ],
+      };
+
+      const PRODUCTS_MARGIN_POURCENTANGE_Marge =  {
+        labels:[...response.data.MARGE_PRODUCTS_BY_CLIENTS_CHART.PRODUCTSNAME] ,
+        datasets: [
+          {
+            label: "Marge Bénéficiaire En %",
+            data: [...response.data.MARGE_PRODUCTS_BY_CLIENTS_CHART.MARGE],
+            
+          },
+        ],
+      };
+
+       
+        this.CANETCABRUT = CA;
+        this.QNTENTANDM3 = QNT;
+        this.PMVGLOBALS = PMV;
+         this.VOLPARPRODUIT = VOLPARPRODUIT;
+        this.PRODUCTS_SOLD = VOLUMEBYPRODUCTS;
+        this.PRODUCTS_MARGIN  = PRODUCTS_MARGIN_PRICES;
+        this.PRODUCTS_MARGIN_POURCENTANGE = PRODUCTS_MARGIN_POURCENTANGE_Marge
         console.log("API Response:", response.data);
       } catch (error) {
         console.error("Error fetching client analysis:", error);

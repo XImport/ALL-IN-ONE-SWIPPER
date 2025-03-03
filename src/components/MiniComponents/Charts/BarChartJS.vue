@@ -51,9 +51,11 @@ ChartJS.register(
 export default {
   name: "BarChart",
   components: { Bar },
-  props: ["CHARTDATA", "title", "IconName", "IconColor"],
+  props: ["CHARTDATA", "title", "IconName", "IconColor","UNITE"],
   data() {
+    const unite = this.UNITE
     return {
+      
       chartData: this.CHARTDATA,
       chartOptions: {
         responsive: true,
@@ -66,6 +68,14 @@ export default {
             display: false,
             text: this.title,
           },
+          // tooltip: {
+          //   enabled: true,
+          //   callbacks: {
+          //     label: function (context) {
+          //       return `représente: ${context.raw.toLocaleString(2)} ${unite} `;
+          //     },
+          //   },
+          // },
         },
         scales: {
           x: {
