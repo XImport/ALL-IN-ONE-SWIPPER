@@ -809,18 +809,33 @@ export default defineComponent({
           ],
         };
 
+
+
+        const CAPARPRODUIT =  {
+        labels:[...response.data.CANETBYPRODUITGRAPH.PRODUITS] ,
+        datasets: [
+          {
+            label: "CA Net Par Produits",
+            data: [...response.data.CANETBYPRODUITGRAPH.CANETBYPRODUIT],
+           
+          },
+        ],
+      };
+
+
+
         const PRODUCTS_MARGIN_PRICES =  {
-        labels:  [...response.data.CHARTCOUTREVIENWITHPRIXVENTE.PRODUCTSNAME],
+        labels:  [...response.data.CHARTCOUTREVIENWITHPRIXVENTE[0].PRODUCTSNAME],
         datasets: [
           {
             label: "Cout de Revient",
-            data: [...response.data.CHARTCOUTREVIENWITHPRIXVENTE.COUTREVIEN],
+            data: [...response.data.CHARTCOUTREVIENWITHPRIXVENTE[0].COUTREVIEN],
            
             
           },
           {
             label: "Prix de Vente",
-            data: [...response.data.CHARTCOUTREVIENWITHPRIXVENTE.PRIXVENTE],
+            data: [...response.data.CHARTCOUTREVIENWITHPRIXVENTE[0].PRIXVENTE],
            
          
           },
@@ -844,6 +859,7 @@ export default defineComponent({
         this.PMVGLOBALS = PMV;
          this.VOLPARPRODUIT = VOLPARPRODUIT;
         this.PRODUCTS_SOLD = VOLUMEBYPRODUCTS;
+        this.CAPARPRODUIT = CAPARPRODUIT
         this.PRODUCTS_MARGIN  = PRODUCTS_MARGIN_PRICES;
         this.PRODUCTS_MARGIN_POURCENTANGE = PRODUCTS_MARGIN_POURCENTANGE_Marge
         console.log("API Response:", response.data);
