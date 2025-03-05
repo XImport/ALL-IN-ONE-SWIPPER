@@ -99,8 +99,8 @@
             title="Progression du Chiffre d'Affaires Brut et Net "
             IconName="mdi-chart-ppf"
             IconColor="blue"
-            :Min="1500000"
-            :Max="2100000"
+            :Min="200000"
+            :Max="400000"
             :chartHeight="350"
           />
         </v-col>
@@ -852,8 +852,63 @@ export default defineComponent({
           },
         ],
       };
+      console.log("DSO Data:", response.data.DSO_CLIENTS_CHART);
+      console.log("Selected Clients:", Clients);
+      
+      const DSO_CLIENTS_CHART = {
+        labels: response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.data[response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.client_names[0]].dates,
+        datasets: response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.client_names.flatMap(clientName => {
+          const clientData = response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.data[clientName];
+          return [
+            {
+              label: `${clientName} - Délai de Paiement Accordé (jours)`,
+              data: Array(clientData.dates.length).fill(clientData.client_delay_days),
+              backgroundColor: "#0c38a5",
+              borderColor: "#0c38a5",
+            },
+            {
+              label: `${clientName} - Date de Recouvrement Effectué (jours)`,
+              data: clientData.max_dso,
+              backgroundColor: "#eca90e",
+              borderColor: "#eca90e",
+            }
+          ];
+        })
+      };
 
-       
+      const CREANCE_CA_API = {
+        labels:[...response.data.CREANCE_CLIENT_CHART.dates],
+        datasets: [
+          {
+            label: "SOMME DU CREANCE CLIENT",
+            data: [...response.data.CREANCE_CLIENT_CHART.net_receivables],
+            backgroundColor: ["#0c38a5"],
+            borderColor: "#0c38a5",
+          },
+          {
+            label: "RECOUVREMENT EFFECTUER",
+            data: [...response.data.CREANCE_CLIENT_CHART.reglements],
+            backgroundColor: ["#FFC0CB"],
+            borderColor: "#FFC0CB",
+          },
+          {
+            label: "VALEUR IMPAYE",
+            data: [...response.data.CREANCE_CLIENT_CHART.impayes],
+            backgroundColor: ["#FF0000"],
+            borderColor: "#FF0000",
+          },
+          {
+            label: "SOMME DU CA BRUT",
+            data: [...response.data.CREANCE_CLIENT_CHART.ca_brut],
+            backgroundColor: ["#eca90e"],
+            borderColor: "#eca90e",
+          },
+        ],
+      };
+
+       this.DELAI_PAIEMENT_VS_RECOUVREMENT = DSO_CLIENTS_CHART;
+       this.CREANCE_CA = CREANCE_CA_API
+       this.CREANCE_CA = CREANCE_CA_API;
         this.CANETCABRUT = CA;
         this.QNTENTANDM3 = QNT;
         this.PMVGLOBALS = PMV;
