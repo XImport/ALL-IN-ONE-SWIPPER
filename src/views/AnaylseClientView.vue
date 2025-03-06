@@ -121,7 +121,7 @@
             title="Analyse du PVM : Nobles, Graves et Stérile "
             IconName="mdi-chart-ppf"
             IconColor="blue"
-                UNITE="dhs/Tonne"
+            UNITE="dhs/Tonne"
           />
         </v-col>
         <v-col cols="12" sm="6">
@@ -130,7 +130,7 @@
             title="Répartition du Volume de Vente par Produits"
             IconName="mdi-chart-tree"
             IconColor="green"
-              UNITE="Tonne du Volume Global"
+            UNITE="Tonne du Volume Global"
           />
         </v-col>
       </v-row>
@@ -142,7 +142,7 @@
             title="Distribution des Coûts et Prix de Vente selon les Produits (dhs) "
             IconName="mdi-chart-ppf"
             IconColor="blue"
-             UNITE="dhs"
+            UNITE="dhs"
           />
         </v-col>
         <v-col cols="12" sm="6">
@@ -152,7 +152,7 @@
               title="Marge Bénéficiaire : Distribution en Pourcentage par Produit (%)"
               IconName="mdi-chart-pie"
               IconColor="orange"
-               UNITE="%"
+              UNITE="%"
             />
           </div>
         </v-col>
@@ -210,6 +210,16 @@
             IconName="mdi-chart-tree"
             IconColor="green"
           />
+        </v-col>
+      </v-row>
+      <v-row no-gutters>
+        <v-col cols="12" sm="6">
+          <h1>GRAPHIC DE DSO </h1>
+          
+        </v-col>
+        <v-col cols="12" sm="6">
+    
+          <h1>GRAPHIC REPARTITION DES MODES DE PAIEMENT DES CLIENTS </h1>
         </v-col>
       </v-row>
     </v-container>
@@ -789,11 +799,16 @@ export default defineComponent({
           ],
         };
         const VOLUMEBYPRODUCTS = {
-          labels: response.data.QNTBYPRODUITGRAPH.PRODUITS, // Use product names as labels
+          labels: response.data.VOLUMEDATABYPRODUCTSBYDATES.PRODUITS, // Use product names as labels
           datasets: [
             {
               label: "Quantité",
-              data: response.data.QNTBYPRODUITGRAPH.QNTBYPRODUIT,
+              data: response.data.VOLUMEDATABYPRODUCTSBYDATES.QNTBYPRODUIT,
+              backgroundColor: ["#ff6384", "#36a2eb", "#ffce56"],
+            },
+            {
+              label: "CA NET",
+              data: response.data.VOLUMEDATABYPRODUCTSBYDATES.CANETBYPRODUIT,
               backgroundColor: ["#ff6384", "#36a2eb", "#ffce56"],
             },
           ],
@@ -804,119 +819,127 @@ export default defineComponent({
             {
               label: "Volume Par Produits",
               data: [...response.data.QNTBYPRODUITGRAPH.QNTBYPRODUIT],
-             
             },
           ],
         };
 
-
-
-        const CAPARPRODUIT =  {
-        labels:[...response.data.CANETBYPRODUITGRAPH.PRODUITS] ,
-        datasets: [
-          {
-            label: "CA Net Par Produits",
-            data: [...response.data.CANETBYPRODUITGRAPH.CANETBYPRODUIT],
-           
-          },
-        ],
-      };
-
-
-
-        const PRODUCTS_MARGIN_PRICES =  {
-        labels:  [...response.data.CHARTCOUTREVIENWITHPRIXVENTE[0].PRODUCTSNAME],
-        datasets: [
-          {
-            label: "Cout de Revient",
-            data: [...response.data.CHARTCOUTREVIENWITHPRIXVENTE[0].COUTREVIEN],
-           
-            
-          },
-          {
-            label: "Prix de Vente",
-            data: [...response.data.CHARTCOUTREVIENWITHPRIXVENTE[0].PRIXVENTE],
-           
-         
-          },
-        ],
-      };
-
-      const PRODUCTS_MARGIN_POURCENTANGE_Marge =  {
-        labels:[...response.data.MARGE_PRODUCTS_BY_CLIENTS_CHART.PRODUCTSNAME] ,
-        datasets: [
-          {
-            label: "Marge Bénéficiaire En %",
-            data: [...response.data.MARGE_PRODUCTS_BY_CLIENTS_CHART.MARGE],
-            
-          },
-        ],
-      };
-      console.log("DSO Data:", response.data.DSO_CLIENTS_CHART);
-      console.log("Selected Clients:", Clients);
-      
-      const DSO_CLIENTS_CHART = {
-        labels: response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.data[response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.client_names[0]].dates,
-        datasets: response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.client_names.flatMap(clientName => {
-          const clientData = response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.data[clientName];
-          return [
+        const CAPARPRODUIT = {
+          labels: [...response.data.CANETBYPRODUITGRAPH.PRODUITS],
+          datasets: [
             {
-              label: `${clientName} - Délai de Paiement Accordé (jours)`,
-              data: Array(clientData.dates.length).fill(clientData.client_delay_days),
-              backgroundColor: "#0c38a5",
+              label: "CA Net Par Produits",
+              data: [...response.data.CANETBYPRODUITGRAPH.CANETBYPRODUIT],
+            },
+          ],
+        };
+
+        const PRODUCTS_MARGIN_PRICES = {
+          labels: [
+            ...response.data.CHARTCOUTREVIENWITHPRIXVENTE[0].PRODUCTSNAME,
+          ],
+          datasets: [
+            {
+              label: "Cout de Revient",
+              data: [
+                ...response.data.CHARTCOUTREVIENWITHPRIXVENTE[0].COUTREVIEN,
+              ],
+            },
+            {
+              label: "Prix de Vente",
+              data: [
+                ...response.data.CHARTCOUTREVIENWITHPRIXVENTE[0].PRIXVENTE,
+              ],
+            },
+          ],
+        };
+
+        const PRODUCTS_MARGIN_POURCENTANGE_Marge = {
+          labels: [
+            ...response.data.MARGE_PRODUCTS_BY_CLIENTS_CHART.PRODUCTSNAME,
+          ],
+          datasets: [
+            {
+              label: "Marge Bénéficiaire En %",
+              data: [...response.data.MARGE_PRODUCTS_BY_CLIENTS_CHART.MARGE],
+            },
+          ],
+        };
+        console.log("DSO Data:", response.data.DSO_CLIENTS_CHART);
+        console.log("Selected Clients:", Clients);
+
+        const DSO_CLIENTS_CHART = {
+          labels:
+            response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.data[
+              response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.client_names[0]
+            ].dates,
+          datasets:
+            response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.client_names.flatMap(
+              (clientName) => {
+                const clientData =
+                  response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.data[
+                    clientName
+                  ];
+                return [
+                  {
+                    label: `${clientName} - Délai de Paiement Accordé (jours)`,
+                    data: Array(clientData.dates.length).fill(
+                      clientData.client_delay_days
+                    ),
+                    backgroundColor: "#0c38a5",
+                    borderColor: "#0c38a5",
+                  },
+                  {
+                    label: `${clientName} - Date de Recouvrement Effectué (jours)`,
+                    data: clientData.max_dso,
+                    backgroundColor: "#eca90e",
+                    borderColor: "#eca90e",
+                  },
+                ];
+              }
+            ),
+        };
+
+        const CREANCE_CA_API = {
+          labels: [...response.data.CREANCE_CLIENT_CHART.dates],
+          datasets: [
+            {
+              label: "SOMME DU CREANCE CLIENT",
+              data: [...response.data.CREANCE_CLIENT_CHART.net_receivables],
+              backgroundColor: ["#0c38a5"],
               borderColor: "#0c38a5",
             },
             {
-              label: `${clientName} - Date de Recouvrement Effectué (jours)`,
-              data: clientData.max_dso,
-              backgroundColor: "#eca90e",
+              label: "RECOUVREMENT EFFECTUER",
+              data: [...response.data.CREANCE_CLIENT_CHART.reglements],
+              backgroundColor: ["#FFC0CB"],
+              borderColor: "#FFC0CB",
+            },
+            {
+              label: "VALEUR IMPAYE",
+              data: [...response.data.CREANCE_CLIENT_CHART.impayes],
+              backgroundColor: ["#FF0000"],
+              borderColor: "#FF0000",
+            },
+            {
+              label: "SOMME DU CA BRUT",
+              data: [...response.data.CREANCE_CLIENT_CHART.ca_brut],
+              backgroundColor: ["#eca90e"],
               borderColor: "#eca90e",
-            }
-          ];
-        })
-      };
+            },
+          ],
+        };
 
-      const CREANCE_CA_API = {
-        labels:[...response.data.CREANCE_CLIENT_CHART.dates],
-        datasets: [
-          {
-            label: "SOMME DU CREANCE CLIENT",
-            data: [...response.data.CREANCE_CLIENT_CHART.net_receivables],
-            backgroundColor: ["#0c38a5"],
-            borderColor: "#0c38a5",
-          },
-          {
-            label: "RECOUVREMENT EFFECTUER",
-            data: [...response.data.CREANCE_CLIENT_CHART.reglements],
-            backgroundColor: ["#FFC0CB"],
-            borderColor: "#FFC0CB",
-          },
-          {
-            label: "VALEUR IMPAYE",
-            data: [...response.data.CREANCE_CLIENT_CHART.impayes],
-            backgroundColor: ["#FF0000"],
-            borderColor: "#FF0000",
-          },
-          {
-            label: "SOMME DU CA BRUT",
-            data: [...response.data.CREANCE_CLIENT_CHART.ca_brut],
-            backgroundColor: ["#eca90e"],
-            borderColor: "#eca90e",
-          },
-        ],
-      };
-
-       this.DELAI_PAIEMENT_VS_RECOUVREMENT = DSO_CLIENTS_CHART;
-       this.CREANCE_CA = CREANCE_CA_API
-       this.CREANCE_CA = CREANCE_CA_API;
+        this.DELAI_PAIEMENT_VS_RECOUVREMENT = DSO_CLIENTS_CHART;
+        this.CREANCE_CA = CREANCE_CA_API;
+        this.CREANCE_CA = CREANCE_CA_API;
         this.CANETCABRUT = CA;
         this.QNTENTANDM3 = QNT;
         this.PMVGLOBALS = PMV;
-         this.VOLPARPRODUIT = VOLPARPRODUIT;
+        this.VOLPARPRODUIT = VOLPARPRODUIT;
         this.PRODUCTS_SOLD = VOLUMEBYPRODUCTS;
-        this.CAPARPRODUIT = CAPARPRODUIT
-        this.PRODUCTS_MARGIN  = PRODUCTS_MARGIN_PRICES;
-        this.PRODUCTS_MARGIN_POURCENTANGE = PRODUCTS_MARGIN_POURCENTANGE_Marge
+        this.CAPARPRODUIT = CAPARPRODUIT;
+        this.PRODUCTS_MARGIN = PRODUCTS_MARGIN_PRICES;
+        this.PRODUCTS_MARGIN_POURCENTANGE = PRODUCTS_MARGIN_POURCENTANGE_Marge;
         console.log("API Response:", response.data);
       } catch (error) {
         console.error("Error fetching client analysis:", error);
