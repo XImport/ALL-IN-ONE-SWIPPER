@@ -214,8 +214,16 @@
       </v-row>
       <v-row no-gutters>
         <v-col cols="12" sm="6">
-          <h1>GRAPHIC DE DSO </h1>
-          
+          <LineChartJS
+            :CHARTDATA="DSO_CLIENTS"
+            title="DSO CLIENTS"
+            IconName="mdi-chart-ppf"
+            IconColor="blue"
+            :Min="120"
+            :Max="30"
+            :chartHeight="370"
+            Unite="Jours"
+          />
         </v-col>
         <v-col cols="12" sm="6">
     
@@ -253,6 +261,25 @@ export default defineComponent({
       },
       selectedClients: [],
       Clients: [{ CLIENTNAME: "New York", CODE: "NY" }],
+      DSO_CLIENTS: {
+        labels: [
+          "Janvier",
+          "Février",
+          "Mars",
+          "Avril",
+          "Mai",
+          "Juin",
+          "Juillet",
+        ],
+        datasets: [
+          {
+            label: "DSO Clients",
+            data: [10, 20, 30, 40, 50, 60, 70],
+            backgroundColor: "#0c38a5",
+            borderColor: "#0c38a5",
+          },
+        ],
+      },
       QNTENTANDM3: {
         labels: [
           "Janvier",
@@ -864,19 +891,19 @@ export default defineComponent({
             },
           ],
         };
-        console.log("DSO Data:", response.data.DSO_CLIENTS_CHART);
+      
         console.log("Selected Clients:", Clients);
 
         const DSO_CLIENTS_CHART = {
           labels:
-            response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.data[
-              response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.client_names[0]
+            response.data.Daily_vs_payment_date_CHART.DSO_CLIENTS_CHART.data[
+              response.data.Daily_vs_payment_date_CHART.DSO_CLIENTS_CHART.client_names[0]
             ].dates,
           datasets:
-            response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.client_names.flatMap(
+            response.data.Daily_vs_payment_date_CHART.DSO_CLIENTS_CHART.client_names.flatMap(
               (clientName) => {
                 const clientData =
-                  response.data.DSO_CLIENTS_CHART.DSO_CLIENTS_CHART.data[
+                  response.data.Daily_vs_payment_date_CHART.DSO_CLIENTS_CHART.data[
                     clientName
                   ];
                 return [
@@ -928,6 +955,17 @@ export default defineComponent({
             },
           ],
         };
+        const DSO_CLIENTS = {
+          labels:  [...response.data.DSO_clients.dates],
+          datasets: [
+            { 
+              label: "DSO Clients", 
+              data:  [...response.data.DSO_clients.dso_values],
+              backgroundColor: "#0c38a5",
+              borderColor: "#0c38a5"
+            },
+          ],
+        };
 
         this.DELAI_PAIEMENT_VS_RECOUVREMENT = DSO_CLIENTS_CHART;
         this.CREANCE_CA = CREANCE_CA_API;
@@ -940,6 +978,7 @@ export default defineComponent({
         this.CAPARPRODUIT = CAPARPRODUIT;
         this.PRODUCTS_MARGIN = PRODUCTS_MARGIN_PRICES;
         this.PRODUCTS_MARGIN_POURCENTANGE = PRODUCTS_MARGIN_POURCENTANGE_Marge;
+        this.DSO_CLIENTS = DSO_CLIENTS;
         console.log("API Response:", response.data);
       } catch (error) {
         console.error("Error fetching client analysis:", error);
