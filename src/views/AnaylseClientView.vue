@@ -78,159 +78,176 @@
         </template>
       </MultiSelect>
     </v-container>
-    <v-container>
-      <h2 class="text-center text-decoration-underline" style="margin-top: -2%">
-        <span class="text-red"> Partie 1 : </span>
-
-        <span
-          >Analyse Commerciale (
-          <span class="text-pink">
-            Ventes, Produits, Prix, Volume, Prix Client,Marge bénéficiaire
-            ...</span
-          >)</span
+    <div v-if="isLoadingContent">
+      <v-container>
+        <h2
+          class="text-center text-decoration-underline"
+          style="margin-top: -2%"
         >
-      </h2>
-    </v-container>
-    <v-container style="max-width: 90%">
-      <v-row no-gutters>
-        <v-col cols="12" sm="6">
-          <LineChartJS
-            :CHARTDATA="CANETCABRUT"
-            title="Progression du Chiffre d'Affaires Brut et Net "
-            IconName="mdi-chart-ppf"
-            IconColor="blue"
-            :Min="200000"
-            :Max="400000"
-            :chartHeight="350"
-          />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <BarCHART
-            :CHARTDATA="QNTENTANDM3"
-            title="Quantité Vendue : Tonnes et Mètres Cubes"
-            IconName="mdi-chart-tree"
-            IconColor="green"
-            UNITE="du Volume Global"
-          />
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col cols="12" sm="6">
-          <BarCHART
-            :CHARTDATA="PMVGLOBALS"
-            title="Analyse du PVM : Nobles, Graves et Stérile "
-            IconName="mdi-chart-ppf"
-            IconColor="blue"
-            UNITE="dhs/Tonne"
-          />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <BarCHART
-            :CHARTDATA="PRODUCTS_SOLD"
-            title="Répartition du Volume de Vente par Produits"
-            IconName="mdi-chart-tree"
-            IconColor="green"
-            UNITE="Tonne du Volume Global"
-          />
-        </v-col>
-      </v-row>
+          <span class="text-red"> Partie 1 : </span>
 
-      <v-row no-gutters>
-        <v-col cols="12" sm="6">
-          <BarCHART
-            :CHARTDATA="PRODUCTS_MARGIN"
-            title="Distribution des Coûts et Prix de Vente selon les Produits (dhs) "
-            IconName="mdi-chart-ppf"
-            IconColor="blue"
-            UNITE="dhs"
-          />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <div>
+          <span
+            >Analyse Commerciale (
+            <span class="text-pink">
+              Ventes, Produits, Prix, Volume, Prix Client,Marge bénéficiaire
+              ...</span
+            >)</span
+          >
+        </h2>
+      </v-container>
+      <v-container style="max-width: 90%">
+        <v-row no-gutters>
+          <v-col cols="12" sm="6">
+            <LineChartJS
+              :CHARTDATA="CANETCABRUT"
+              title="Progression du Chiffre d'Affaires Brut et Net "
+              IconName="mdi-chart-ppf"
+              IconColor="blue"
+              :Min="200000"
+              :Max="400000"
+              :chartHeight="350"
+            />
+          </v-col>
+          <v-col cols="12" sm="6">
             <BarCHART
-              :CHARTDATA="PRODUCTS_MARGIN_POURCENTANGE"
-              title="Marge Bénéficiaire : Distribution en Pourcentage par Produit (%)"
+              :CHARTDATA="QNTENTANDM3"
+              title="Quantité Vendue : Tonnes et Mètres Cubes"
+              IconName="mdi-chart-tree"
+              IconColor="green"
+              UNITE="du Volume Global"
+            />
+          </v-col>
+        </v-row>
+        <v-row no-gutters>
+          <v-col cols="12" sm="6">
+            <BarCHART
+              :CHARTDATA="PMVGLOBALS"
+              title="Analyse du PVM : Nobles, Graves et Stérile "
+              IconName="mdi-chart-ppf"
+              IconColor="blue"
+              UNITE="dhs/Tonne"
+            />
+          </v-col>
+          <v-col cols="12" sm="6">
+            <BarCHART
+              :CHARTDATA="PRODUCTS_SOLD"
+              title="Répartition du Volume de Vente par Produits"
+              IconName="mdi-chart-tree"
+              IconColor="green"
+              UNITE="Tonne du Volume Global"
+            />
+          </v-col>
+        </v-row>
+
+        <v-row no-gutters>
+          <v-col cols="12" sm="6">
+            <BarCHART
+              :CHARTDATA="PRODUCTS_MARGIN"
+              title="Distribution des Coûts et Prix de Vente selon les Produits (dhs) "
+              IconName="mdi-chart-ppf"
+              IconColor="blue"
+              UNITE="dhs"
+            />
+          </v-col>
+          <v-col cols="12" sm="6">
+            <div>
+              <BarCHART
+                :CHARTDATA="PRODUCTS_MARGIN_POURCENTANGE"
+                title="Marge Bénéficiaire : Distribution en Pourcentage par Produit (%)"
+                IconName="mdi-chart-pie"
+                IconColor="orange"
+                UNITE="%"
+              />
+            </div>
+          </v-col>
+        </v-row>
+
+        <v-row no-gutters style="margin-top: 0%; margin-left: 10%">
+          <v-col cols="12" sm="6">
+            <DonutsChartJS
+              :CHARTDATA="VOLPARPRODUIT"
+              title="État des Ventes par Produit en Tonnes (Par Date)"
               IconName="mdi-chart-pie"
               IconColor="orange"
-              UNITE="%"
             />
-          </div>
-        </v-col>
-      </v-row>
-
-      <v-row no-gutters style="margin-top: 0%; margin-left: 10%">
-        <v-col cols="12" sm="6">
-          <DonutsChartJS
-            :CHARTDATA="VOLPARPRODUIT"
-            title="État des Ventes par Produit en Tonnes (Par Date)"
-            IconName="mdi-chart-pie"
-            IconColor="orange"
-          />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <DonutsChartJS
-            :CHARTDATA="CAPARPRODUIT"
-            title="État des Ventes par Produit en CA NET (Par Date)"
-            IconName="mdi-chart-pie"
-            IconColor="orange"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container>
-      <h2 class="text-center text-decoration-underline" style="margin-top: -2%">
-        <span class="text-red"> Partie 2 : </span>
-
-        <span
-          >Analyse Paiement (
-          <span class="text-pink">
-            Délai de Paiement, Créances Clients, Recouvrement Effectuer... </span
-          >)</span
+          </v-col>
+          <v-col cols="12" sm="6">
+            <DonutsChartJS
+              :CHARTDATA="CAPARPRODUIT"
+              title="État des Ventes par Produit en CA NET (Par Date)"
+              IconName="mdi-chart-pie"
+              IconColor="orange"
+            />
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container>
+        <h2
+          class="text-center text-decoration-underline"
+          style="margin-top: -2%"
         >
-      </h2>
-    </v-container>
-    <v-container style="max-width: 95%">
-      <v-row no-gutters>
-        <v-col cols="12" sm="6">
-          <LineChartJS
-            :CHARTDATA="DELAI_PAIEMENT_VS_RECOUVREMENT"
-            title="Délai de Paiement vs Date de Recouvrement "
-            IconName="mdi-chart-ppf"
-            IconColor="blue"
-            :Min="120"
-            :Max="30"
-            :chartHeight="370"
-            Unite="Jours"
-          />
-        </v-col>
-        <v-col cols="12" sm="6">
-          <BarCHART
-            :CHARTDATA="CREANCE_CA"
-            title="Évolution des Créances Clients et du Chiffre d'Affaires Brut "
-            IconName="mdi-chart-tree"
-            IconColor="green"
-          />
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col cols="12" sm="6">
-          <LineChartJS
-            :CHARTDATA="DSO_CLIENTS"
-            title="DSO CLIENTS"
-            IconName="mdi-chart-ppf"
-            IconColor="blue"
-            :Min="120"
-            :Max="30"
-            :chartHeight="370"
-            Unite="Jours"
-          />
-        </v-col>
-        <v-col cols="12" sm="6">
-    
-          <h1>GRAPHIC REPARTITION DES MODES DE PAIEMENT DES CLIENTS </h1>
-        </v-col>
-      </v-row>
-    </v-container>
+          <span class="text-red"> Partie 2 : </span>
+
+          <span
+            >Analyse Paiement (
+            <span class="text-pink">
+              Délai de Paiement, Créances Clients, Recouvrement Effectuer... </span
+            >)</span
+          >
+        </h2>
+      </v-container>
+      <v-container style="max-width: 95%">
+        <v-row no-gutters>
+          <v-col cols="12" sm="6">
+            <LineChartJS
+              :CHARTDATA="DELAI_PAIEMENT_VS_RECOUVREMENT"
+              title="Délai de Paiement vs Date de Recouvrement "
+              IconName="mdi-chart-ppf"
+              IconColor="blue"
+              :Min="120"
+              :Max="30"
+              :chartHeight="370"
+              Unite="Jours"
+            />
+          </v-col>
+          <v-col cols="12" sm="6">
+            <BarCHART
+              :CHARTDATA="CREANCE_CA"
+              title="Évolution des Créances Clients et du Chiffre d'Affaires Brut "
+              IconName="mdi-chart-tree"
+              IconColor="green"
+            />
+          </v-col>
+        </v-row>
+        <v-row no-gutters>
+          <v-col cols="12" sm="6">
+            <LineChartJS
+              :CHARTDATA="DSO_CLIENTS"
+              title="DSO CLIENTS"
+              IconName="mdi-chart-ppf"
+              IconColor="blue"
+              :Min="120"
+              :Max="CLIENT_PAYEMENT_DELAIY"
+              :chartHeight="370"
+              :chartWidth="472"
+              Unite="Jours"
+            />
+          </v-col>
+          <v-col cols="12" sm="6">
+            <div style="margin-left: 20%">
+              <DonutsChartJS
+                :CHARTDATA="REPARTITION_MODES_PAYEMENTS"
+                title="État des Ventes par Produit en CA NET (Par Date)"
+                IconName="mdi-chart-pie"
+                IconColor="orange"
+                :chartHeight="370"
+                :chartWidth="172"
+              />
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+    </div>
   </div>
 </template>
 
@@ -255,12 +272,15 @@ export default defineComponent({
   },
   data() {
     return {
+      CLIENT_PAYEMENT_DELAIY: 0,
+      isLoadingContent: false,
       DATA: {
         DébutDate: "",
         FinDate: "",
       },
       selectedClients: [],
       Clients: [{ CLIENTNAME: "New York", CODE: "NY" }],
+
       DSO_CLIENTS: {
         labels: [
           "Janvier",
@@ -277,6 +297,47 @@ export default defineComponent({
             data: [10, 20, 30, 40, 50, 60, 70],
             backgroundColor: "#0c38a5",
             borderColor: "#0c38a5",
+          },
+        ],
+      },
+      REPARTITION_MODES_PAYEMENTS: {
+        labels: ["ESPECE", "VIRMENT", "EFFET", "COMP", "CHEQ"],
+        datasets: [
+          {
+            label: "Repartition des modes de paiement",
+            data: [100],
+            backgroundColor: ["#1f77b4"], // Blue
+            borderColor: "#1f77b4",
+          },
+          {
+            label: "Repartition des modes de paiement",
+            data: [100],
+            backgroundColor: ["#f50750"], // RED
+            borderColor: "#f50750",
+          },
+          {
+            label: "Repartition des modes de paiement",
+            data: [100],
+            backgroundColor: ["#ff7f0e"], // ORANGE
+            borderColor: "#ff7f0e",
+          },
+          {
+            label: "Repartition des modes de paiement",
+            data: [100],
+            backgroundColor: ["#FFFF00"], // YELLOW
+            borderColor: "#FFFF00",
+          },
+          {
+            label: "Repartition des modes de paiement",
+            data: [100],
+            backgroundColor: ["#FF00FF"], // MAGENTA
+            borderColor: "#FF00FF",
+          },
+          {
+            label: "Repartition des modes de paiement",
+            data: [100],
+            backgroundColor: ["#00FFFF"], // CYAN
+            borderColor: "#00FFFF",
           },
         ],
       },
@@ -771,7 +832,10 @@ export default defineComponent({
         );
 
         // Store the response data in Vuex
+        // this.CLIENT_PAYEMENT_DELAIY = response.data.DSO_clients.client_payement_delaiy;
         this.$store.commit("ChangeQuerysData", DATA);
+        this.CLIENT_PAYEMENT_DELAIY =
+          response.data.DSO_clients.client_payement_delaiy[0];
         const CA = {
           labels: [...response.data.CAGRAPH.GRAPHCADATESS],
           datasets: [
@@ -846,6 +910,25 @@ export default defineComponent({
             {
               label: "Volume Par Produits",
               data: [...response.data.QNTBYPRODUITGRAPH.QNTBYPRODUIT],
+              backgroundColor: [
+                "#ff6384",
+                "#36a2eb",
+                "#ffce56",
+                "#0c38a5",
+                "#eca90e",
+                "#008000",
+                "#FFA500",
+                "#FF0000",
+                "#9E5F95",
+                "#F08C4F",
+                "#D44B73",
+                "#A8D5BA",
+                "#57A8D8",
+                "#F9C74F",
+                "#A8E0B1",
+                "#F1A7B7",
+                "#F8D4B3",
+              ],
             },
           ],
         };
@@ -856,6 +939,25 @@ export default defineComponent({
             {
               label: "CA Net Par Produits",
               data: [...response.data.CANETBYPRODUITGRAPH.CANETBYPRODUIT],
+              backgroundColor: [
+                "#ff6384",
+                "#36a2eb",
+                "#ffce56",
+                "#0c38a5",
+                "#eca90e",
+                "#008000",
+                "#FFA500",
+                "#FF0000",
+                "#9E5F95",
+                "#F08C4F",
+                "#D44B73",
+                "#A8D5BA",
+                "#57A8D8",
+                "#F9C74F",
+                "#A8E0B1",
+                "#F1A7B7",
+                "#F8D4B3",
+              ],
             },
           ],
         };
@@ -870,12 +972,16 @@ export default defineComponent({
               data: [
                 ...response.data.CHARTCOUTREVIENWITHPRIXVENTE[0].COUTREVIEN,
               ],
+              backgroundColor: ["#0c38a5"],
+              borderColor: "#0c38a5",
             },
             {
               label: "Prix de Vente",
               data: [
                 ...response.data.CHARTCOUTREVIENWITHPRIXVENTE[0].PRIXVENTE,
               ],
+              backgroundColor: ["#eca90e"],
+              borderColor: "#eca90e",
             },
           ],
         };
@@ -888,24 +994,41 @@ export default defineComponent({
             {
               label: "Marge Bénéficiaire En %",
               data: [...response.data.MARGE_PRODUCTS_BY_CLIENTS_CHART.MARGE],
+              backgroundColor: [
+                "#0c38a5",
+                "#eca90e",
+                "#008000",
+                "#FFA500",
+                "#FF0000",
+                "#9E5F95",
+                "#F08C4F",
+                "#D44B73",
+                "#A8D5BA",
+                "#57A8D8",
+                "#F9C74F",
+                "#A8E0B1",
+                "#F1A7B7",
+                "#F8D4B3",
+              ],
+              borderColor: "#0c38a5",
             },
           ],
         };
-      
+
         console.log("Selected Clients:", Clients);
 
         const DSO_CLIENTS_CHART = {
           labels:
             response.data.Daily_vs_payment_date_CHART.DSO_CLIENTS_CHART.data[
-              response.data.Daily_vs_payment_date_CHART.DSO_CLIENTS_CHART.client_names[0]
+              response.data.Daily_vs_payment_date_CHART.DSO_CLIENTS_CHART
+                .client_names[0]
             ].dates,
           datasets:
             response.data.Daily_vs_payment_date_CHART.DSO_CLIENTS_CHART.client_names.flatMap(
               (clientName) => {
                 const clientData =
-                  response.data.Daily_vs_payment_date_CHART.DSO_CLIENTS_CHART.data[
-                    clientName
-                  ];
+                  response.data.Daily_vs_payment_date_CHART.DSO_CLIENTS_CHART
+                    .data[clientName];
                 return [
                   {
                     label: `${clientName} - Délai de Paiement Accordé (jours)`,
@@ -956,13 +1079,49 @@ export default defineComponent({
           ],
         };
         const DSO_CLIENTS = {
-          labels:  [...response.data.DSO_clients.dates],
+          labels: [...response.data.DSO_clients.dates],
           datasets: [
-            { 
-              label: "DSO Clients", 
-              data:  [...response.data.DSO_clients.dso_values],
+            {
+              label: "DSO Clients",
+              data: [...response.data.DSO_clients.dso_values],
               backgroundColor: "#0c38a5",
-              borderColor: "#0c38a5"
+              borderColor: "#0c38a5",
+            },
+          ],
+        };
+        const REPARTITION_MODES_PAYEMENTS = {
+          labels: [
+            ...response.data.RepartitionModesPayments_data.Mode_Payement,
+          ],
+          datasets: [
+            {
+              label: "Repartition des modes de paiement",
+              data: [...response.data.RepartitionModesPayments_data.percentage],
+              backgroundColor: [
+                "#1f77b4", // Blue
+                "#ff7f0e", // Orange
+                "#2ca02c", // Green
+                "#d62728", // Red
+                "#9467bd", // Purple
+                "#8c564b", // Brown
+                "#e377c2", // Pink
+                "#7f7f7f", // Gray
+                "#bcbd22", // Yellow-green
+                "#17becf", // Cyan
+              ],
+              borderColor: [
+                "#1f77b4",
+                "#ff7f0e",
+                "#2ca02c",
+                "#d62728",
+                "#9467bd",
+                "#8c564b",
+                "#e377c2",
+                "#7f7f7f",
+                "#bcbd22",
+                "#17becf",
+              ],
+              borderWidth: 1,
             },
           ],
         };
@@ -979,6 +1138,9 @@ export default defineComponent({
         this.PRODUCTS_MARGIN = PRODUCTS_MARGIN_PRICES;
         this.PRODUCTS_MARGIN_POURCENTANGE = PRODUCTS_MARGIN_POURCENTANGE_Marge;
         this.DSO_CLIENTS = DSO_CLIENTS;
+        this.REPARTITION_MODES_PAYEMENTS = REPARTITION_MODES_PAYEMENTS;
+        this.isLoadingContent = true;
+
         console.log("API Response:", response.data);
       } catch (error) {
         console.error("Error fetching client analysis:", error);
