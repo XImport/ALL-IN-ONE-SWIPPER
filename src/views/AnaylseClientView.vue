@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <div >
+    <v-container >
+  
+    </v-container>
+    
     <AppHeaderBar
       :DATA="DATA"
       :FetchQuery="FetchQuery"
@@ -10,6 +14,7 @@
 
   <!-- Toggle Drawer Button -->
   <div
+  
     style="position: fixed; top: 300px; left: 0%; z-index: 5 !important"
     v-show="!isDrawerOpen"
   >
@@ -40,7 +45,7 @@
     }"
     style="margin-top: 4% !important"
   >
-    <v-container v-if="isDrawerOpen">
+    <v-container v-if="isDrawerOpen" >
       <!-- PrimeVue MultiSelect for country selection -->
       <MultiSelect
         v-model="selectedClients"
@@ -58,6 +63,23 @@
           </div>
         </template>
       </MultiSelect>
+      <v-tooltip text="Consulter des données" location="top"  v-if="isLoadingContent">
+              <template v-slot:activator="{ props }">
+                <v-btn
+        icon
+        size="20"
+        class="ml-2 mb-2"
+        @click="downloadPdf(selectedClients)"
+      >
+        <v-img
+          src="https://static-00.iconduck.com/assets.00/pdf-icon-1500x2048-5ftd129y.png"
+          width="20"
+          style="display: inline-block; vertical-align: middle"
+        ></v-img>
+      </v-btn>
+              </template>
+            </v-tooltip>
+     
     </v-container>
     <v-container v-if="!isDrawerOpen">
       <!-- PrimeVue MultiSelect for country selection -->
@@ -77,8 +99,32 @@
           </div>
         </template>
       </MultiSelect>
+   
     </v-container>
-    <div v-if="isLoadingContent">
+
+    <div v-if="SpinnerLoader" >
+        <v-progress-linear
+          color="yellow-darken-2"
+          indeterminate
+          style="margin-top: 5%"
+        ></v-progress-linear>
+        <div style="position: absolute; top: 30%; left: 35%">
+          <div class="bg-white pa-12 rounded-xl">
+            <h1 class="text-center text-decoration-underline">
+              Préparation des données ...
+            </h1>
+            <h3 class="text-center text-grey mt-2">Merci de patienter 🔍😁</h3>
+          </div>
+        </div>
+      </div>
+
+    <div v-if="isLoadingContent" id="Export-PDF">
+      <img 
+      v-if="ExportPDF"
+        src="https://i.postimg.cc/fbGvTyVy/Capture-d-cran-2025-02-12-141301.png"
+        style="width: 100%; margin-top: 0%; margin-bottom: 0%;height: 95%"
+        @load="imageLoaded = true"
+      />
       <v-container>
         <h2
           class="text-center text-decoration-underline"
@@ -95,12 +141,13 @@
           >
         </h2>
       </v-container>
+   
       <v-container style="max-width: 90%">
         <v-row no-gutters>
           <v-col cols="12" sm="6">
             <LineChartJS
               :CHARTDATA="CANETCABRUT"
-              title="Progression du Chiffre d'Affaires Brut et Net "
+              title="Évolution du Chiffre d'Affaires Brut et Net"
               IconName="mdi-chart-ppf"
               IconColor="blue"
               :Min="200000"
@@ -118,7 +165,7 @@
             />
           </v-col>
         </v-row>
-        <v-row no-gutters>
+        <v-row no-gutters >
           <v-col cols="12" sm="6">
             <BarCHART
               :CHARTDATA="PMVGLOBALS"
@@ -131,7 +178,7 @@
           <v-col cols="12" sm="6">
             <BarCHART
               :CHARTDATA="PRODUCTS_SOLD"
-              title="Répartition du Volume de Vente par Produits"
+              title="Répartition du Volume de Vente par Produit En Tonne"
               IconName="mdi-chart-tree"
               IconColor="green"
               UNITE="Tonne du Volume Global"
@@ -166,7 +213,7 @@
           <v-col cols="12" sm="6">
             <DonutsChartJS
               :CHARTDATA="VOLPARPRODUIT"
-              title="État des Ventes par Produit en Tonnes (Par Date)"
+              title="État des Ventes par Produit en Tonnes "
               IconName="mdi-chart-pie"
               IconColor="orange"
             />
@@ -174,7 +221,7 @@
           <v-col cols="12" sm="6">
             <DonutsChartJS
               :CHARTDATA="CAPARPRODUIT"
-              title="État des Ventes par Produit en CA NET (Par Date)"
+              title="État des Ventes par Produit en CA NET "
               IconName="mdi-chart-pie"
               IconColor="orange"
             />
@@ -201,7 +248,7 @@
           <v-col cols="12" sm="6">
             <LineChartJS
               :CHARTDATA="DELAI_PAIEMENT_VS_RECOUVREMENT"
-              title="Délai de Paiement vs Date de Recouvrement "
+              title="Comparaison entre le Délai de Paiement et la Date de Recouvrement"
               IconName="mdi-chart-ppf"
               IconColor="blue"
               :Min="120"
@@ -213,7 +260,7 @@
           <v-col cols="12" sm="6">
             <BarCHART
               :CHARTDATA="CREANCE_CA"
-              title="Évolution des Créances Clients et du Chiffre d'Affaires Brut "
+              title="Analyse des Créances Clients : Recouvrement Effectué, Valeur Impayée et CA Brut"
               IconName="mdi-chart-tree"
               IconColor="green"
             />
@@ -223,7 +270,7 @@
           <v-col cols="12" sm="6">
             <LineChartJS
               :CHARTDATA="DSO_CLIENTS"
-              title="DSO CLIENTS"
+              title="Analyse du DSO Clients : Suivi des Délais de Paiement et du Recouvrement"
               IconName="mdi-chart-ppf"
               IconColor="blue"
               :Min="120"
@@ -237,7 +284,7 @@
             <div style="margin-left: 20%">
               <DonutsChartJS
                 :CHARTDATA="REPARTITION_MODES_PAYEMENTS"
-                title="État des Ventes par Produit en CA NET (Par Date)"
+                title="Répartition en % de Chaque Mode de Paiement dans le Montant Total"
                 IconName="mdi-chart-pie"
                 IconColor="orange"
                 :chartHeight="370"
@@ -246,8 +293,17 @@
             </div>
           </v-col>
         </v-row>
+      
       </v-container>
+      <img
+  
+        src="https://i.postimg.cc/VvL0YPW5/Capture-d-cran-2025-02-12-141404.png"
+        style="width: 100%; "
+        @load="imageLoaded = true"
+        alt="Footer image"
+      />
     </div>
+   
   </div>
 </template>
 
@@ -260,6 +316,10 @@ import axiosInstance from "../Axios";
 import BarCHART from "../components/MiniComponents/Charts/BarChartJS.vue";
 import LineChartJS from "../components/MiniComponents/Charts/LineChartJS.vue";
 import DonutsChartJS from "../components/MiniComponents/Charts/DonutsChartJS.vue";
+import { jsPDF } from "jspdf";
+
+import html2pdf from "html2pdf.js/dist/html2pdf.bundle.min";
+
 export default defineComponent({
   name: "AnalyseClientView",
   components: {
@@ -274,6 +334,8 @@ export default defineComponent({
     return {
       CLIENT_PAYEMENT_DELAIY: 0,
       isLoadingContent: false,
+      SpinnerLoader: false,
+      ExportPDF: false,
       DATA: {
         DébutDate: "",
         FinDate: "",
@@ -802,6 +864,7 @@ export default defineComponent({
           },
         ],
       },
+      imageLoaded: false,
     };
   },
   created() {
@@ -811,6 +874,102 @@ export default defineComponent({
     });
   },
   methods: {
+    async waitForCharts() {
+      // Wait for initial render
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Additional wait for chart resizing
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    },
+    async downloadPdf(ClientName) {
+      try {
+        this.SpinnerLoader = true;
+        this.ExportPDF = true;
+        
+        await new Promise(resolve => setTimeout(resolve, 4000));
+        
+        const element = document.getElementById("Export-PDF");
+        
+        await Promise.all(
+          Array.from(element.getElementsByTagName('img')).map(
+            img => new Promise(resolve => {
+              if (img.complete) resolve();
+              else img.onload = resolve;
+            })
+          )
+        );
+
+        const opt = {
+          margin: [12, 5, 12, 5],
+          filename: `Fiche_Client_${ClientName}.pdf`,
+          image: { type: "jpeg", quality: 1 },
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            letterRendering: true,
+            scrollY: -window.scrollY,
+            windowWidth: 1920,
+            windowHeight: element.scrollHeight,
+            onclone: (clonedDoc) => {
+              const clonedElement = clonedDoc.getElementById('Export-PDF');
+              if (clonedElement) {
+                clonedElement.style.padding = '20px 10px 20px 10px';
+                
+                const containers = clonedElement.getElementsByClassName('v-container');
+                Array.from(containers).forEach(container => {
+                  container.style.marginLeft = '10px';
+                  container.style.maxWidth = '98%';
+                });
+
+                const images = clonedElement.getElementsByTagName('img');
+                Array.from(images).forEach(img => {
+                  img.style.display = 'block';
+                  img.style.maxWidth = '100%';
+                  img.style.height = 'auto';
+                  img.style.marginBottom = '20px';
+                });
+
+                const vImages = clonedElement.getElementsByClassName('v-img');
+                Array.from(vImages).forEach(vImg => {
+                  vImg.style.display = 'block';
+                  vImg.style.width = '100%';
+                  vImg.style.height = 'auto';
+                  vImg.style.marginBottom = '20px';
+                });
+
+                const headers = clonedElement.getElementsByTagName('h2');
+                Array.from(headers).forEach(header => {
+                  if (header.textContent.includes('Partie 2')) {
+                    const headerContainer = header.closest('.v-container');
+                    if (headerContainer) {
+                      headerContainer.style.pageBreakBefore = 'always';
+                      headerContainer.style.marginTop = '40px';
+                    }
+                  }
+                });
+              }
+            }
+          },
+          jsPDF: {
+            unit: "mm",
+            format: "a3",
+            orientation: "landscape",
+            compress: true
+          }
+        };
+
+        await html2pdf()
+          .from(element)
+          .set(opt)
+          .save();
+
+      } catch (error) {
+        console.error('PDF generation error:', error);
+      } finally {
+        this.ExportPDF = false;
+        this.SpinnerLoader = false;
+      }
+    },
     async FetchQuery(DATA) {
       console.log("Selected Clients:", this.selectedClients);
 
@@ -821,6 +980,7 @@ export default defineComponent({
         });
         let Payload = { ...DATA, Clients: Clients }; // ✅ Correct payload structure
         console.log(Payload);
+        this.SpinnerLoader = true;
         const response = await axiosInstance.post(
           "/API/V1/AnalyseClient",
           Payload,
@@ -1139,6 +1299,7 @@ export default defineComponent({
         this.PRODUCTS_MARGIN_POURCENTANGE = PRODUCTS_MARGIN_POURCENTANGE_Marge;
         this.DSO_CLIENTS = DSO_CLIENTS;
         this.REPARTITION_MODES_PAYEMENTS = REPARTITION_MODES_PAYEMENTS;
+        this.SpinnerLoader = false;
         this.isLoadingContent = true;
 
         console.log("API Response:", response.data);
@@ -1185,5 +1346,66 @@ export default defineComponent({
 
 :deep(.p-multiselect) {
   min-width: 15rem;
+}
+
+/* PDF export specific styles */
+#Export-PDF {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px 10px;
+  background-color: white;
+  position: relative;
+  overflow: visible !important;
+}
+
+#Export-PDF .v-container {
+  width: 98%;
+  margin-left: 10px;
+  margin-right: auto;
+  page-break-inside: auto;
+}
+
+#Export-PDF .v-row {
+  display: flex;
+  flex-wrap: wrap;
+  page-break-inside: auto;
+}
+
+#Export-PDF .v-col {
+  page-break-inside: avoid;
+  margin-bottom: 20px;
+}
+
+/* Chart container styles */
+#Export-PDF canvas {
+  max-width: 100% !important;
+  width: 100% !important;
+  height: auto !important;
+  margin: 10px auto;
+  display: block !important;
+}
+
+/* Remove fixed heights and allow content to flow naturally */
+.chart-wrapper {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* Ensure images are properly sized */
+#Export-PDF img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Section headers */
+#Export-PDF h2 {
+  margin: 20px 0;
+  page-break-before: auto;
+  page-break-after: avoid;
+}
+
+/* Ensure proper spacing between sections */
+#Export-PDF > div {
+  margin-bottom: 30px;
 }
 </style>
