@@ -49,6 +49,7 @@ import {
   Filler,
 } from "chart.js";
 import annotationPlugin from "chartjs-plugin-annotation";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { exportToExcel } from "../../../utils"; // Adjust the path if needed
 
 ChartJS.register(
@@ -60,7 +61,8 @@ ChartJS.register(
   LinearScale,
   PointElement,
   Filler,
-  annotationPlugin
+  annotationPlugin,
+  ChartDataLabels
 );
 
 export default {
@@ -111,6 +113,9 @@ export default {
           intersect: false,
         },
         plugins: {
+          datalabels: {
+            display: false
+          },
           legend: {
             display: true,
             position: "top",
@@ -206,7 +211,7 @@ export default {
           borderWidth: 2,
           borderDash: [5, 5],
           label: {
-            content: `"Min ${(this.Min).toLocaleString(2)} ${this.Unite}"`,
+            content: `"ALERTE ${(this.Min).toLocaleString(2)} ${this.Unite}"`,
             display: true,
             position: "end",
             backgroundColor: 'rgba(236, 31, 14, 0.8)',
@@ -229,7 +234,7 @@ export default {
           borderWidth: 2,
           borderDash: [5, 5],
           label: {
-            content: `"Max ${(this.Max).toLocaleString(2)} ${this.Unite}"`,
+            content: `"OBJECTIF ${(this.Max).toLocaleString(2)} ${this.Unite}"`,
             display: true,
             position: "end",
             backgroundColor: 'rgba(0, 189, 26, 0.8)',

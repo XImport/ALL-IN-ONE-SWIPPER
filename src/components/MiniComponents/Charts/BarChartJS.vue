@@ -38,6 +38,7 @@ import {
   CategoryScale,
   LinearScale,
 } from "chart.js";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(
   Title,
@@ -45,7 +46,8 @@ ChartJS.register(
   Legend,
   BarElement,
   CategoryScale,
-  LinearScale
+  LinearScale,
+  ChartDataLabels
 );
 
 export default {
@@ -68,14 +70,17 @@ export default {
             display: false,
             text: this.title,
           },
-          // tooltip: {
-          //   enabled: true,
-          //   callbacks: {
-          //     label: function (context) {
-          //       return `représente: ${context.raw.toLocaleString(2)} ${unite} `;
-          //     },
-          //   },
-          // },
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              label: function (context) {
+                return `${context.dataset.label}: ${context.raw.toLocaleString()} ${unite}`;
+              },
+            },
+          },
+          datalabels: {
+            display: false
+          }
         },
         scales: {
           x: {
@@ -83,6 +88,9 @@ export default {
               display: true,
               color: "rgba(0, 0, 0, 0.1)",
             },
+            ticks: {
+              display: true
+            }
           },
           y: {
             grid: {
@@ -90,6 +98,9 @@ export default {
               color: "rgba(0, 0, 0, 0.1)",
             },
             beginAtZero: true,
+            ticks: {
+              display: true
+            }
           },
         },
       },

@@ -36,6 +36,7 @@
 <script>
 import { Doughnut } from "vue-chartjs";
 import { exportToExcel } from "../../../utils"; // Adjust the path if needed
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
   Chart as ChartJS,
   Title,
@@ -52,7 +53,8 @@ ChartJS.register(
   Legend,
   ArcElement, // This is for donut (arc) chart elements
   CategoryScale,
-  LinearScale
+  LinearScale,
+  ChartDataLabels
 );
 
 export default {
@@ -65,6 +67,19 @@ export default {
       chartOptions: {
         responsive: true,
         plugins: {
+          datalabels: {
+            color: '#fff',
+            font: {
+              weight: 'bold',
+              size: 14
+            },
+            formatter: (value) => {
+              return `${value}%`;
+            },
+            anchor: 'center',
+            align: 'center',
+            offset: 0
+          },
           legend: {
             display: true,
             position: "top", // Options: 'top', 'bottom', 'left', 'right'

@@ -1,309 +1,198 @@
 <template>
-  <div >
-    <v-container >
-  
+  <div>
+    <v-container>
+
     </v-container>
-    
-    <AppHeaderBar
-      :DATA="DATA"
-      :FetchQuery="FetchQuery"
-      :StaticInfo="{ icon: 'mdi-poll', title: 'Évaluation Client' }"
-      :GoButton="true"
-    />
+
+    <AppHeaderBar :DATA="DATA" :FetchQuery="FetchQuery" :StaticInfo="{ icon: 'mdi-poll', title: 'Évaluation Client' }"
+      :GoButton="true" />
   </div>
 
   <!-- Toggle Drawer Button -->
-  <div
-  
-    style="position: fixed; top: 300px; left: 0%; z-index: 5 !important"
-    v-show="!isDrawerOpen"
-  >
-    <v-btn
-      icon="mdi-arrow-collapse-right"
-      elevation="3"
-      @click="ChangeDrawerState"
-      size="x-large"
-    ></v-btn>
+  <div style="position: fixed; top: 300px; left: 0%; z-index: 5 !important" v-show="!isDrawerOpen">
+    <v-btn icon="mdi-arrow-collapse-right" elevation="3" @click="ChangeDrawerState" size="x-large"></v-btn>
   </div>
-  <div
-    style="position: fixed; top: 300px; left: 15%; z-index: 5 !important"
-    v-show="isDrawerOpen"
-  >
-    <v-btn
-      icon="mdi-arrow-collapse-left"
-      elevation="3"
-      @click="ChangeDrawerState"
-      size="x-large"
-    ></v-btn>
+  <div style="position: fixed; top: 300px; left: 15%; z-index: 5 !important" v-show="isDrawerOpen">
+    <v-btn icon="mdi-arrow-collapse-left" elevation="3" @click="ChangeDrawerState" size="x-large"></v-btn>
   </div>
 
   <!-- Content Area -->
-  <div
-    :class="{
-      'content-with-drawer': isDrawerOpen,
-      'content-full-width': !isDrawerOpen,
-    }"
-    style="margin-top: 4% !important"
-  >
-    <v-container v-if="isDrawerOpen" >
+  <div :class="{
+    'content-with-drawer': isDrawerOpen,
+    'content-full-width': !isDrawerOpen,
+  }" style="margin-top: 4% !important">
+    <v-container v-if="isDrawerOpen">
       <!-- PrimeVue MultiSelect for country selection -->
-      <MultiSelect
-        v-model="selectedClients"
-        :options="Clients"
-        optionLabel="CLIENTNAME"
-        placeholder="Choisissez le nom du client ou des clients"
-        filter
-        :maxSelectedLabels="3"
-        class="w-full md:w-56 mb-4"
-        style="max-width: 100%; min-width: 21% !important; margin-left: 23%"
-      >
+      <MultiSelect v-model="selectedClients" :options="Clients" optionLabel="CLIENTNAME"
+        placeholder="Choisissez le nom du client ou des clients" filter :maxSelectedLabels="3"
+        class="w-full md:w-56 mb-4" style="max-width: 100%; min-width: 21% !important; margin-left: 23%">
         <template #option="slotProps">
           <div class="flex align-items-center">
             <div>{{ slotProps.option.CLIENTNAME }}</div>
           </div>
         </template>
       </MultiSelect>
-      <v-tooltip text="Consulter des données" location="top"  v-if="isLoadingContent">
-              <template v-slot:activator="{ props }">
-                <v-btn
-        icon
-        size="20"
-        class="ml-2 mb-2"
-        @click="downloadPdf(selectedClients)"
-      >
-        <v-img
-          src="https://static-00.iconduck.com/assets.00/pdf-icon-1500x2048-5ftd129y.png"
-          width="20"
-          style="display: inline-block; vertical-align: middle"
-        ></v-img>
-      </v-btn>
-              </template>
-            </v-tooltip>
-     
+      <v-tooltip text="Consulter des données" location="top" v-if="isLoadingContent">
+        <template v-slot:activator="{ props }">
+          <v-btn icon size="20" class="ml-2 mb-2" @click="downloadPdf(selectedClients)">
+            <v-img src="https://static-00.iconduck.com/assets.00/pdf-icon-1500x2048-5ftd129y.png" width="20"
+              style="display: inline-block; vertical-align: middle"></v-img>
+          </v-btn>
+        </template>
+      </v-tooltip>
+
     </v-container>
     <v-container v-if="!isDrawerOpen">
       <!-- PrimeVue MultiSelect for country selection -->
-      <MultiSelect
-        v-model="selectedClients"
-        :options="Clients"
-        optionLabel="CLIENTNAME"
-        placeholder="Choisissez le nom du client ou des clients"
-        filter
-        :maxSelectedLabels="3"
-        class="w-full md:w-56 mb-4"
-        style="max-width: 100%; min-width: 21% !important; margin-left: 34%"
-      >
+      <MultiSelect v-model="selectedClients" :options="Clients" optionLabel="CLIENTNAME"
+        placeholder="Choisissez le nom du client ou des clients" filter :maxSelectedLabels="3"
+        class="w-full md:w-56 mb-4" style="max-width: 100%; min-width: 21% !important; margin-left: 34%">
         <template #option="slotProps">
           <div class="flex align-items-center">
             <div>{{ slotProps.option.CLIENTNAME }}</div>
           </div>
         </template>
       </MultiSelect>
-   
+
     </v-container>
 
-    <div v-if="SpinnerLoader" >
-        <v-progress-linear
-          color="yellow-darken-2"
-          indeterminate
-          style="margin-top: 5%"
-        ></v-progress-linear>
-        <div style="position: absolute; top: 30%; left: 35%">
-          <div class="bg-white pa-12 rounded-xl">
-            <h1 class="text-center text-decoration-underline">
-              Préparation des données ...
-            </h1>
-            <h3 class="text-center text-grey mt-2">Merci de patienter 🔍😁</h3>
-          </div>
+    <div v-if="SpinnerLoader">
+      <v-progress-linear color="yellow-darken-2" indeterminate style="margin-top: 5%"></v-progress-linear>
+      <div style="position: absolute; top: 30%; left: 35%">
+        <div class="bg-white pa-12 rounded-xl">
+          <h1 class="text-center text-decoration-underline">
+            Préparation des données ...
+          </h1>
+          <h3 class="text-center text-grey mt-2">Merci de patienter 🔍😁</h3>
         </div>
       </div>
+    </div>
 
     <div v-if="isLoadingContent" id="Export-PDF">
-      <img 
-      v-if="ExportPDF"
-        src="https://i.postimg.cc/fbGvTyVy/Capture-d-cran-2025-02-12-141301.png"
-        style="width: 100%; margin-top: 0%; margin-bottom: 0%;height: 95%"
-        @load="imageLoaded = true"
-      />
-      <v-container>
-        <h2
-          class="text-center text-decoration-underline"
-          style="margin-top: -2%"
-        >
-          <span class="text-red"> Partie 1 : </span>
+      <img v-if="ExportPDF" src="https://i.postimg.cc/fbGvTyVy/Capture-d-cran-2025-02-12-141301.png"
+        style="width: 100%; margin-top: 0%; margin-bottom: 0%;height: 90% !important" @load="imageLoaded = true" />
+      <div v-if="ExportPDF" style="height: 40px !important;background-color: #FFF;width: 100%;">
+      </div>
+      <!-- margin-to -10% if ExportPDF  -->
+      <v-container class="justify-content-center justify-center" :style="{ marginTop: ExportPDF ? '-5%' : '0%' }">
 
-          <span
-            >Analyse Commerciale (
-            <span class="text-pink">
-              Ventes, Produits, Prix, Volume, Prix Client,Marge bénéficiaire
-              ...</span
-            >)</span
-          >
+        <h2 class="text-center  "
+          style="margin-top: -2%; border-bottom: 2px solid black; display: inline-block; padding-bottom: 2px;margin-left: 12% ; font-size: 22px !important;">
+          <span class="text-red">Partie 1 : </span>
+          Analyse Commerciale (
+          <span class="text-pink">
+            Ventes, Produits, Prix, Volume, Prix Client,Marge bénéficiaire
+            ...</span>)
         </h2>
       </v-container>
-   
-      <v-container style="max-width: 90%">
-        <v-row no-gutters>
-          <v-col cols="12" sm="6">
-            <LineChartJS
-              :CHARTDATA="CANETCABRUT"
-              title="Évolution du Chiffre d'Affaires Brut et Net"
-              IconName="mdi-chart-ppf"
-              IconColor="blue"
-              :Min="200000"
-              :Max="400000"
-              :chartHeight="350"
-            />
-          </v-col>
-          <v-col cols="12" sm="6">
-            <BarCHART
-              :CHARTDATA="QNTENTANDM3"
-              title="Quantité Vendue : Tonnes et Mètres Cubes"
-              IconName="mdi-chart-tree"
-              IconColor="green"
-              UNITE="du Volume Global"
-            />
-          </v-col>
-        </v-row>
-        <v-row no-gutters >
-          <v-col cols="12" sm="6">
-            <BarCHART
-              :CHARTDATA="PMVGLOBALS"
-              title="Analyse du PVM : Nobles, Graves et Stérile "
-              IconName="mdi-chart-ppf"
-              IconColor="blue"
-              UNITE="dhs/Tonne"
-            />
-          </v-col>
-          <v-col cols="12" sm="6">
-            <BarCHART
-              :CHARTDATA="PRODUCTS_SOLD"
-              title="Répartition du Volume de Vente par Produit En Tonne"
-              IconName="mdi-chart-tree"
-              IconColor="green"
-              UNITE="Tonne du Volume Global"
-            />
-          </v-col>
-        </v-row>
 
+      <v-container style="max-width: 98%">
         <v-row no-gutters>
           <v-col cols="12" sm="6">
-            <BarCHART
-              :CHARTDATA="PRODUCTS_MARGIN"
-              title="Distribution des Coûts et Prix de Vente selon les Produits (dhs) "
-              IconName="mdi-chart-ppf"
-              IconColor="blue"
-              UNITE="dhs"
-            />
+            <LineChartJS :CHARTDATA="CANETCABRUT" title="Évolution du Chiffre d'Affaires Brut et Net"
+              IconName="mdi-chart-ppf" IconColor="blue" :Min="200000" :Max="400000" :chartHeight="350" />
+          </v-col>
+          <v-col cols="12" sm="6">
+            <BarCHART :CHARTDATA="QNTENTANDM3" title="Quantité Vendue : Tonnes et Mètres Cubes"
+              IconName="mdi-chart-tree" IconColor="green" UNITE="du Volume Global" />
+          </v-col>
+        </v-row>
+       
+        <v-row no-gutters>
+          <v-col cols="12" sm="6">
+            <BarCHART :CHARTDATA="PMVGLOBALS" title="Analyse du PVM : Nobles, Graves et Stérile "
+              IconName="mdi-chart-ppf" IconColor="blue" UNITE="dhs/Tonne" />
+          </v-col>
+          <v-col cols="12" sm="6">
+            <BarCHART :CHARTDATA="PRODUCTS_SOLD" title="Répartition du Volume de Vente par Produit En Tonne"
+              IconName="mdi-chart-tree" IconColor="green" UNITE="Tonne du Volume Global" />
+          </v-col>
+        </v-row>
+        <div  style="height: 60px !important;background-color: #fff;width: 100%;"></div>  
+        <v-row no-gutters>
+          <v-col cols="12" sm="6">
+            <BarCHART :CHARTDATA="PRODUCTS_MARGIN"
+              title="Distribution des Coûts et Prix de Vente selon les Produits (dhs) " IconName="mdi-chart-ppf"
+              IconColor="blue" UNITE="dhs" />
           </v-col>
           <v-col cols="12" sm="6">
             <div>
-              <BarCHART
-                :CHARTDATA="PRODUCTS_MARGIN_POURCENTANGE"
-                title="Marge Bénéficiaire : Distribution en Pourcentage par Produit (%)"
-                IconName="mdi-chart-pie"
-                IconColor="orange"
-                UNITE="%"
-              />
+              <BarCHART :CHARTDATA="PRODUCTS_MARGIN_POURCENTANGE"
+                title="Marge Bénéficiaire : Distribution en Pourcentage par Produit (%)" IconName="mdi-chart-pie"
+                IconColor="orange" UNITE="%" />
             </div>
           </v-col>
         </v-row>
 
         <v-row no-gutters style="margin-top: 0%; margin-left: 10%">
           <v-col cols="12" sm="6">
-            <DonutsChartJS
-              :CHARTDATA="VOLPARPRODUIT"
-              title="État des Ventes par Produit en Tonnes "
-              IconName="mdi-chart-pie"
-              IconColor="orange"
-            />
+            <DonutsChartJS :CHARTDATA="VOLPARPRODUIT" title="État des Ventes par Produit en Tonnes "
+              IconName="mdi-chart-pie" IconColor="orange" />
           </v-col>
           <v-col cols="12" sm="6">
-            <DonutsChartJS
-              :CHARTDATA="CAPARPRODUIT"
-              title="État des Ventes par Produit en CA NET "
-              IconName="mdi-chart-pie"
-              IconColor="orange"
-            />
+            <DonutsChartJS :CHARTDATA="CAPARPRODUIT" title="État des Ventes par Produit en CA NET "
+              IconName="mdi-chart-pie" IconColor="orange" />
           </v-col>
         </v-row>
       </v-container>
       <v-container>
-        <h2
-          class="text-center text-decoration-underline"
-          style="margin-top: -2%"
-        >
-          <span class="text-red"> Partie 2 : </span>
 
-          <span
-            >Analyse Paiement (
-            <span class="text-pink">
-              Délai de Paiement, Créances Clients, Recouvrement Effectuer... </span
-            >)</span
-          >
+
+        <div  v-if="ExportPDF" style="height: 300px !important;background-color: #FFF;width: 100%;">
+        </div>
+        <h2 class="text-center  "
+          style="margin-top: -2%; border-bottom: 2px solid black; display: inline-block; padding-bottom: 2px;margin-left: 12%; font-size: 22px !important;">
+          <span class="text-red">Partie 2 : </span>
+          Analyse Commerciale (
+          <span class="text-pink">
+            Délai de Paiement, Créances Clients, Recouvrement Effectuer...
+            </span>)
         </h2>
+
+        
+
+
+
+
+
+
+
+
       </v-container>
       <v-container style="max-width: 95%">
         <v-row no-gutters>
           <v-col cols="12" sm="6">
-            <LineChartJS
-              :CHARTDATA="DELAI_PAIEMENT_VS_RECOUVREMENT"
-              title="Comparaison entre le Délai de Paiement et la Date de Recouvrement"
-              IconName="mdi-chart-ppf"
-              IconColor="blue"
-              :Min="120"
-              :Max="30"
-              :chartHeight="370"
-              Unite="Jours"
-            />
+            <LineChartJS :CHARTDATA="DELAI_PAIEMENT_VS_RECOUVREMENT"
+              title="Comparaison entre le Délai de Paiement et la Date de Recouvrement" IconName="mdi-chart-ppf"
+              IconColor="blue" :Min="120" :Max="30" :chartHeight="370" Unite="Jours" />
           </v-col>
           <v-col cols="12" sm="6">
-            <BarCHART
-              :CHARTDATA="CREANCE_CA"
+            <BarCHART :CHARTDATA="CREANCE_CA"
               title="Analyse des Créances Clients : Recouvrement Effectué, Valeur Impayée et CA Brut"
-              IconName="mdi-chart-tree"
-              IconColor="green"
-            />
+              IconName="mdi-chart-tree" IconColor="green" />
           </v-col>
         </v-row>
         <v-row no-gutters>
           <v-col cols="12" sm="6">
-            <LineChartJS
-              :CHARTDATA="DSO_CLIENTS"
-              title="Analyse du DSO Clients : Suivi des Délais de Paiement et du Recouvrement"
-              IconName="mdi-chart-ppf"
-              IconColor="blue"
-              :Min="120"
-              :Max="CLIENT_PAYEMENT_DELAIY"
-              :chartHeight="370"
-              :chartWidth="472"
-              Unite="Jours"
-            />
+            <LineChartJS :CHARTDATA="DSO_CLIENTS"
+              title="Analyse du DSO Clients : Suivi des Délais de Paiement et du Recouvrement" IconName="mdi-chart-ppf"
+              IconColor="blue" :Min="120" :Max="CLIENT_PAYEMENT_DELAIY" :chartHeight="370" :chartWidth="472"
+              Unite="Jours" />
           </v-col>
           <v-col cols="12" sm="6">
             <div style="margin-left: 20%">
-              <DonutsChartJS
-                :CHARTDATA="REPARTITION_MODES_PAYEMENTS"
-                title="Répartition en % de Chaque Mode de Paiement dans le Montant Total"
-                IconName="mdi-chart-pie"
-                IconColor="orange"
-                :chartHeight="370"
-                :chartWidth="172"
-              />
+              <DonutsChartJS :CHARTDATA="REPARTITION_MODES_PAYEMENTS"
+                title="Répartition en % de Chaque Mode de Paiement dans le Montant Total" IconName="mdi-chart-pie"
+                IconColor="orange" :chartHeight="370" :chartWidth="172" />
             </div>
           </v-col>
         </v-row>
-      
+
       </v-container>
-      <img
-  
-        src="https://i.postimg.cc/VvL0YPW5/Capture-d-cran-2025-02-12-141404.png"
-        style="width: 100%; "
-        @load="imageLoaded = true"
-        alt="Footer image"
-      />
+      <img v-if="ExportPDF" src="https://i.postimg.cc/VvL0YPW5/Capture-d-cran-2025-02-12-141404.png"
+        style="width: 100%; " @load="imageLoaded = true" alt="Footer image" />
     </div>
-   
+
   </div>
 </template>
 
@@ -335,6 +224,7 @@ export default defineComponent({
       CLIENT_PAYEMENT_DELAIY: 0,
       isLoadingContent: false,
       SpinnerLoader: false,
+      ClientName: "",
       ExportPDF: false,
       DATA: {
         DébutDate: "",
@@ -869,7 +759,7 @@ export default defineComponent({
   },
   created() {
     axiosInstance.get("/API/V1/QueryClients").then((response) => {
-      this.Clients.map(() => {});
+      this.Clients.map(() => { });
       this.Clients = response.data.INFO_CLIENTS;
     });
   },
@@ -877,7 +767,7 @@ export default defineComponent({
     async waitForCharts() {
       // Wait for initial render
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // Additional wait for chart resizing
       await new Promise(resolve => setTimeout(resolve, 1000));
     },
@@ -885,11 +775,11 @@ export default defineComponent({
       try {
         this.SpinnerLoader = true;
         this.ExportPDF = true;
-        
+
         await new Promise(resolve => setTimeout(resolve, 4000));
-        
+
         const element = document.getElementById("Export-PDF");
-        
+
         await Promise.all(
           Array.from(element.getElementsByTagName('img')).map(
             img => new Promise(resolve => {
@@ -900,8 +790,9 @@ export default defineComponent({
         );
 
         const opt = {
-          margin: [12, 5, 12, 5],
-          filename: `Fiche_Client_${ClientName}.pdf`,
+          margin: [0, 1, 2, 2], // [top, right, bottom, left]
+          // make it all caps
+          filename: `ANALYSE_CLIENT_${this.ClientName.toUpperCase()}.pdf`,
           image: { type: "jpeg", quality: 1 },
           html2canvas: {
             scale: 2,
@@ -914,7 +805,7 @@ export default defineComponent({
               const clonedElement = clonedDoc.getElementById('Export-PDF');
               if (clonedElement) {
                 clonedElement.style.padding = '20px 10px 20px 10px';
-                
+
                 const containers = clonedElement.getElementsByClassName('v-container');
                 Array.from(containers).forEach(container => {
                   container.style.marginLeft = '10px';
@@ -978,6 +869,7 @@ export default defineComponent({
         this.selectedClients.map((client) => {
           Clients.push(client.CLIENTNAME);
         });
+        this.ClientName = Clients[0];
         let Payload = { ...DATA, Clients: Clients }; // ✅ Correct payload structure
         console.log(Payload);
         this.SpinnerLoader = true;
@@ -1359,7 +1251,7 @@ export default defineComponent({
 }
 
 #Export-PDF .v-container {
-  width: 98%;
+  width: 100%;
   margin-left: 10px;
   margin-right: auto;
   page-break-inside: auto;
@@ -1398,14 +1290,10 @@ export default defineComponent({
 }
 
 /* Section headers */
-#Export-PDF h2 {
-  margin: 20px 0;
-  page-break-before: auto;
-  page-break-after: avoid;
-}
+
 
 /* Ensure proper spacing between sections */
-#Export-PDF > div {
+#Export-PDF>div {
   margin-bottom: 30px;
 }
 </style>
