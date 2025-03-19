@@ -84,9 +84,12 @@
             Ventes, Produits, Prix, Volume, Prix Client,Marge bénéficiaire
             ...</span>)
         </h2>
+        <h4 v-if="ExportPDF" class="text-center text-decoration-underline" style="margin-top: 1%; margin-bottom: 2%;">
+          CLIENT : <span class="text-red">{{ ClientName }}</span>
+        </h4>
       </v-container>
 
-      <v-container style="max-width: 98%">
+      <v-container :style="ExportPDF ? 'margin-top:-3%;max-width: 95%' : 'max-width: 95%'">
         <v-row no-gutters>
           <v-col cols="12" sm="6">
             <LineChartJS :CHARTDATA="CANETCABRUT" title="Évolution du Chiffre d'Affaires Brut et Net"
@@ -108,7 +111,7 @@
               IconName="mdi-chart-tree" IconColor="green" UNITE="Tonne du Volume Global" />
           </v-col>
         </v-row>
-        <div  style="height: 60px !important;background-color: #fff;width: 100%;"></div>  
+        <div  style="height: 100px !important;background-color: #fff;width: 100%;"></div>  
         <v-row no-gutters>
           <v-col cols="12" sm="6">
             <BarCHART :CHARTDATA="PRODUCTS_MARGIN"
@@ -124,6 +127,8 @@
           </v-col>
         </v-row>
 
+        <div  v-if="ExportPDF" style="height: 120px !important;background-color: #FFF;width: 100%;">
+        </div>
         <v-row no-gutters style="margin-top: 0%; margin-left: 10%">
           <v-col cols="12" sm="6">
             <DonutsChartJS :CHARTDATA="VOLPARPRODUIT" title="État des Ventes par Produit en Tonnes "
@@ -138,7 +143,7 @@
       <v-container>
 
 
-        <div  v-if="ExportPDF" style="height: 300px !important;background-color: #FFF;width: 100%;">
+        <div  v-if="ExportPDF" style="height: 120px !important;background-color: #FFF;width: 100%;">
         </div>
         <h2 class="text-center  "
           style="margin-top: -2%; border-bottom: 2px solid black; display: inline-block; padding-bottom: 2px;margin-left: 12%; font-size: 22px !important;">
